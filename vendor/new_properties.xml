@@ -5227,6 +5227,24 @@ If needed: which sub menu this item belongs to
 If needed: the button id this item corresponds to
 </HELP>
   </PROPERTY>
+  <PROPERTY Name="Item Submenu Parent ID" ID="0x8a2602ca" Type="Uint32" Default="0x00000000" ShowAsHex="Y">
+    <HELP>
+For use with Submenus DLL: the button ID that opens the submenu this item belongs to
+</HELP>
+  </PROPERTY>
+  <PROPERTY Name="Item Button Class" ID="0x8a2602cc" Type="Uint32" Default="0x00000001" ShowAsHex="Y">
+    <HELP>
+For use with Submenus DLL: classifier that determines the function of this item
+</HELP>
+    <OPTION Value="0x0000" Name="Disabled">
+    </OPTION>
+    <OPTION Value="0x0001" Name="Submenu Button">
+    </OPTION>
+    <OPTION Value="0x0002" Name="Network Item in Submenu">
+    </OPTION>
+    <OPTION Value="0x0004" Name="Flora Item in Submenu">
+    </OPTION>
+  </PROPERTY>
   <PROPERTY Name="Port Type Exemplar IDs" ID="0x8a270fc3" Type="Uint32" Count="-1" Default="0x00000000" ShowAsHex="Y">
     <HELP>
 List of instance IDs for exemplars containing the properties for each distinct airport/seaport type
@@ -7339,6 +7357,11 @@ List of groups this occupant belongs to.
   <PROPERTY Name="SFX:Query Sound" ID="0xaa1dd397" Type="Uint32" Default="0x00000000" ShowAsHex="Y">
     <HELP>
 GUID of the sound to play when the occupant is clicked on with query tool
+</HELP>
+  </PROPERTY>
+  <PROPERTY Name="OccupantGroupsAlt" ID="0xaa1dd399" Type="Uint32" Count="-1" Default="0x00000000" ShowAsHex="Y">
+    <HELP>
+When Submenus DLL is loaded, this overwrites the OccupantGroups property (only affects menu placement, so keep regular OccupantGroups as well)
 </HELP>
   </PROPERTY>
   <PROPERTY Name="Garbage service cost per unit of garbage" ID="0xaa1f8ab7" Type="Float32" Default="0.100" ShowAsHex="Y">
