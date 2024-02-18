@@ -71,7 +71,7 @@
   </OPTION>
   <OPTION Value="0x00000020" Name="Automata Tuning">
   </OPTION>
-  <OPTION Value="0x00000021" Name="Type 21">
+  <OPTION Value="0x00000021" Name="Type 21 (Network)">
   </OPTION>
   <OPTION Value="0x00000022" Name="Disaster">
   </OPTION>
@@ -1030,6 +1030,11 @@ Amount of power consumed by this building.
   <PROPERTY Name="Building/prop Family" ID="0x27812870" Type="Uint32" Count="-1" ShowAsHex="Y">
     <HELP>
 The family that this building or prop is a member of.
+</HELP>
+  </PROPERTY>
+  <PROPERTY Name="ResourceKeyTypeMisc" ID="0x27812920" Type="Uint32" Count="3" Default="0x00000000" ShowAsHex="Y">
+    <HELP>
+Specifies 1 model key for each Z/R
 </HELP>
   </PROPERTY>
   <PROPERTY Name="Resource Key Type 1xm" ID="0x27812921" Type="Uint32" Count="3" Default="0x00000000" ShowAsHex="Y">
@@ -9206,7 +9211,7 @@ This seletion will filter the display to only show Residential plug-ins.
 </PROPERTIES>
 </CATEGORY>
 
-<CATEGORY Name="(R$) Low Wealth" ID="0x2c8fbb95" ParentID="0x0c8fbb86">
+<CATEGORY Name="(R $) Low Wealth" ID="0x2c8fbb95" ParentID="0x0c8fbb86">
 <HELP>
 This selection will filter the display to only show Residential Low Wealth plug-ins.  To create a Residential Low Wealth plug-in drag a model to this category.
 </HELP>
@@ -9232,7 +9237,7 @@ This selection will filter the display to only show Residential Low Wealth plug-
 </PROPERTIES>
 </CATEGORY>
 
-<CATEGORY Name="(R$$) Medium Wealth" ID="0x6c8fbba5" ParentID="0x0c8fbb86">
+<CATEGORY Name="(R $$) Medium Wealth" ID="0x6c8fbba5" ParentID="0x0c8fbb86">
 <HELP>
 This selection will filter the display to only show Residential Medium Wealth plug-ins.  To create a Residential Medium Wealth plug-in drag a model to this category.
 </HELP>
@@ -9258,7 +9263,7 @@ This selection will filter the display to only show Residential Medium Wealth pl
 </PROPERTIES>
 </CATEGORY>
 
-<CATEGORY Name="(R$$$) High Wealth" ID="0x0c8fbbae" ParentID="0x0c8fbb86">
+<CATEGORY Name="(R $$$) High Wealth" ID="0x0c8fbbae" ParentID="0x0c8fbb86">
 <HELP>
 This selection will filter the display to only show Residential High Wealth plug-ins.  To create a Residential High Wealth plug-in drag a model to this category.
 </HELP>
@@ -9878,7 +9883,7 @@ This selection will filter the display to only show Library plug-ins. To create 
  <eval name="Radius" value="40*int(1+0.75*Students**0.4)"/>
  <eval name="MCost" value="50*int(5+0.0002*Students**0.9)"/>
  <eval name="PCost" value="50*int(6+0.000025*Students**1.1)"/>
- <eval name="BCost" value="10*int(2+0.0025*Students**0.9)"/>
+ <eval name="BCost" value="10*int(2+0.000004*Students**1.4)"/>
  <PROPERTY ID="0x27812832" Value="0x02"/><!--Wealth-->
  <PROPERTY ID="0x29244DB5" Eval="0x23"/><!--Flammability-->
  <PROPERTY ID="0x2A499F85" Eval="QueryForLibrary"/><!--Query exemplar GUID-->
@@ -10448,33 +10453,6 @@ This selection will filter the display to only show Neutral plug-ins. To create 
 </PROPERTIES> 
 </CATEGORY>
 
-<CATEGORY Name="WaterFront" ID="0x6d155f57" ParentID="0xcc8fbc2d" img="img_seaport.gif">
-<HELP>
-This selection will filter the display to only show foundation plug-ins.  To create a foundation, drag a model on to this category.
-</HELP>
-<FILTERS>
- <NEEDED ID="0xaa1dd396" Value="0x1519"/>  
- <NOT ID="0xaa1dd396" Value="0x1509"/>
- <NOT ID="0xaa1dd396" Value="0x1308"/>
- <NOT ID="0xaa1dd396" Value="0x1309"/>
-</FILTERS>
-<PROPERTIES>
- <PROPERTY ID="0x099AFACD" Eval="0x000000000000000A"/><!--Bulldoze Cost-->
- <PROPERTY ID="0x27812832" Eval="0x03"/><!--Wealth-->
- <PROPERTY ID="0x29244DB5" Eval="0x00"/><!--Flammability-->
- <PROPERTY ID="0x2A499F85" Eval="QueryForPark"/><!--Query exemplar GUID-->
- <PROPERTY ID="0x49BEDA31" Eval="0x00"/><!--MaxFireStage-->
- <PROPERTY ID="0x49CAC341" Eval="0x000000000000000A"/><!--Plop Cost-->
- <PROPERTY ID="0x68EE9764" Eval="0.00000000,1.00000000,0.00000000,0.00000000"/><!--Pollution radii-->
- <PROPERTY ID="0x8A2602B9" Eval="ItemOrderForWF"/><!-- Item Order -->
- <PROPERTY ID="0xAA1DD396" Eval="0x00001519"/><!--OccupantGroups-->
- <PROPERTY ID="0xAA1DD397" Set="0xCA5B1461"/><!--SFX:Query Sound-->
- <PROPERTY ID="0xC8ED2D84" Eval="0x00000005"/><!--Water Consumed-->
- <PROPERTY ID="0xC9B93A56" Set="0xEA5EC59F"/><!--SFX:Default Plop Sound-->
- <PROPERTY ID="0xEA54D286" Eval="0x0000000000000014"/><!--Budget Item: Cost-->
-</PROPERTIES>
-</CATEGORY>
-
 <CATEGORY Name="Hospital" ID="0xccb23662" ParentID="0xcc8fbc2d" img="img_health.gif">
 <HELP>
 This selection will filter the display to only show Hospital plug-ins.  To create a Hospital plug-in drag a model to this category. In the lot editor this plug-in building can be found by choosing and replacing the building on CV3x4_LargeMedicalCenter_0313 or CV1x2_UrgentCareClinic_0311.
@@ -10958,6 +10936,7 @@ This selection will filter the display to only show Power plug-ins.  To create a
  <eval name="GarbagePollutionFactor" value="0"/>
  <eval name="WaterConsumedFactor" value="0"/>
  <PROPERTY ID="0x0A4C13CB" Set="0x6A4C4478"/><!--SFX:Ambience Decayed Sound-->
+ <PROPERTY ID="0x27812841" Remove="27812841"/><!--Demand Created-->
  <PROPERTY ID="0x27812853" Eval="0x00000009"/><!--Power Plant Type-->
  <PROPERTY ID="0x29244DB5" Eval="0x0A"/><!--Flammability-->
  <PROPERTY ID="0x4A4C132E" Set="0x6A4C4490"/><!--SFX:Activate Sound-->
@@ -11029,6 +11008,39 @@ This selection will filter the display to only show Waste to Energy plug-ins.  T
  <PROPERTY ID="0xAA1DD397" Set="0x4A8B7CD2"/><!--SFX:Query Sound-->
  <PROPERTY ID="0xCA19D7CA" Set="0xAA4C4467"/><!--SFX:Ambience Good Sound-->
  <PROPERTY ID="0xEA1CF220" Eval="0.00104200"/><!--Age degradation rate-->
+</PROPERTIES>
+</CATEGORY>
+
+<CATEGORY Name="Power Eye-Candy" ID="0x4cb9387E" ParentID="0x4cb23866">
+<FILTERS>
+</FILTERS>
+<PROPERTIES>
+ <eval name="PowerOutput" value="0"/>
+ <eval name="PCost" value="10*int(Volume/200.)"/>
+ <eval name="MCost" value="1*int(Volume/2000.)"/>
+ <eval name="BCost" value="5*int(Volume/500.)"/>
+ <eval name="CivicJobs" value="0"/>
+ <eval name="Jobs1" value="0"/>
+ <eval name="Jobs2" value="0"/>
+ <eval name="Jobs3" value="0"/>
+ <PROPERTY ID="0x0911E2E7" Remove="0911E2E7"/><!--Age to maintenance cost multiplier response curve-->
+ <PROPERTY ID="0x27812832" Set="0x00"/><!--Wealth-->
+ <PROPERTY ID="0x27812841" Remove="27812841"/><!--Demand Created-->
+ <PROPERTY ID="0x27812851" Eval="0,0,0,0"/><!--pollution at center-->
+ <PROPERTY ID="0x27812852" Remove="27812852"/><!--Power Generated-->
+ <PROPERTY ID="0x29244DB5" Eval="0x00"/><!--Flammability-->
+ <PROPERTY ID="0x2A499F85" Eval="QueryForPowerEyeCandy"/><!--Query exemplar GUID-->
+ <PROPERTY ID="0x49CAC341" Eval="max(PCost,10)"/><!--Plop Cost-->
+ <PROPERTY ID="0x6A43150F" Remove="6A43150F"/><!--Hard Failure Type-->
+ <PROPERTY ID="0x8A1E07EE" Remove="8A1E07EE"/><!--Age to output level response curve-->
+ <PROPERTY ID="0x8A2602B9" Eval="ItemOrderForPowerEyeCandy"/><!-- Item Order -->
+ <PROPERTY ID="0xC8ED2D84" Value="0"/><!--Water Consumed-->
+ <PROPERTY ID="0xCA19D7CA" Remove="CA19D7CA"/><!--SFX:Ambience Good Sound-->
+ <PROPERTY ID="0xEA1CF220" Remove="EA1CF220"/><!--Age degradation rate-->
+ <PROPERTY ID="0xEA1CF221" Remove="EA1CF221"/><!--Soft failure threshold-->
+ <PROPERTY ID="0xEA1CF222" Remove="EA1CF222"/><!--Hard failure threshold-->
+ <PROPERTY ID="0xEA54D285" Eval="0xAA59670C"/><!--Budget Item: Purpose-->
+ <PROPERTY ID="0xEA54D286" Eval="max(MCost,1)"/><!--Budget Item: Cost-->
 </PROPERTIES>
 </CATEGORY>
 
@@ -11457,7 +11469,7 @@ This selection will filter the display to only show Bus Stop plug-ins.  To creat
  <PROPERTY ID="0xAA1DD396" Set="0x00001003,0x00001301,0x00001A04,0x00001926,0x0000130A"/><!--OccupantGroups-->
  <PROPERTY ID="0xAA1DD397" Set="0x0A8B8D3E"/><!--SFX:Query Sound-->
  <PROPERTY ID="0xE90E25A1" Value="0x81,0xF0,0x00,0x00,0x82,0xF0,0x00,0x00,0x81,0xF0,0x02,0x00,0x82,0xF0,0x00,0x02"/><!--Transit Switch Point-->
- <PROPERTY ID="0xE90E25A2" Value="0.02000000"/><!--Transit Switch Entry Cost-->
+ <PROPERTY ID="0xE90E25A2" Value="0.06400000"/><!--Transit Switch Entry Cost-->
  <PROPERTY ID="0xE90E25A3" Eval="TSCap"/><!--Transit Switch Traffic Capacity-->
  <PROPERTY ID="0xEA54D283" Value="0xC921CEEB"/><!--Budget Item: Department-->
  <PROPERTY ID="0xEA54D284" Value="0x00000001"/><!--Budget Item: Line-->
@@ -11489,7 +11501,7 @@ This selection will filter the display to only show Subway plug-ins.  To create 
  <PROPERTY ID="0xAA1DD396" Set="0x00001003,0x00001302,0x00001A04,0x0000130A"/><!--OccupantGroups-->
  <PROPERTY ID="0xAA1DD397" Set="0x0A55BAEB"/><!--SFX:Query Sound-->
  <PROPERTY ID="0xE90E25A1" Value="0x81,0xF0,0x00,0x00,0x81,0xF0,0x00,0x06,0x82,0xF0,0x06,0x00,0x82,0xF0,0x00,0x00,0x82,0xF0,0x00,0x06"/><!--Transit Switch Point-->
- <PROPERTY ID="0xE90E25A2" Value="0.02000000"/><!--Transit Switch Entry Cost-->
+ <PROPERTY ID="0xE90E25A2" Value="0.06400000"/><!--Transit Switch Entry Cost-->
  <PROPERTY ID="0xE90E25A3" Eval="TSCap"/><!--Transit Switch Traffic Capacity-->
  <PROPERTY ID="0xEA54D283" Value="0xC921CEEB"/><!--Budget Item: Department-->
  <PROPERTY ID="0xEA54D284" Value="0x00000001"/><!--Budget Item: Line-->
@@ -11520,7 +11532,7 @@ This selection will filter the display to only show Passenger Rail Station plug-
  <PROPERTY ID="0xAA1DD396" Set="0x00001003,0x00001300,0x00001A04,0x00001903,0x00001305"/><!--OccupantGroups-->
  <PROPERTY ID="0xAA1DD397" Set="0x2A55BD56"/><!--SFX:Query Sound-->
  <PROPERTY ID="0xE90E25A1" Value="0x81,0xF0,0x00,0x00,0x81,0xF0,0x01,0x00,0x81,0xF0,0x03,0x00,0x82,0xF0,0x00,0x03,0x82,0xF0,0x00,0x00"/><!--Transit Switch Point-->
- <PROPERTY ID="0xE90E25A2" Value="0.02000000"/><!--Transit Switch Entry Cost-->
+ <PROPERTY ID="0xE90E25A2" Value="0.00690000"/><!--Transit Switch Entry Cost-->
  <PROPERTY ID="0xE90E25A3" Eval="TSCap"/><!--Transit Switch Traffic Capacity-->
  <PROPERTY ID="0xEA54D283" Value="0xC921CEEB"/><!--Budget Item: Department-->
  <PROPERTY ID="0xEA54D284" Value="0x00000001"/><!--Budget Item: Line-->
@@ -11551,11 +11563,41 @@ This selection will filter the display to only show Freight Rail Station plug-in
  <PROPERTY ID="0xAA1DD396" Set="0x00001003,0x00001300,0x00001A04,0x00001306"/><!--OccupantGroups-->
  <PROPERTY ID="0xAA1DD397" Set="0x2A55BD56"/><!--SFX:Query Sound-->
  <PROPERTY ID="0xE90E25A1" Value="0x81,0xF0,0x04,0x05,0x82,0xF0,0x05,0x05"/><!--Transit Switch Point-->
- <PROPERTY ID="0xE90E25A2" Value="0.02000000"/><!--Transit Switch Entry Cost-->
+ <PROPERTY ID="0xE90E25A2" Value="0.00910000"/><!--Transit Switch Entry Cost-->
  <PROPERTY ID="0xE90E25A3" Eval="TSCap"/><!--Transit Switch Traffic Capacity-->
  <PROPERTY ID="0xEA54D283" Value="0xC921CEEB"/><!--Budget Item: Department-->
  <PROPERTY ID="0xEA54D284" Value="0x00000001"/><!--Budget Item: Line-->
  <PROPERTY ID="0xEA54D285" Value="0xCA550301"/><!--Budget Item: Purpose-->
+</PROPERTIES>
+</CATEGORY>
+
+<CATEGORY Name="Railyard without station" ID="0x6c8fbd14" ParentID="0x0c8fbc5e">
+<HELP>
+This selection will filter the display to only show Railyard plug-ins.  To create a Railyard plug-in drag a model to this category.
+</HELP>
+<FILTERS>
+ <NEEDED ID="0xaa1dd396" Value="0x1300"/>
+ <NOT ID="0xaa1dd396" Value="0x1305"/>
+ <NOT ID="0xaa1dd396" Value="0x1306"/>
+ <NOT ID="0xaa1dd396" Value="0x1508"/>
+ <NOT ID="0xaa1dd396" Value="0x1509"/>
+</FILTERS>
+<PROPERTIES>
+ <eval name="TSCap" value="100*int((1000*sqrt(LotSizeX*LotSizeY)+Volume/10.)/100.)"/>
+ <eval name="PCost" value="50*int((150*sqrt(LotSizeX*LotSizeY)+Volume**1.2/600.)/50.)"/>
+ <eval name="BCost" value="10*int((10*sqrt(LotSizeX*LotSizeY)+Volume**1.2/6000.)/10.)"/>
+ <eval name="MCost" value="5*int((5*sqrt(LotSizeX*LotSizeY)+Volume**1.2/10000.)/5.)"/>
+ <PROPERTY ID="0x27812854" Eval="0x00000000"/><!--Power Consumed-->
+ <PROPERTY ID="0x29244DB5" Eval="0x19"/><!--Flammability-->
+ <PROPERTY ID="0x2A499F85" Eval="QueryForTrainEyeCandy"/><!--Query exemplar GUID-->
+ <PROPERTY ID="0x49beda31" Eval="Test(LessThan(Volume,619), 0x01, Test(LessThan(Volume,3068), 0x02, Test(LessThan(Volume,18869), 0x03, Test(LessThan(Volume,326987), 0x04, 0x05 ))))"/>    <!--MaxFireStage-->
+ <PROPERTY ID="0x68EE9764" Eval="1.00000000,2.00000000,0.00000000,0.00000000"/><!--Pollution radii-->
+ <PROPERTY ID="0x8A2602B9" Value="0x113"/><!--Item Order-->
+ <PROPERTY ID="0xAA1DD396" Set="0x00001003,0x00001300"/><!--OccupantGroups-->
+ <PROPERTY ID="0xAA1DD397" Set="0x2A55BD56"/><!--SFX:Query Sound-->
+ <PROPERTY ID="0xEA54D283" Value="0xC921CEEB"/><!--Budget Item: Department-->
+ <PROPERTY ID="0xEA54D284" Value="0x00000001"/><!--Budget Item: Line-->
+ <PROPERTY ID="0xEA54D285" Value="0xAA59670C"/><!--Budget Item:Purpose-->
 </PROPERTIES>
 </CATEGORY>
 
@@ -11584,7 +11626,7 @@ This selection will filter the display to only show Elevated Rail Station plug-i
  <PROPERTY ID="0xAA1DD396" Set="0x00001003,0x00001A04,0x00001303,0x0000130A"/><!--OccupantGroups-->
  <PROPERTY ID="0xAA1DD397" Set="0x0A55BAEB"/><!--SFX:Query Sound-->
  <PROPERTY ID="0xE90E25A1" Value="0x81,0xA0,0x07,0x07,0x82,0xA0,0x07,0x07,0x81,0xF0,0x00,0x07,0x82,0xF0,0x07,0x00"/><!--Transit Switch Point-->
- <PROPERTY ID="0xE90E25A2" Value="0.02000000"/><!--Transit Switch Entry Cost-->
+ <PROPERTY ID="0xE90E25A2" Value="0.00910000"/><!--Transit Switch Entry Cost-->
  <PROPERTY ID="0xE90E25A3" Eval="TSCap"/><!--Transit Switch Traffic Capacity-->
  <PROPERTY ID="0xEA54D283" Value="0xC921CEEB"/><!--Budget Item: Department-->
  <PROPERTY ID="0xEA54D284" Value="0x00000001"/><!--Budget Item: Line-->
@@ -11617,7 +11659,7 @@ This selection will filter the display to only show Monorail Station plug-ins.  
  <PROPERTY ID="0xAA1DD396" Set="0x00001003,0x00001A04,0x00001300,0x00001307"/><!--OccupantGroups-->
  <PROPERTY ID="0xAA1DD397" Set="0x0A55BAEB"/><!--SFX:Query Sound-->
  <PROPERTY ID="0xE90E25A1" Value="0x81,0xA0,0x08,0x08,0x82,0xA0,0x08,0x08,0x81,0xF0,0x00,0x08,0x82,0xF0,0x08,0x00"/><!--Transit Switch Point-->
- <PROPERTY ID="0xE90E25A2" Value="0.02000000"/><!--Transit Switch Entry Cost-->
+ <PROPERTY ID="0xE90E25A2" Value="0.00430000"/><!--Transit Switch Entry Cost-->
  <PROPERTY ID="0xE90E25A3" Eval="TSCap"/><!--Transit Switch Traffic Capacity-->
  <PROPERTY ID="0xEA54D283" Value="0xC921CEEB"/><!--Budget Item: Department-->
  <PROPERTY ID="0xEA54D284" Value="0x00000001"/><!--Budget Item: Line-->
@@ -11649,7 +11691,7 @@ This selection will filter the display to only show Garage plug-ins.  To create 
  <PROPERTY ID="0xAA1DD396" Set="0x00001003,0x0000130A"/><!--OccupantGroups-->
  <PROPERTY ID="0xAA1DD397" Set="0x6C08D959"/><!--SFX:Query Sound-->
  <PROPERTY ID="0xE90E25A1" Value="0x81,0xF0,0x01,0x00,0x82,0xF0,0x00,0x00,0x81,0xF0,0x00,0x00"/><!--Transit Switch Point-->
- <PROPERTY ID="0xE90E25A2" Value="0.02000000"/><!--Transit Switch Entry Cost-->
+ <PROPERTY ID="0xE90E25A2" Value="0.06400000"/><!--Transit Switch Entry Cost-->
  <PROPERTY ID="0xE90E25A3" Eval="TSCap"/><!--Transit Switch Traffic Capacity-->
  <PROPERTY ID="0xEA54D283" Value="0xC921CEEB"/><!--Budget Item: Department-->
  <PROPERTY ID="0xEA54D284" Value="0x00000001"/><!--Budget Item: Line-->
@@ -12170,6 +12212,78 @@ This selection will filter the display to only show Seaport plug-ins.  To create
  <PROPERTY ID="0xC8ED2D84" Eval="int(32+0.30*LotSizeX*LotSizeY)"/><!--Water Consumed-->
  <PROPERTY ID="0xAA60E745" Value="0,15"/><!--Goofy Stat Response Curve-->
 </PROPERTIES>
+</CATEGORY>
+
+<CATEGORY Name="Waterfront" ID="0xccb23a00" ParentID="0x0c8fbc5e" img="img_seaport.gif">
+<HELP>
+This selection will filter the display to only show Other Seaport plug-ins.
+</HELP>
+<FILTERS>
+ <NOT ID="0x27812844"/>
+ <NEEDED ID="0xaa1dd396" Value="0x00001519"/>
+</FILTERS>
+<PROPERTIES>
+ <eval name="ParkAirPollution"   value="1*int((LotSizeX*LotSizeY)/4.)"/>
+ <eval name="ParkWaterPollution" value="1*int((LotSizeX+LotSizeY)/2.)"/>
+ <eval name="ParkAirRadius"      value="2*int((LotSizeX+LotSizeY)/2.)"/>
+ <eval name="ParkWaterRadius"    value="1*int((LotSizeX+LotSizeY)/2.)"/>
+ <eval name="ParkWaterConsumed"  value="5*int((LotSizeX+LotSizeY)/2.)"/>
+ <PROPERTY ID="0x27812832" Set="0x00"/><!--Wealth-->
+ <PROPERTY ID="0x68EE9764" Eval="ParkAirRadius,ParkWaterRadius,0.00000000,0.00000000"/><!--Pollution radii-->
+ <PROPERTY ID="0x8A2602B9" Eval="ItemOrderForWF"/><!-- Item Order -->
+ <PROPERTY ID="0xAA1DD397" Set="0xCA5B1461"/><!--SFX:Query Sound-->
+ <PROPERTY ID="0xC9B93A56" Set="0xEA5EC59F"/><!--SFX:Default Plop Sound-->
+ <PROPERTY ID="0xEA54D283" Set="0x4A4155AB"/><!--Budget Item:Department-->
+ <PROPERTY ID="0xEA54D284" Set="0x00"/><!--Budget Item:Line-->
+ <PROPERTY ID="0xEA54D285" Set="0xAA59670C"/><!--Budget Item:Purpose-->
+</PROPERTIES>
+</CATEGORY>
+
+<CATEGORY Name="Harbour Building" ID="0xccb23a10" ParentID="0xccb23a00">
+<HELP>
+This selection will filter the display to only show Seaport building plug-ins.
+</HELP>
+<FILTERS>
+ <NEEDED ID="0x27812841"/>
+</FILTERS>
+<PROPERTIES>
+ <eval name="Jobs1" value="int((100+20*LotSizeX*LotSizeY+int(Volume/5000))/100.)"/>
+ <eval name="Jobs2" value="int((100+20*LotSizeX*LotSizeY+int(Volume/10000))/150.)"/>
+ <eval name="Jobs3" value="int((100+20*LotSizeX*LotSizeY+int(Volume/50000))/300.)"/>
+ <eval name="BCost" value="int(30+10/3.*CalculatedElevation*3.2)+10*int((LotSizeX+LotSizeY)/2.)"/>
+ <eval name="PCost" value="50+40*LotSizeX*LotSizeY"/>
+ <eval name="MCost" value="13+5*int(LotSizeX*LotSizeY/5.)+int((10/3.*CalculatedElevation*3.2)/10.)"/>
+ <PROPERTY ID="0x27812841" Eval="0x00002010,Jobs1,0x00002020,Jobs2,0x00002030,Jobs3,0x00001810,Jobs1,0x00001820,Jobs2,0x00001830,Jobs3"/><!--Demand Created-->
+ <PROPERTY ID="0x27812851" Eval="ParkAirPollution+int(BiasedBC*AirPollutionFactor),ParkWaterPollution+int(BiasedBC*WaterPollutionFactor),int(BiasedBC*GarbagePollutionFactor),0"/><!--pollution at center-->
+ <PROPERTY ID="0x27812854" Eval="int(1+BiasedBC*PowerConsumedFactor)"/><!--Power Consumed-->
+ <PROPERTY ID="0x29244DB5" Eval="0x14"/><!--Flammability-->
+ <PROPERTY ID="0x2A499F85" Eval="QueryForHarbour"/><!--Query exemplar GUID-->
+ <PROPERTY ID="0x49beda31" Eval="Test(LessThan(Volume,619), 0x01, Test(LessThan(Volume,3068), 0x02, Test(LessThan(Volume,18869), 0x03, Test(LessThan(Volume,326987), 0x04, 0x05 ))))"/>    <!--MaxFireStage-->
+ <PROPERTY ID="0xAA1DD396" Set="0x00001003,0x00001509,0x00001519"/><!--OccupantGroups-->
+ <PROPERTY ID="0xC8ED2D84" Eval="ParkWaterConsumed+int(0+BiasedBC*WaterConsumedFactor)"/><!--Water Consumed-->
+</PROPERTIES> 
+</CATEGORY>
+
+<CATEGORY Name="Waterfront Object" ID="0xccb23a20" ParentID="0xccb23a00">
+<HELP>
+This selection will filter the display to only show Seaport object plug-ins.
+</HELP>
+<FILTERS>
+ <NOT ID="0x27812841"/>
+</FILTERS>
+<PROPERTIES>
+ <eval name="BCost" value="10*int((LotSizeX+LotSizeY)/2.)"/>
+ <eval name="PCost" value="40*LotSizeX*LotSizeY"/>
+ <eval name="MCost" value="5+5*int(LotSizeX*LotSizeY/5.)"/>
+ <PROPERTY ID="0x27812841" Remove="27812841"/><!--Demand Created-->
+ <PROPERTY ID="0x27812851" Eval="0x00000000,0x00000000,0x00000000,0x00000000"/><!--Pollution at center-->
+ <PROPERTY ID="0x27812854" Eval="0x00000000"/><!--Power Consumed-->
+ <PROPERTY ID="0x29244DB5" Eval="0x00"/><!--Flammability-->
+ <PROPERTY ID="0x2A499F85" Eval="QueryForWaterfront"/><!--Query exemplar GUID-->
+ <PROPERTY ID="0x49BEDA31" Eval="0x00"/><!--MaxFireStage-->
+ <PROPERTY ID="0xAA1DD396" Set="0x00001006,0x00001519"/><!--OccupantGroups-->
+ <PROPERTY ID="0xC8ED2D84" Eval="0x00000000"/><!--Water Consumed-->
+</PROPERTIES> 
 </CATEGORY>
 
 <CATEGORY Name="Airport" ID="0x0c8fbd1c" ParentID="0x0c8fbc5e" img="img_airport.gif">
@@ -12821,7 +12935,7 @@ This selection will filter the display to only show Other Airport plug-ins.
  <PROPERTY ID="0x2A499F85" Eval="QueryForRunway"/><!--Query exemplar GUID-->
  <PROPERTY ID="0x68EE9764" Eval="ParkAirRadius,ParkWaterRadius,0.00000000,0.00000000"/><!--Pollution radii-->
  <PROPERTY ID="0x8A2602B9" Eval="ItemOrderForRunway"/><!-- Item Order -->
- <PROPERTY ID="0xAA1DD396" Set="0x00001508,0x00001003"/><!--OccupantGroups-->
+ <PROPERTY ID="0xAA1DD396" Set="0x00001003,0x00001508"/><!--OccupantGroups-->
  <PROPERTY ID="0xAA1DD397" Set="0x6A8B7C86"/><!--SFX:Query Sound-->
  <PROPERTY ID="0xC9B93A56" Set="0xEA5EC59F"/><!--SFX:Default Plop Sound-->
  <PROPERTY ID="0xEA54D283" Set="0x6A4119F0"/><!--Budget Item:Department-->
@@ -12832,7 +12946,7 @@ This selection will filter the display to only show Other Airport plug-ins.
 
 <CATEGORY Name="Airport Building" ID="0x0c8fcc10" ParentID="0x0c8fcc00">
 <HELP>
-This selection will filter the display to only show Park plug-ins. To create a plug-in of this type drag a model to Park.  In the lot editor this plug-in building can be found by choosing and replacing the building on any Park lot.
+This selection will filter the display to only show Airport building plug-ins.
 </HELP>
 <FILTERS>
  <NEEDED ID="0x27812841"/>
@@ -12855,17 +12969,19 @@ This selection will filter the display to only show Park plug-ins. To create a p
 
 <CATEGORY Name="Airport Object" ID="0x0c8fcc20" ParentID="0x0c8fcc00">
 <HELP>
-This selection will filter the display to only show Park plug-ins. To create a plug-in of this type drag a model to Park.  In the lot editor this plug-in building can be found by choosing and replacing the building on any Park lot.
+This selection will filter the display to only show Airpot object plug-ins.
 </HELP>
 <FILTERS>
  <NOT ID="0x27812810" Value="0x0000"/><!--Occupant Size-->
  <NOT ID="0x27812820" Value="0x0000"/><!--Resource Key Type 0-->
  <NOT ID="0x27812821" Value="0x0000"/><!--Resource Key Type 1-->
+ <NOT ID="0x27812841"/>
 </FILTERS>
 <PROPERTIES>
  <eval name="BCost" value="int(30+10/3.*CalculatedElevation*3.2)+10*int((LotSizeX+LotSizeY)/2.)"/>
  <eval name="PCost" value="50+40*LotSizeX*LotSizeY"/>
  <eval name="MCost" value="13+5*int(LotSizeX*LotSizeY/5.)+int((10/3.*CalculatedElevation*3.2)/10.)"/>
+ <PROPERTY ID="0x27812841" Remove="27812841"/><!--Demand Created-->
  <PROPERTY ID="0x27812851" Eval="ParkAirPollution+int(BiasedBC*AirPollutionFactor),ParkWaterPollution+int(BiasedBC*WaterPollutionFactor),int(BiasedBC*GarbagePollutionFactor),0"/><!--pollution at center-->
  <PROPERTY ID="0x27812854" Eval="int(1+BiasedBC*PowerConsumedFactor)"/><!--Power Consumed-->
  <PROPERTY ID="0x29244DB5" Eval="0x0A"/><!--Flammability-->
@@ -12886,6 +13002,7 @@ This selection will filter the display to only show Runway plug-ins. To create a
  <eval name="PCost" value="40*LotSizeX*LotSizeY"/>
  <eval name="MCost" value="5+5*int(LotSizeX*LotSizeY/5.)"/>
  <PROPERTY ID="0x27812820" Eval="0x00000000,0x00000000,0x00000000"/><!--Resource Key Type 0-->
+ <PROPERTY ID="0x27812841" Remove="27812841"/><!--Demand Created-->
  <PROPERTY ID="0x27812851" Eval="ParkAirPollution,ParkWaterPollution,0x00000000,0x00000000"/><!--Pollution at center-->
  <PROPERTY ID="0x27812854" Eval="0x00000000"/><!--Power Consumed-->
  <PROPERTY ID="0x29244DB5" Eval="0x00"/><!--Flammability-->
@@ -13253,7 +13370,7 @@ This selection will filter the display to only show Reward plug-ins.
 <PROPERTIES>
  <PROPERTY ID="0x27812841" Eval="0x00002010,Jobs1,0x00002020,Jobs2,0x00002030,Jobs3,0x00001810,Jobs1,0x00001820,Jobs2,0x00001830,Jobs3"/><!--Demand Created-->
  <PROPERTY ID="0x2781284F" Eval="5*LandmarkEffectFactor,LandmarkEffectRadius+abs(LandmarkEffectFactor)"/><!--Landmark Effect-->
- <PROPERTY ID="0x27812850" Eval="5*ParkEffectFactor,ParkEffectRadius+abs(ParkEffectFactor)"/><!--Park Effect-->
+ <PROPERTY ID="0x27812850" Eval="int(5*ParkEffectFactor),int(ParkEffectRadius+abs(ParkEffectFactor))"/><!--Park Effect-->
  <PROPERTY ID="0x27812854" Eval="PowerConsumedConstant*int((LotSizeX+LotSizeY)/2.)+int(BiasedBC*PowerConsumedFactor)"/><!--Power Consumed-->
  <PROPERTY ID="0x49beda31" Eval="Test(LessThan(Volume,619), 0x01, Test(LessThan(Volume,3068), 0x02, Test(LessThan(Volume,18869), 0x03, Test(LessThan(Volume,326987), 0x04, 0x05 ))))"/>    <!--MaxFireStage-->
  <PROPERTY ID="0xc8ed2d84" Eval="WaterConsumedConstant*int((LotSizeX+LotSizeY)/2.)+int(BiasedBC*WaterConsumedFactor)"/><!--Water Consumed-->
@@ -14307,6 +14424,7 @@ This selection will filter the display to only show Prop plug-ins.
 </HELP>
 <FILTERS>
  <NEEDED ID="0x10" Value="0x1E"/>
+ <NOT ID="0xC98204B8"/>
 </FILTERS>
 <PROPERTIES>
  <PROPERTY ID="0x10" Value="0x1E"/>
@@ -14324,6 +14442,207 @@ This selection will filter the display to only show Prop plug-ins.
 </PROPERTIES>
 </CATEGORY>
 
+<CATEGORY Name="Zot" ID="0x0c8fbd21" ParentID="0x0c8fbd24">
+<HELP>
+This selection will filter the display to only show Zot plug-ins.
+</HELP>
+<FILTERS>
+ <NEEDED ID="0xAA1DD396" Value="0x00005001"/>
+</FILTERS>
+<PROPERTIES>
+ <PROPERTY ID="0x09F00E59" Value="True"/><!--Ignore lot state effects-->
+ <PROPERTY ID="0xAA1DD396" Value="0x00005001"/><!--OccupantGroups-->
+ <PROPERTY ID="0xE9F0FA86" Value="True"/><!--Self-illuminated-->
+ <PROPERTY ID="0x49A1E05A" Remove="49A1E05A"/><!--Requester Satisfaction-->
+ <PROPERTY ID="0x49BEDA31" Remove="49BEDA31"/><!--Max Fire Stage-->
+ <PROPERTY ID="0x4A89FCF3" Remove="4A89FCF3"/><!--Previable-->
+ <PROPERTY ID="0x4A9F188B" Remove="4A9F188B"/><!--Light-->
+ <PROPERTY ID="0x69F14D33" Remove="69F14D33"/><!--OrientToSlope-->
+ <PROPERTY ID="0x6A95E503" Remove="6A95E503"/><!--QueryAsMainBuilding-->
+ <PROPERTY ID="0x8A5E5DB8" Remove="8A5E5DB8"/><!--Is Ground Model-->
+</PROPERTIES>
+</CATEGORY>
+
+<CATEGORY Name="Stoplight" ID="0x0c8fbd31" ParentID="0x0c8fbd24">
+<HELP>
+This selection will filter the display to only show Zot plug-ins.
+</HELP>
+<FILTERS>
+ <NEEDED ID="0xAA1DD396" Value="0x00005002"/>
+</FILTERS>
+<PROPERTIES>
+ <PROPERTY ID="0x10" Eval="CannotCreateStoplight"/>
+</PROPERTIES>
+</CATEGORY>
+
+<CATEGORY Name="RR Crossing" ID="0x0c8fbd41" ParentID="0x0c8fbd24">
+<HELP>
+This selection will filter the display to only show Zot plug-ins.
+</HELP>
+<FILTERS>
+ <NEEDED ID="0xAA1DD396" Value="0x00005003"/>
+</FILTERS>
+<PROPERTIES>
+ <PROPERTY ID="0x10" Eval="CannotCreateRRCrossing"/>
+</PROPERTIES>
+</CATEGORY>
+
+<CATEGORY Name="Flora Prop" ID="0x0c8fbd22" ParentID="0x0c8fbd24">
+<HELP>
+This selection will filter the display to only show Flora Prop plug-ins.
+</HELP>
+<FILTERS>
+ <NEEDED ID="0x69F14D33" Value="1"/>
+ <NEEDED ID="0xAA1DD396" Value="0x00005004"/>
+</FILTERS>
+<PROPERTIES>
+ <PROPERTY ID="0x4A9F188B" Value="False"/><!--Light-->
+ <PROPERTY ID="0x69F14D33" Value="1"/><!--OrientToSlope-->
+ <PROPERTY ID="0xAA1DD396" Value="0x00005004"/><!--OccupantGroups-->
+</PROPERTIES>
+</CATEGORY>
+
+<CATEGORY Name="($$$) High Wealth" ID="0x1c8fbd32" ParentID="0x0c8fbd22">
+<HELP>
+This selection will filter the display to only show $$$ Flora Prop plug-ins.  To create a $$$ Flora Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
+</HELP>
+<FILTERS>
+ <NOT ID="0x49A1E05A" Value="0x49A1E996"/>
+ <NEEDED ID="0xE9A316EB" Value="0x03"/>
+</FILTERS>
+<PROPERTIES>
+ <PROPERTY ID="0xE9A316EB" Value="0x03"/><!--Prop Wealth-->
+</PROPERTIES>
+</CATEGORY>
+
+<CATEGORY Name="($$) Medium Wealth" ID="0x1c8fbd42" ParentID="0x0c8fbd22">
+<HELP>
+This selection will filter the display to only show $$ Flora Prop plug-ins.  To create a $$ Flora Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
+</HELP>
+<FILTERS>
+ <NOT ID="0x49A1E05A" Value="0x49A1E996"/>
+ <NEEDED ID="0xE9A316EB" Value="0x02"/>
+</FILTERS>
+<PROPERTIES>
+ <PROPERTY ID="0xE9A316EB" Value="0x02"/><!--Prop Wealth-->
+</PROPERTIES>
+</CATEGORY>
+
+<CATEGORY Name="($) Low Wealth" ID="0x1c8fbd52" ParentID="0x0c8fbd22">
+<HELP>
+This selection will filter the display to only show $ Flora Prop plug-ins.  To create a $ Flora Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
+</HELP>
+<FILTERS>
+ <NOT ID="0x49A1E05A" Value="0x49A1E996"/>
+ <NEEDED ID="0xE9A316EB" Value="0x01"/>
+</FILTERS>
+<PROPERTIES>
+ <PROPERTY ID="0xE9A316EB" Value="0x01"/><!--Prop Wealth-->
+</PROPERTIES>
+</CATEGORY>
+
+<CATEGORY Name="No Wealth" ID="0x1c8fbd62" ParentID="0x0c8fbd22">
+<HELP>
+This selection will filter the display to only show Other Flora Prop plug-ins.  To create an Other Flora Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
+</HELP>
+<FILTERS>
+ <NOT ID="0x49A1E05A" Value="0x49A1E996"/>
+</FILTERS>
+<PROPERTIES>
+ <PROPERTY ID="0xE9A316EB" Value="0x00"/><!--Prop Wealth-->
+</PROPERTIES>
+</CATEGORY>
+
+<CATEGORY Name="Crime" ID="0x1c8fbd72" ParentID="0x0c8fbd22">
+<HELP>
+This selection will filter the display to only show Crime Flora Prop plug-ins.  To create an Crime Flora Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
+</HELP>
+<FILTERS>
+ <NEEDED ID="0x49A1E05A" Value="0x49A1E996"/>
+</FILTERS>
+<PROPERTIES>
+ <PROPERTY ID="0x49A1E05A" Value="0x49A1E996"/><!--Requester Satisfaction-->
+ <PROPERTY ID="0xE9A316EB" Value="0x00"/><!--Prop Wealth-->
+</PROPERTIES>
+</CATEGORY>
+
+<CATEGORY Name="Tree Prop" ID="0x0c8fbd23" ParentID="0x0c8fbd24">
+<HELP>
+This selection will filter the display to only show Tree Prop plug-ins.
+</HELP>
+<FILTERS>
+ <NEEDED ID="0xAA1DD396" Value="0x00005004"/>
+</FILTERS>
+<PROPERTIES>
+ <PROPERTY ID="0x4A9F188B" Value="False"/><!--Light-->
+ <PROPERTY ID="0xAA1DD396" Value="0x00005004"/><!--OccupantGroups-->
+</PROPERTIES>
+</CATEGORY>
+
+<CATEGORY Name="($$$) High Wealth" ID="0x1c8fbd33" ParentID="0x0c8fbd23">
+<HELP>
+This selection will filter the display to only show $$$ Tree Prop plug-ins.  To create a $$$ Tree Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
+</HELP>
+<FILTERS>
+ <NOT ID="0x49A1E05A" Value="0x49A1E996"/>
+ <NEEDED ID="0xE9A316EB" Value="0x03"/>
+</FILTERS>
+<PROPERTIES>
+ <PROPERTY ID="0xE9A316EB" Value="0x03"/><!--Prop Wealth-->
+</PROPERTIES>
+</CATEGORY>
+
+<CATEGORY Name="($$) Medium Wealth" ID="0x1c8fbd43" ParentID="0x0c8fbd23">
+<HELP>
+This selection will filter the display to only show $$ Tree Prop plug-ins.  To create a $$ Tree Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
+</HELP>
+<FILTERS>
+ <NOT ID="0x49A1E05A" Value="0x49A1E996"/>
+ <NEEDED ID="0xE9A316EB" Value="0x02"/>
+</FILTERS>
+<PROPERTIES>
+ <PROPERTY ID="0xE9A316EB" Value="0x02"/><!--Prop Wealth-->
+</PROPERTIES>
+</CATEGORY>
+
+<CATEGORY Name="($) Low Weath" ID="0x1c8fbd53" ParentID="0x0c8fbd23">
+<HELP>
+This selection will filter the display to only show $ Tree Prop plug-ins.  To create a $ Tree Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
+</HELP>
+<FILTERS>
+ <NOT ID="0x49A1E05A" Value="0x49A1E996"/>
+ <NEEDED ID="0xE9A316EB" Value="0x01"/>
+</FILTERS>
+<PROPERTIES>
+ <PROPERTY ID="0xE9A316EB" Value="0x01"/><!--Prop Wealth-->
+</PROPERTIES>
+</CATEGORY>
+
+<CATEGORY Name="No Wealth" ID="0x1c8fbd63" ParentID="0x0c8fbd23">
+<HELP>
+This selection will filter the display to only show Other Tree Prop plug-ins.  To create an Other Tree Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
+</HELP>
+<FILTERS>
+ <NOT ID="0x49A1E05A" Value="0x49A1E996"/>
+</FILTERS>
+<PROPERTIES>
+ <PROPERTY ID="0xE9A316EB" Value="0x00"/><!--Prop Wealth-->
+</PROPERTIES>
+</CATEGORY>
+
+<CATEGORY Name="Crime" ID="0x1c8fbd73" ParentID="0x0c8fbd23">
+<HELP>
+This selection will filter the display to only show Crime Tree Prop plug-ins.  To create an Crime Tree Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
+</HELP>
+<FILTERS>
+ <NEEDED ID="0x49A1E05A" Value="0x49A1E996"/>
+</FILTERS>
+<PROPERTIES>
+ <PROPERTY ID="0x49A1E05A" Value="0x49A1E996"/><!--Requester Satisfaction-->
+ <PROPERTY ID="0xE9A316EB" Value="0x00"/><!--Prop Wealth-->
+</PROPERTIES>
+</CATEGORY>
+
 <CATEGORY Name="Building as Prop" ID="0x0c8fbd25" ParentID="0x0c8fbd24">
 <HELP>
 This selection will filter the display to only show Building as Prop plug-ins.
@@ -14336,11 +14655,12 @@ This selection will filter the display to only show Building as Prop plug-ins.
 </PROPERTIES>
 </CATEGORY>
 
-<CATEGORY Name="$$$ Building as Prop" ID="0x1c8fbd35" ParentID="0x0c8fbd25">
+<CATEGORY Name="($$$) High Wealth" ID="0x1c8fbd35" ParentID="0x0c8fbd25">
 <HELP>
 This selection will filter the display to only show $$$ Building as Prop plug-ins.  To create a $$$ Building as Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
 </HELP>
 <FILTERS>
+ <NOT ID="0x49A1E05A" Value="0x49A1E996"/>
  <NEEDED ID="0xE9A316EB" Value="0x03"/>
 </FILTERS>
 <PROPERTIES>
@@ -14349,11 +14669,12 @@ This selection will filter the display to only show $$$ Building as Prop plug-in
 </PROPERTIES>
 </CATEGORY>
 
-<CATEGORY Name="$$ Building as Prop" ID="0x1c8fbd45" ParentID="0x0c8fbd25">
+<CATEGORY Name="($$) Medium Wealth" ID="0x1c8fbd45" ParentID="0x0c8fbd25">
 <HELP>
 This selection will filter the display to only show $$ Building as Prop plug-ins.  To create a $$ Building as Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
 </HELP>
 <FILTERS>
+ <NOT ID="0x49A1E05A" Value="0x49A1E996"/>
  <NEEDED ID="0xE9A316EB" Value="0x02"/>
 </FILTERS>
 <PROPERTIES>
@@ -14362,11 +14683,12 @@ This selection will filter the display to only show $$ Building as Prop plug-ins
 </PROPERTIES>
 </CATEGORY>
 
-<CATEGORY Name="$ Building as Prop" ID="0x1c8fbd55" ParentID="0x0c8fbd25">
+<CATEGORY Name="($) Low Wealth" ID="0x1c8fbd55" ParentID="0x0c8fbd25">
 <HELP>
 This selection will filter the display to only show $ Building as Prop plug-ins.  To create a $ Building as Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
 </HELP>
 <FILTERS>
+ <NOT ID="0x49A1E05A" Value="0x49A1E996"/>
  <NEEDED ID="0xE9A316EB" Value="0x01"/>
 </FILTERS>
 <PROPERTIES>
@@ -14375,16 +14697,50 @@ This selection will filter the display to only show $ Building as Prop plug-ins.
 </PROPERTIES>
 </CATEGORY>
 
-<CATEGORY Name="Other Building as Prop" ID="0x1c8fbd65" ParentID="0x0c8fbd25">
+<CATEGORY Name="No Wealth" ID="0x1c8fbd65" ParentID="0x0c8fbd25">
 <HELP>
 This selection will filter the display to only show Other Building as Prop plug-ins.  To create an Other Building as Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
 </HELP>
 <FILTERS>
- <NEEDED ID="0xE9A316EB" Value="0x00"/>
+ <NOT ID="0x49A1E05A" Value="0x49A1E996"/>
 </FILTERS>
 <PROPERTIES>
  <PROPERTY ID="0x29244db5" Value="50"/> <!--Flammability-->  
  <PROPERTY ID="0xE9A316EB" Value="0x00"/><!--Prop Wealth-->
+</PROPERTIES>
+</CATEGORY>
+
+<CATEGORY Name="Crime" ID="0x1c8fbd65" ParentID="0x0c8fbd25">
+<HELP>
+This selection will filter the display to only show Crime Building as Prop plug-ins.  To create an Crime Building as Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
+</HELP>
+<FILTERS>
+ <NEEDED ID="0x49A1E05A" Value="0x49A1E996"/>
+</FILTERS>
+<PROPERTIES>
+ <PROPERTY ID="0x29244db5" Value="50"/> <!--Flammability-->  
+ <PROPERTY ID="0x49A1E05A" Value="0x49A1E996"/><!--Requester Satisfaction-->
+ <PROPERTY ID="0xE9A316EB" Value="0x00"/><!--Prop Wealth-->
+</PROPERTIES>
+</CATEGORY>
+
+<CATEGORY Name="Invisible Prop" ID="0x0c8fbd2a" ParentID="0x0c8fbd24">
+<HELP>
+This selection will filter the display to only show Invisible Prop plug-ins.
+</HELP>
+<FILTERS>
+ <NEEDED ID="0x27812820" Value="0x00000000"/>
+</FILTERS>
+<PROPERTIES>
+ <PROPERTY ID="0x27812820" Eval="0x00000000,0x00000000,0x00000000"/><!--Resource Key Type 0-->
+ <PROPERTY ID="0x27812821" Remove="27812821"/><!--Resource Key Type 1-->
+ <PROPERTY ID="0x49A1E05A" Remove="49A1E05A"/><!--Requester Satisfaction-->
+ <PROPERTY ID="0x49BEDA31" Remove="49BEDA31"/><!--Max Fire Stage-->
+ <PROPERTY ID="0x4A89FCF3" Remove="4A89FCF3"/><!--Previable-->
+ <PROPERTY ID="0x4A9F188B" Remove="4A9F188B"/><!--Light-->
+ <PROPERTY ID="0x69F14D33" Remove="69F14D33"/><!--OrientToSlope-->
+ <PROPERTY ID="0x8A5E5DB8" Remove="8A5E5DB8"/><!--Is Ground Model-->
+ <PROPERTY ID="0xE9A316EB" Set="0x00"/><!--Prop Wealth-->
 </PROPERTIES>
 </CATEGORY>
 
@@ -14395,15 +14751,16 @@ This selection will filter the display to only show Ordinary Prop plug-ins.
 <FILTERS>
 </FILTERS>
 <PROPERTIES>
- <PROPERTY ID="0x29244db5" Value="0"/> <!--Flammability-->  
+ <PROPERTY ID="0x29244db5" Value="0"/> <!--Flammability-->
 </PROPERTIES>
 </CATEGORY>
 
-<CATEGORY Name="$$$ Ordinary Prop" ID="0x1c8fbd36" ParentID="0x0c8fbd26">
+<CATEGORY Name="($$$) High Wealth" ID="0x1c8fbd36" ParentID="0x0c8fbd26">
 <HELP>
 This selection will filter the display to only show $$$ Ordinary Prop plug-ins.  To create a $$$ Ordinary Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
 </HELP>
 <FILTERS>
+ <NOT ID="0x49A1E05A" Value="0x49A1E996"/>
  <NEEDED ID="0xE9A316EB" Value="0x03"/>
 </FILTERS>
 <PROPERTIES>
@@ -14411,11 +14768,12 @@ This selection will filter the display to only show $$$ Ordinary Prop plug-ins. 
 </PROPERTIES>
 </CATEGORY>
 
-<CATEGORY Name="$$ Ordinary Prop" ID="0x1c8fbd46" ParentID="0x0c8fbd26">
+<CATEGORY Name="($$) Medium Wealth" ID="0x1c8fbd46" ParentID="0x0c8fbd26">
 <HELP>
 This selection will filter the display to only show $$ Ordinary Prop plug-ins.  To create a $$ Ordinary Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
 </HELP>
 <FILTERS>
+ <NOT ID="0x49A1E05A" Value="0x49A1E996"/>
  <NEEDED ID="0xE9A316EB" Value="0x02"/>
 </FILTERS>
 <PROPERTIES>
@@ -14423,11 +14781,12 @@ This selection will filter the display to only show $$ Ordinary Prop plug-ins.  
 </PROPERTIES>
 </CATEGORY>
 
-<CATEGORY Name="$ Ordinary Prop" ID="0x1c8fbd56" ParentID="0x0c8fbd26">
+<CATEGORY Name="($) Low Wealth" ID="0x1c8fbd56" ParentID="0x0c8fbd26">
 <HELP>
 This selection will filter the display to only show $ Ordinary Prop plug-ins.  To create a $ Ordinary Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
 </HELP>
 <FILTERS>
+ <NOT ID="0x49A1E05A" Value="0x49A1E996"/>
  <NEEDED ID="0xE9A316EB" Value="0x01"/>
 </FILTERS>
 <PROPERTIES>
@@ -14435,14 +14794,41 @@ This selection will filter the display to only show $ Ordinary Prop plug-ins.  T
 </PROPERTIES>
 </CATEGORY>
 
-<CATEGORY Name="Other Ordinary Prop" ID="0x1c8fbd66" ParentID="0x0c8fbd26">
+<CATEGORY Name="No Wealth" ID="0x1c8fbd66" ParentID="0x0c8fbd26">
 <HELP>
 This selection will filter the display to only show Other Ordinary Prop plug-ins.  To create an Other Ordinary Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
 </HELP>
 <FILTERS>
+ <NOT ID="0x49A1E05A" Value="0x49A1E996"/>
 </FILTERS>
 <PROPERTIES>
  <PROPERTY ID="0xE9A316EB" Value="0x00"/><!--Prop Wealth-->
+</PROPERTIES>
+</CATEGORY>
+
+<CATEGORY Name="Crime" ID="0x1c8fbd76" ParentID="0x0c8fbd26">
+<HELP>
+This selection will filter the display to only show Crime Ordinary Prop plug-ins.  To create an Crime Ordinary Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
+</HELP>
+<FILTERS>
+ <NEEDED ID="0x49A1E05A" Value="0x49A1E996"/>
+</FILTERS>
+<PROPERTIES>
+ <PROPERTY ID="0x49A1E05A" Value="0x49A1E996"/><!--Requester Satisfaction-->
+ <PROPERTY ID="0xE9A316EB" Value="0x00"/><!--Prop Wealth-->
+</PROPERTIES>
+</CATEGORY>
+
+<CATEGORY Name="Effect" ID="0x0c8fbc00" ParentID="0xec8fba75">
+<HELP>
+This selection will filter the display to only show Effect plug-ins.
+</HELP>
+<FILTERS>
+ <NEEDED ID="0x10" Value="0x1E"/>
+ <NEEDED ID="0xC98204B8"/>
+</FILTERS>
+<PROPERTIES>
+ <PROPERTY ID="0x10" Eval="CannotCreateEffect"/>
 </PROPERTIES>
 </CATEGORY>
 
@@ -14466,7 +14852,7 @@ This selection will filter the display to only show Other Ordinary Prop plug-ins
 
 <CATEGORY Name="Lots" ID="0x0c85bd24" ParentID="0xec8fba75" img="img_lot.gif">
 <HELP>
-This selection will filter the display to only show lots plug-ins.  To create a Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
+This selection will filter the display to only show lots plug-ins.
 </HELP>
 <FILTERS>
   <NEEDED ID="0x10" Value="0x10"/>
@@ -14478,7 +14864,7 @@ This selection will filter the display to only show lots plug-ins.  To create a 
 
 <CATEGORY Name="Stage 1" ID="0xC96D2131" ParentID="0x0c85bd24">
 <HELP>
-This selection will filter the display to only show lots plug-ins.  To create a Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
+This selection will filter the display to only show lots plug-ins.
 </HELP>
 <FILTERS>
   <NEEDED ID="0x27812837" Value="0x01"/>
@@ -14579,7 +14965,7 @@ This selection will filter the display to only show lots plug-ins.  To create a 
 
 <CATEGORY Name="Stage 2" ID="0xC96D2132" ParentID="0x0c85bd24">
 <HELP>
-This selection will filter the display to only show lots plug-ins.  To create a Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
+This selection will filter the display to only show lots plug-ins.
 </HELP>
 <FILTERS>
   <NEEDED ID="0x27812837" Value="0x02"/>
@@ -14679,7 +15065,7 @@ This selection will filter the display to only show lots plug-ins.  To create a 
 
 <CATEGORY Name="Stage 3" ID="0xC96D2133" ParentID="0x0c85bd24">
 <HELP>
-This selection will filter the display to only show lots plug-ins.  To create a Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
+This selection will filter the display to only show lots plug-ins.
 </HELP>
 <FILTERS>
   <NEEDED ID="0x27812837" Value="0x03"/>
@@ -14780,7 +15166,7 @@ This selection will filter the display to only show lots plug-ins.  To create a 
 
 <CATEGORY Name="Stage 4" ID="0xC96D2134" ParentID="0x0c85bd24">
 <HELP>
-This selection will filter the display to only show lots plug-ins.  To create a Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
+This selection will filter the display to only show lots plug-ins.
 </HELP>
 <FILTERS>
   <NEEDED ID="0x27812837" Value="0x04"/>
@@ -14881,7 +15267,7 @@ This selection will filter the display to only show lots plug-ins.  To create a 
 
 <CATEGORY Name="Stage 5" ID="0xC96D2135" ParentID="0x0c85bd24">
 <HELP>
-This selection will filter the display to only show lots plug-ins.  To create a Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
+This selection will filter the display to only show lots plug-ins.
 </HELP>
 <FILTERS>
   <NEEDED ID="0x27812837" Value="0x05"/>
@@ -14981,7 +15367,7 @@ This selection will filter the display to only show lots plug-ins.  To create a 
 
 <CATEGORY Name="Stage 6" ID="0xC96D2136" ParentID="0x0c85bd24">
 <HELP>
-This selection will filter the display to only show lots plug-ins.  To create a Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
+This selection will filter the display to only show lots plug-ins.
 </HELP>
 <FILTERS>
   <NEEDED ID="0x27812837" Value="0x06"/>
@@ -15081,7 +15467,7 @@ This selection will filter the display to only show lots plug-ins.  To create a 
 
 <CATEGORY Name="Stage 7" ID="0xC96D2137" ParentID="0x0c85bd24">
 <HELP>
-This selection will filter the display to only show lots plug-ins.  To create a Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
+This selection will filter the display to only show lots plug-ins.
 </HELP>
 <FILTERS>
   <NEEDED ID="0x27812837" Value="0x07"/>
@@ -15181,7 +15567,7 @@ This selection will filter the display to only show lots plug-ins.  To create a 
 
 <CATEGORY Name="Stage 8" ID="0xC96D2138" ParentID="0x0c85bd24">
 <HELP>
-This selection will filter the display to only show lots plug-ins.  To create a Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
+This selection will filter the display to only show lots plug-ins.
 </HELP>
 <FILTERS>
   <NEEDED ID="0x27812837" Value="0x08"/>
@@ -15281,7 +15667,7 @@ This selection will filter the display to only show lots plug-ins.  To create a 
 
 <CATEGORY Name="Stage 9" ID="0xC96D2139" ParentID="0x0c85bd24">
 <HELP>
-This selection will filter the display to only show lots plug-ins.  To create a Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
+This selection will filter the display to only show lots plug-ins.
 </HELP>
 <FILTERS>
   <NEEDED ID="0x27812837" Value="0x09"/>
@@ -15381,7 +15767,7 @@ This selection will filter the display to only show lots plug-ins.  To create a 
 
 <CATEGORY Name="Stage 10" ID="0xC96D213A" ParentID="0x0c85bd24">
 <HELP>
-This selection will filter the display to only show lots plug-ins.  To create a Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
+This selection will filter the display to only show lots plug-ins.
 </HELP>
 <FILTERS>
   <NEEDED ID="0x27812837" Value="0x0A"/>
@@ -15481,7 +15867,7 @@ This selection will filter the display to only show lots plug-ins.  To create a 
 
 <CATEGORY Name="Stage 11" ID="0xC96D213B" ParentID="0x0c85bd24">
 <HELP>
-This selection will filter the display to only show lots plug-ins.  To create a Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
+This selection will filter the display to only show lots plug-ins.
 </HELP>
 <FILTERS>
   <NEEDED ID="0x27812837" Value="0xB"/>
@@ -15581,7 +15967,7 @@ This selection will filter the display to only show lots plug-ins.  To create a 
 
 <CATEGORY Name="Stage 12" ID="0xC96D213C" ParentID="0x0c85bd24">
 <HELP>
-This selection will filter the display to only show lots plug-ins.  To create a Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
+This selection will filter the display to only show lots plug-ins.
 </HELP>
 <FILTERS>
   <NEEDED ID="0x27812837" Value="0xC"/>
@@ -15681,7 +16067,7 @@ This selection will filter the display to only show lots plug-ins.  To create a 
 
 <CATEGORY Name="Stage 13" ID="0xC96D213D" ParentID="0x0c85bd24">
 <HELP>
-This selection will filter the display to only show lots plug-ins.  To create a Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
+This selection will filter the display to only show lots plug-ins.
 </HELP>
 <FILTERS>
   <NEEDED ID="0x27812837" Value="0xD"/>
@@ -15781,7 +16167,7 @@ This selection will filter the display to only show lots plug-ins.  To create a 
 
 <CATEGORY Name="Stage 14" ID="0xC96D213E" ParentID="0x0c85bd24">
 <HELP>
-This selection will filter the display to only show lots plug-ins.  To create a Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
+This selection will filter the display to only show lots plug-ins.
 </HELP>
 <FILTERS>
   <NEEDED ID="0x27812837" Value="0xE"/>
@@ -15881,7 +16267,7 @@ This selection will filter the display to only show lots plug-ins.  To create a 
 
 <CATEGORY Name="Stage 15" ID="0xC96D213F" ParentID="0x0c85bd24">
 <HELP>
-This selection will filter the display to only show lots plug-ins.  To create a Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
+This selection will filter the display to only show lots plug-ins.
 </HELP>
 <FILTERS>
   <NEEDED ID="0x27812837" Value="0xF"/>
@@ -15981,7 +16367,7 @@ This selection will filter the display to only show lots plug-ins.  To create a 
 
 <CATEGORY Name="Airport" ID="0xC96D2150" ParentID="0x0c85bd24">
 <HELP>
-This selection will filter the display to only show lots plug-ins.  To create a Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
+This selection will filter the display to only show lots plug-ins.
 </HELP>
 <FILTERS>
   <NEEDED ID="0x88EDC793" Value="0x0b"/>
@@ -15990,7 +16376,7 @@ This selection will filter the display to only show lots plug-ins.  To create a 
 
 <CATEGORY Name="Seaport" ID="0xC96D2160" ParentID="0x0c85bd24">
 <HELP>
-This selection will filter the display to only show lots plug-ins.  To create a Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
+This selection will filter the display to only show lots plug-ins.
 </HELP>
 <FILTERS>
   <NEEDED ID="0x88EDC793" Value="0x0c"/>
@@ -15999,7 +16385,7 @@ This selection will filter the display to only show lots plug-ins.  To create a 
 
 <CATEGORY Name="All others" ID="0xC96D2137" ParentID="0x0c85bd24">
 <HELP>
-This selection will filter the display to only show lots plug-ins.  To create a Prop plug-in drag a model to this category. In the lot editor this plug-in Prop can be found by choosing add a prop to a lot.
+This selection will filter the display to only show lots plug-ins.
 </HELP>
 <FILTERS>
 </FILTERS>
