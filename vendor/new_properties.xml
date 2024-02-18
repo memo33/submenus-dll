@@ -6663,6 +6663,10 @@ List of groups this occupant belongs to.
     </OPTION>
     <OPTION Value="0xB5C00007" Name="CSX: Civics">
     </OPTION>
+	<OPTION Value="0xB5C00008" Name="CSX: Transportation">
+    </OPTION>
+	<OPTION Value="0xB5C00009" Name="CSX: Utility">
+    </OPTION>
     <OPTION Value="0xB5C0000A" Name="BTE: Gascooker Lots">
     </OPTION>
     <OPTION Value="0xB5C0000B" Name="BTE: Market Chain">
@@ -8302,7 +8306,7 @@ Paired entries indicating this building allows a travelling Sim to switch betwee
   </PROPERTY>
   <PROPERTY Name="Transit Switch Entry Cost" ID="0xe90e25a2" Type="Float32" Default="6" ShowAsHex="N">
     <HELP>
-Cost in travel time to enter this transit switch. Once inside, travel time inside the building is zero.
+Cost in travel time in seconds to traverse each tile in the TE lot.
 </HELP>
   </PROPERTY>
   <PROPERTY Name="Transit Switch Traffic Capacity" ID="0xe90e25a3" Type="Float32" Default="20" MinValue="0" ShowAsHex="N">
@@ -11469,7 +11473,7 @@ This selection will filter the display to only show Bus Stop plug-ins.  To creat
  <PROPERTY ID="0xAA1DD396" Set="0x00001003,0x00001301,0x00001A04,0x00001926,0x0000130A"/><!--OccupantGroups-->
  <PROPERTY ID="0xAA1DD397" Set="0x0A8B8D3E"/><!--SFX:Query Sound-->
  <PROPERTY ID="0xE90E25A1" Value="0x81,0xF0,0x00,0x00,0x82,0xF0,0x00,0x00,0x81,0xF0,0x02,0x00,0x82,0xF0,0x00,0x02"/><!--Transit Switch Point-->
- <PROPERTY ID="0xE90E25A2" Value="0.06400000"/><!--Transit Switch Entry Cost-->
+ <PROPERTY ID="0xE90E25A2" Value="0.0666667"/><!--Transit Switch Entry Cost-->
  <PROPERTY ID="0xE90E25A3" Eval="TSCap"/><!--Transit Switch Traffic Capacity-->
  <PROPERTY ID="0xEA54D283" Value="0xC921CEEB"/><!--Budget Item: Department-->
  <PROPERTY ID="0xEA54D284" Value="0x00000001"/><!--Budget Item: Line-->
@@ -11501,7 +11505,7 @@ This selection will filter the display to only show Subway plug-ins.  To create 
  <PROPERTY ID="0xAA1DD396" Set="0x00001003,0x00001302,0x00001A04,0x0000130A"/><!--OccupantGroups-->
  <PROPERTY ID="0xAA1DD397" Set="0x0A55BAEB"/><!--SFX:Query Sound-->
  <PROPERTY ID="0xE90E25A1" Value="0x81,0xF0,0x00,0x00,0x81,0xF0,0x00,0x06,0x82,0xF0,0x06,0x00,0x82,0xF0,0x00,0x00,0x82,0xF0,0x00,0x06"/><!--Transit Switch Point-->
- <PROPERTY ID="0xE90E25A2" Value="0.06400000"/><!--Transit Switch Entry Cost-->
+ <PROPERTY ID="0xE90E25A2" Value="0.0666667"/><!--Transit Switch Entry Cost-->
  <PROPERTY ID="0xE90E25A3" Eval="TSCap"/><!--Transit Switch Traffic Capacity-->
  <PROPERTY ID="0xEA54D283" Value="0xC921CEEB"/><!--Budget Item: Department-->
  <PROPERTY ID="0xEA54D284" Value="0x00000001"/><!--Budget Item: Line-->
@@ -11532,7 +11536,7 @@ This selection will filter the display to only show Passenger Rail Station plug-
  <PROPERTY ID="0xAA1DD396" Set="0x00001003,0x00001300,0x00001A04,0x00001903,0x00001305"/><!--OccupantGroups-->
  <PROPERTY ID="0xAA1DD397" Set="0x2A55BD56"/><!--SFX:Query Sound-->
  <PROPERTY ID="0xE90E25A1" Value="0x81,0xF0,0x00,0x00,0x81,0xF0,0x01,0x00,0x81,0xF0,0x03,0x00,0x82,0xF0,0x00,0x03,0x82,0xF0,0x00,0x00"/><!--Transit Switch Point-->
- <PROPERTY ID="0xE90E25A2" Value="0.00690000"/><!--Transit Switch Entry Cost-->
+ <PROPERTY ID="0xE90E25A2" Value="0.00714286"/><!--Transit Switch Entry Cost-->
  <PROPERTY ID="0xE90E25A3" Eval="TSCap"/><!--Transit Switch Traffic Capacity-->
  <PROPERTY ID="0xEA54D283" Value="0xC921CEEB"/><!--Budget Item: Department-->
  <PROPERTY ID="0xEA54D284" Value="0x00000001"/><!--Budget Item: Line-->
@@ -11563,7 +11567,7 @@ This selection will filter the display to only show Freight Rail Station plug-in
  <PROPERTY ID="0xAA1DD396" Set="0x00001003,0x00001300,0x00001A04,0x00001306"/><!--OccupantGroups-->
  <PROPERTY ID="0xAA1DD397" Set="0x2A55BD56"/><!--SFX:Query Sound-->
  <PROPERTY ID="0xE90E25A1" Value="0x81,0xF0,0x04,0x05,0x82,0xF0,0x05,0x05"/><!--Transit Switch Point-->
- <PROPERTY ID="0xE90E25A2" Value="0.00910000"/><!--Transit Switch Entry Cost-->
+ <PROPERTY ID="0xE90E25A2" Value="0.00952381"/><!--Transit Switch Entry Cost-->
  <PROPERTY ID="0xE90E25A3" Eval="TSCap"/><!--Transit Switch Traffic Capacity-->
  <PROPERTY ID="0xEA54D283" Value="0xC921CEEB"/><!--Budget Item: Department-->
  <PROPERTY ID="0xEA54D284" Value="0x00000001"/><!--Budget Item: Line-->
@@ -11579,6 +11583,7 @@ This selection will filter the display to only show Railyard plug-ins.  To creat
  <NEEDED ID="0xaa1dd396" Value="0x1300"/>
  <NOT ID="0xaa1dd396" Value="0x1305"/>
  <NOT ID="0xaa1dd396" Value="0x1306"/>
+ <NOT ID="0xaa1dd396" Value="0x1307"/>
  <NOT ID="0xaa1dd396" Value="0x1508"/>
  <NOT ID="0xaa1dd396" Value="0x1509"/>
 </FILTERS>
@@ -11626,7 +11631,7 @@ This selection will filter the display to only show Elevated Rail Station plug-i
  <PROPERTY ID="0xAA1DD396" Set="0x00001003,0x00001A04,0x00001303,0x0000130A"/><!--OccupantGroups-->
  <PROPERTY ID="0xAA1DD397" Set="0x0A55BAEB"/><!--SFX:Query Sound-->
  <PROPERTY ID="0xE90E25A1" Value="0x81,0xA0,0x07,0x07,0x82,0xA0,0x07,0x07,0x81,0xF0,0x00,0x07,0x82,0xF0,0x07,0x00"/><!--Transit Switch Point-->
- <PROPERTY ID="0xE90E25A2" Value="0.00910000"/><!--Transit Switch Entry Cost-->
+ <PROPERTY ID="0xE90E25A2" Value="0.00869565"/><!--Transit Switch Entry Cost-->
  <PROPERTY ID="0xE90E25A3" Eval="TSCap"/><!--Transit Switch Traffic Capacity-->
  <PROPERTY ID="0xEA54D283" Value="0xC921CEEB"/><!--Budget Item: Department-->
  <PROPERTY ID="0xEA54D284" Value="0x00000001"/><!--Budget Item: Line-->
@@ -11659,7 +11664,7 @@ This selection will filter the display to only show Monorail Station plug-ins.  
  <PROPERTY ID="0xAA1DD396" Set="0x00001003,0x00001A04,0x00001300,0x00001307"/><!--OccupantGroups-->
  <PROPERTY ID="0xAA1DD397" Set="0x0A55BAEB"/><!--SFX:Query Sound-->
  <PROPERTY ID="0xE90E25A1" Value="0x81,0xA0,0x08,0x08,0x82,0xA0,0x08,0x08,0x81,0xF0,0x00,0x08,0x82,0xF0,0x08,0x00"/><!--Transit Switch Point-->
- <PROPERTY ID="0xE90E25A2" Value="0.00430000"/><!--Transit Switch Entry Cost-->
+ <PROPERTY ID="0xE90E25A2" Value="0.00444444"/><!--Transit Switch Entry Cost-->
  <PROPERTY ID="0xE90E25A3" Eval="TSCap"/><!--Transit Switch Traffic Capacity-->
  <PROPERTY ID="0xEA54D283" Value="0xC921CEEB"/><!--Budget Item: Department-->
  <PROPERTY ID="0xEA54D284" Value="0x00000001"/><!--Budget Item: Line-->
@@ -11691,7 +11696,7 @@ This selection will filter the display to only show Garage plug-ins.  To create 
  <PROPERTY ID="0xAA1DD396" Set="0x00001003,0x0000130A"/><!--OccupantGroups-->
  <PROPERTY ID="0xAA1DD397" Set="0x6C08D959"/><!--SFX:Query Sound-->
  <PROPERTY ID="0xE90E25A1" Value="0x81,0xF0,0x01,0x00,0x82,0xF0,0x00,0x00,0x81,0xF0,0x00,0x00"/><!--Transit Switch Point-->
- <PROPERTY ID="0xE90E25A2" Value="0.06400000"/><!--Transit Switch Entry Cost-->
+ <PROPERTY ID="0xE90E25A2" Value="0.06666667"/><!--Transit Switch Entry Cost-->
  <PROPERTY ID="0xE90E25A3" Eval="TSCap"/><!--Transit Switch Traffic Capacity-->
  <PROPERTY ID="0xEA54D283" Value="0xC921CEEB"/><!--Budget Item: Department-->
  <PROPERTY ID="0xEA54D284" Value="0x00000001"/><!--Budget Item: Line-->
@@ -11724,7 +11729,7 @@ This selection will filter the display to only show Toll Booth plug-ins.  To cre
  <PROPERTY ID="0xAA1DD396" Set="0x00001003,0x00001A04,0x0000130A,0x0000130B"/><!--OccupantGroups-->
  <PROPERTY ID="0xAA1DD397" Set="0xAC0B3F91"/><!--SFX:Query Sound-->
  <PROPERTY ID="0xE90E25A1" Value="0x81,0x50,0x00,0x00,0x82,0x50,0x01,0x01,0x81,0x50,0x01,0x01,0x82,0x50,0x00,0x00,0x81,0x50,0x04,0x04,0x82,0x50,0x04,0x04,0x81,0x50,0x02,0x02,0x82,0x50,0x02,0x02"/><!--Transit Switch Point-->
- <PROPERTY ID="0xE90E25A2" Value="0.02000000"/><!--Transit Switch Entry Cost-->
+ <PROPERTY ID="0xE90E25A2" Value="0.02222222"/><!--Transit Switch Entry Cost-->
  <PROPERTY ID="0xE90E25A3" Eval="TSCap"/><!--Transit Switch Traffic Capacity-->
  <PROPERTY ID="0xEA54D283" Value="0xC921CEEA"/><!--Budget Item: Department-->
  <PROPERTY ID="0xEA54D284" Value="0x00000006"/><!--Budget Item: Line-->
