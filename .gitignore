@@ -1,5 +1,6 @@
 /vendor/wil/
-/vendor/xwin/
+/vendor/xwin
+/submenus
 *submenus.dll
 *submenus.lib
 *.zip
