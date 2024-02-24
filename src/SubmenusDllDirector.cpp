@@ -40,7 +40,7 @@
 #define ITEM_BUTTON_ID_PROP 0x8a2602bb
 #define ITEM_SUBMENU_PROP 0x8a2602ba
 // the button ID that opens the submenu this item belongs to (replaces ITEM_SUBMENU_PROP)
-#define ITEM_SUBMENU_PARENT_PROP 0x8a2602ca
+#define ITEM_SUBMENU_PARENT_ID_PROP 0x8a2602ca
 // this is a marker property for the submenu button exemplars as well as network items within nested submenus
 #define ITEM_BUTTON_CLASS_PROP 0x8a2602cc
 #define ITEM_BUTTON_CLASS_DISABLED 0x00000000
@@ -288,7 +288,7 @@ submenuButton:
 			push VIRTUAL_SUBMENU_ITEM_TYPE;
 			push 0x287259f6;  // static button click
 			push 0x3;  // message type
-			push pLastPhysicalButtonNotificationTarget;  // notification target
+			push dword ptr [pLastPhysicalButtonNotificationTarget];  // notification target
 			push WinCatalogView_OnMouseUpL_ContinueJump;
 			ret;
 		}
@@ -346,7 +346,7 @@ useRegularOG:
 
 nested:
 			// for simplicity, we just check for all the buttons that need another color
-			mov eax, lastPhysicalButtonId;
+			mov eax, dword ptr [lastPhysicalButtonId];
 			cmp eax, ROADWAY_BUTTON_ID;
 			je transportColor;
 			cmp eax, HIGHWAY_BUTTON_ID;
@@ -382,7 +382,7 @@ utilityColor:
 afterColor:
 			mov eax, dword ptr [esp + 0x40];  // restore
 			push ebp;
-			push lastPhysicalButtonId;
+			push dword ptr [lastPhysicalButtonId];
 			push ecx;  // notification target
 			// Overwriting this item type by the OG (submenu button ID) is
 			// necessary for making nested submenus work, since otherwise two
@@ -424,7 +424,7 @@ rest:
 			je skip2;
 
 			// we overwrite a physical button press and all its state in order to re-open a submenu
-			mov lastPhysicalButtonId, esi;  // physicalButtonId
+			mov dword ptr [lastPhysicalButtonId], esi;  // physicalButtonId
 			mov dword ptr [edi + 0xc], eax;  // overwrite occupantGroup in dwData3
 			mov dword ptr [occupantGroup], eax;  // occupantGroup (submenu ID) (might be redundant)
 			mov dword ptr [esp + 0x38 + 0xc], VIRTUAL_SUBMENU_ITEM_TYPE;  // overwrite param_2/itemType
@@ -448,7 +448,7 @@ skip:
 	{
 		__asm {
 			// edx contains button id/item type
-			mov lastVirtualButtonId, edx;
+			mov dword ptr [lastVirtualButtonId], edx;
 			mov dword ptr [buttonIdForCreateBuildingMenu], edx;
 			push -1;  // zone
 			push ecx;  // network menu group
@@ -465,7 +465,7 @@ skip:
 		__asm {
 			// esi contains button id
 			mov eax, esi;
-			mov lastVirtualButtonId, eax;
+			mov dword ptr [lastVirtualButtonId], eax;
 			mov dword ptr [buttonIdForCreateBuildingMenu], eax;
 			push -1;  // zone
 			push 0;  // network menu group
@@ -481,7 +481,7 @@ skip:
 	{
 		__asm {
 			// edx contains button id
-			mov lastVirtualButtonId, edx;
+			mov dword ptr [lastVirtualButtonId], edx;
 			mov dword ptr [buttonIdForCreateBuildingMenu], edx;
 			push ebp;  // zone
 			push edi;  // network menu group
@@ -505,7 +505,7 @@ skip:
 			push ITEM_BUTTON_CLASS_SUBMENU;
 			cmp eax, VIRTUAL_SUBMENU_ITEM_TYPE;
 			je nested;
-			push eax;  // virtual button id, matches against ITEM_SUBMENU_PARENT_PROP
+			push eax;  // virtual button id, matches against ITEM_SUBMENU_PARENT_ID_PROP
 			jmp commonCall;
 nested:
 			push dword ptr [occupantGroup];  // is only initialized in nested case
@@ -520,9 +520,9 @@ commonCall:
 			add esp, 0x18;
 
 skipSubmenu:
-			cmp lastVirtualButtonId, VIRTUAL_SUBMENU_ITEM_TYPE;
+			cmp dword ptr [lastVirtualButtonId], VIRTUAL_SUBMENU_ITEM_TYPE;
 			jne skipFlora;  // only add flora items in nested case
-			cmp lastPhysicalButtonId, FLORA_BUTTON_ID;  // lastPhysicalButtonId is only up-to-date in nested case
+			cmp dword ptr [lastPhysicalButtonId], FLORA_BUTTON_ID;  // lastPhysicalButtonId is only up-to-date in nested case
 			jne skipFlora;
 
 			// fourth call for flora items
@@ -538,10 +538,10 @@ skipSubmenu:
 			add esp, 0x18;
 
 skipFlora:
-			cmp lastVirtualButtonId, VIRTUAL_SUBMENU_ITEM_TYPE;
+			cmp dword ptr [lastVirtualButtonId], VIRTUAL_SUBMENU_ITEM_TYPE;
 			jne skipNetworkItems;  // only add additional network items in nested case
 			// for simplicity, we compare against relevant transport menu button IDs
-			mov eax, lastPhysicalButtonId; // is initialized as we are in nested submenu
+			mov eax, dword ptr [lastPhysicalButtonId]; // is initialized as we are in nested submenu
 			cmp eax, ROADWAY_BUTTON_ID;
 			je addNetworkItems;
 			cmp eax, HIGHWAY_BUTTON_ID;
@@ -591,7 +591,7 @@ skipNetworkItems:
 			// else add second call to add submenu exemplars for flora menu
 			add esp, 0x18;
 			push ITEM_BUTTON_CLASS_SUBMENU;
-			push FLORA_BUTTON_ID;  // virtual button id, matches against ITEM_SUBMENU_PARENT_PROP
+			push FLORA_BUTTON_ID;  // virtual button id, matches against ITEM_SUBMENU_PARENT_ID_PROP
 			push SUBMENU_ITEM_TYPE;
 			push CREATE_CATALOG_ITEM_LIST_PARAM_3;
 			lea edx, [esp + 0x20];
@@ -675,7 +675,7 @@ rest:
 			// next determine whether to check for submenu or network item property
 			cmp dword ptr [esp + 0x5c], SUBMENU_ITEM_TYPE;  // param_4
 			je checkSubmenuOrNetworkInSubmenu;
-			cmp lastVirtualButtonId, VIRTUAL_SUBMENU_ITEM_TYPE;  // check if nested
+			cmp dword ptr [lastVirtualButtonId], VIRTUAL_SUBMENU_ITEM_TYPE;  // check if nested
 			jne checkRegularNetworkItem;  // only add additional network items in nested case
 			cmp dword ptr [esp + 0x5c], TOOL_PLOP_NETWORK;  // param_4
 			jne checkRegularNetworkItem;
@@ -727,8 +727,8 @@ discardItem:
 	{
 		__asm {
 			// ebx contains notification target, ecx contains physical button ID
-			mov pLastPhysicalButtonNotificationTarget, ebx;  // store notification target for later use
-			mov lastPhysicalButtonId, ecx;  // store physical button ID for later use
+			mov dword ptr [pLastPhysicalButtonNotificationTarget], ebx;  // store notification target for later use
+			mov dword ptr [lastPhysicalButtonId], ecx;  // store physical button ID for later use
 			mov eax, dword ptr [ebx];
 			push ecx;
 			mov ecx, ebx;
@@ -873,8 +873,8 @@ noTransportExtraMatch:  // continue regularly with airport menu branch
 			InstallHook(InvokeTertiaryMenu_InjectPoint, Hook_InvokeTertiaryMenu);
 
 			// With the following replacement, plugins can be designed for use with and without the DLL.
-			// The property ITEM_SUBMENU_PARENT_PROP is not loaded without the DLL, but otherwise behaves like ITEM_SUBMENU_PROP.
-			OverwriteMemory((void*)0x78f00f, (ITEM_SUBMENU_PARENT_PROP & 0xff));  // replaces ITEM_SUBMENU_PROP by ITEM_SUBMENU_PARENT_PROP
+			// The property ITEM_SUBMENU_PARENT_ID_PROP is not loaded without the DLL, but otherwise behaves like ITEM_SUBMENU_PROP.
+			OverwriteMemory((void*)0x78f00f, (ITEM_SUBMENU_PARENT_ID_PROP & 0xff));  // replaces ITEM_SUBMENU_PROP by ITEM_SUBMENU_PARENT_ID_PROP
 
 			logger.WriteLine(
 				LogLevel::Info,
