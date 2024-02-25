@@ -16,12 +16,18 @@ Submenus for SimCity 4.
 ## Installation
 
 - Copy the DLL into the top-level directory of either Plugins folder.
-- Copy the supplemental `.dat` files into your Plugins folder.
+- Copy the file `parks-submenus.dat` into your Plugins folder.
 
 ## Troubleshooting
 
 The plugin should write a `.log` file in the folder containing the plugin.
 The log contains status information for the most recent run of the plugin.
+
+If the parks submenus appear empty in the game,
+there is a conflicting mod in your Plugins that overwrites properties of the Maxis parks.
+Check if a submenu-compatible version of that mod is available
+or move the `parks-submenus.dat` to a folder loading later.
+In any case, the DLL can still be used as a dependency for other plugins.
 
 ------------------------------------------------------------
 # Information for modders
