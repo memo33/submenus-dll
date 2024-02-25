@@ -82,9 +82,8 @@
 #define TOOL_PLOP_ZONE 0x4a2b2466
 #define TOOL_PLOP_FLORA 0xea5ad08d
 
-// argument for CreateCatalogItemList with unknown purpose
-#define CREATE_CATALOG_ITEM_LIST_PARAM_3 0x2a3858e4
-#define CREATE_CATALOG_ITEM_LIST_PARAM_3_FLORA 0xe83e0437
+#define ITEM_EXEMPLAR_GID_MISC_CATALOG 0x2a3858e4
+#define ITEM_EXEMPLAR_GID_FLORA 0xe83e0437
 
 
 static constexpr uint32_t kSubmenusDllDirectorID = 0xc0583f3b;
@@ -511,7 +510,7 @@ nested:
 			push dword ptr [occupantGroup];  // is only initialized in nested case
 commonCall:
 			push SUBMENU_ITEM_TYPE;
-			push CREATE_CATALOG_ITEM_LIST_PARAM_3;
+			push ITEM_EXEMPLAR_GID_MISC_CATALOG;
 			lea ecx, [esp + 0x1c];
 			push ebp;
 			push ecx;
@@ -529,7 +528,7 @@ skipSubmenu:
 			push ITEM_BUTTON_ID_PROP;
 			push dword ptr [occupantGroup]; // is initialized as we are in nested transport menu opened from flora menu
 			push TOOL_PLOP_FLORA;
-			push CREATE_CATALOG_ITEM_LIST_PARAM_3_FLORA;
+			push ITEM_EXEMPLAR_GID_FLORA;
 			lea ecx, [esp + 0x1c];
 			push ebp;
 			push ecx;
@@ -561,7 +560,7 @@ addNetworkItems:
 			push ITEM_BUTTON_CLASS_NETWORK;
 			push dword ptr [occupantGroup]; // is initialized as we are in nested submenu
 			push TOOL_PLOP_NETWORK;
-			push CREATE_CATALOG_ITEM_LIST_PARAM_3;
+			push ITEM_EXEMPLAR_GID_MISC_CATALOG;
 			lea ecx, [esp + 0x1c];
 			push ebp;
 			push ecx;
@@ -593,7 +592,7 @@ skipNetworkItems:
 			push ITEM_BUTTON_CLASS_SUBMENU;
 			push FLORA_BUTTON_ID;  // virtual button id, matches against ITEM_SUBMENU_PARENT_ID_PROP
 			push SUBMENU_ITEM_TYPE;
-			push CREATE_CATALOG_ITEM_LIST_PARAM_3;
+			push ITEM_EXEMPLAR_GID_MISC_CATALOG;
 			lea edx, [esp + 0x20];
 			push ebp;
 			push edx;
