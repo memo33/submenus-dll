@@ -21,6 +21,11 @@
 #include "version.h"
 #include "cIGZCOM.h"
 #include "cRZCOMDllDirector.h"
+#include "cIGZMessage2.h"
+#include "cIGZMessage2Standard.h"
+#include "cRZMessage2COMDirector.h"
+#include "cIGZMessageServer2.h"
+#include "GZServPtrs.h"
 #include <Windows.h>
 #include "wil/resource.h"
 #include "wil/win32_helpers.h"
@@ -89,6 +94,9 @@
 static constexpr uint32_t kSubmenusDllDirectorID = 0xc0583f3b;
 
 static constexpr std::string_view PluginLogFileName = "memo.submenus.log";
+
+static constexpr uint32_t kSC4MessagePostCityInit = 0x26D31EC1;
+static constexpr uint32_t kSC4MessagePostCityShutdown = 0x26D31EC3;
 
 static uint32_t cSCPropertyHelp_GetPropertyValue = 0x5fd480;
 static uint32_t nSC4UI_CreateCatalogItemList = 0x78ef30;
@@ -895,7 +903,7 @@ noTransportExtraMatch:  // continue regularly with airport menu branch
 	}
 }
 
-class SubmenusDllDirector final : public cRZCOMDllDirector
+class SubmenusDllDirector final : public cRZMessage2COMDirector
 {
 public:
 
@@ -916,6 +924,66 @@ public:
 		return kSubmenusDllDirectorID;
 	}
 
+	void clearState(void)
+	{
+		for (auto&& p : catalogStates)
+		{
+			delete p.second;
+		}
+		catalogStates.clear();
+		for (auto&& p : menuLayerStacks)
+		{
+			delete p.second;
+		}
+		menuLayerStacks.clear();
+		clearItemListIIDs();
+	}
+
+	bool DoMessage(cIGZMessage2* pMsg)
+	{
+		cIGZMessage2Standard* pStandardMessage = static_cast<cIGZMessage2Standard*>(pMsg);
+		uint32_t msgType = pStandardMessage->GetType();
+
+		switch (msgType)
+		{
+		case kSC4MessagePostCityInit:
+		case kSC4MessagePostCityShutdown:
+			clearState();
+			break;
+		}
+
+		return true;
+	}
+
+	bool PostAppInit()
+	{
+		Logger& logger = Logger::GetInstance();
+
+		cIGZMessageServer2Ptr pMsgServ;
+		if (pMsgServ)
+		{
+			std::vector<uint32_t> requiredNotifications;
+			requiredNotifications.push_back(kSC4MessagePostCityInit);
+			requiredNotifications.push_back(kSC4MessagePostCityShutdown);
+
+			for (uint32_t messageID : requiredNotifications)
+			{
+				if (!pMsgServ->AddNotification(this, messageID))
+				{
+					logger.WriteLine(LogLevel::Error, "Failed to subscribe to the required notifications.");
+					return false;
+				}
+			}
+		}
+		else
+		{
+			logger.WriteLine(LogLevel::Error, "Failed to subscribe to the required notifications.");
+			return false;
+		}
+
+		return true;
+	}
+
 	bool OnStart(cIGZCOM* pCOM)
 	{
 		const uint16_t gameVersion = versionDetection.GetGameVersion();
@@ -931,6 +999,17 @@ public:
 				LogLevel::Error,
 				"Requires game version 641, found game version %d.",
 				gameVersion);
+		}
+
+		cIGZFrameWork* const pFramework = RZGetFrameWork();
+
+		if (pFramework->GetState() < cIGZFrameWork::kStatePreAppInit)
+		{
+			pFramework->AddHook(this);
+		}
+		else
+		{
+			PreAppInit();
 		}
 
 		return true;
