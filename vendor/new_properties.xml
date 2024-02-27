@@ -7359,9 +7359,9 @@ List of groups this occupant belongs to.
 GUID of the sound to play when the occupant is clicked on with query tool
 </HELP>
   </PROPERTY>
-  <PROPERTY Name="OccupantGroupsAlt" ID="0xaa1dd399" Type="Uint32" Count="-1" Default="0x00000000" ShowAsHex="Y">
+  <PROPERTY Name="Building Submenus" ID="0xaa1dd399" Type="Uint32" Count="-1" Default="0x00000000" ShowAsHex="Y">
     <HELP>
-When Submenus DLL is loaded, this overwrites the OccupantGroups property (only affects menu placement, so keep regular OccupantGroups as well)
+For use with Submenus DLL: the Button IDs of the submenus this building appears in if the DLL is loaded
 </HELP>
   </PROPERTY>
   <PROPERTY Name="Garbage service cost per unit of garbage" ID="0xaa1f8ab7" Type="Float32" Default="0.100" ShowAsHex="Y">
