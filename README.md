@@ -11,12 +11,14 @@ Submenus for SimCity 4.
 ## System requirements
 
 - SimCity 4, version 1.1.641 (the digital release)
-- Windows 10+ or Linux
+  ([more info](https://community.simtropolis.com/forums/topic/762980-the-future-of-sc4-modding-the-matter-of-digital-vs-disc-and-windows-vs-macos-in-the-dll-era/))
+- Windows 7+ or Linux
 
 ## Installation
 
-- Copy the DLL into the top-level directory of either Plugins folder.
-- Copy the file `parks-submenus.dat` into your Plugins folder.
+- Copy the DLL into the top-level directory of either Plugins folder
+  (place it directly in `<Documents>\SimCity 4\Plugins` or `<SC4 install folder>\Plugins`, not in a subfolder).
+- Copy the file `parks-submenus.dat` anywhere into your Plugins folder.
 
 ## Troubleshooting
 
@@ -30,27 +32,42 @@ or move the `parks-submenus.dat` to a folder loading later.
 In any case, the DLL can still be used as a dependency for other plugins.
 
 ------------------------------------------------------------
-# Information for modders
+## Information for modders
 
-Submenus can contain buildings, flora, network items as well as buttons for nested submenus.
+Submenus may contain
+- buildings,
+- flora,
+- network items,
+- buttons for nested submenus (no hard depth limit).
+
 As the DLL makes use of new properties, plugin files can be made *submenu-compatible*
 such that the same plugin file can be used with and without the DLL, making this DLL an *optional* dependency.
 
-To make a building appear in a submenu, a building exemplar needs two properties:
-- `OccupantGroups`: same as always, including the occupant group for a top-level menu
-- `OccupantGroupsAlt`: a copy of the above, with the menu-placement occupant group replaced
-  by the button ID of the corresponding submenu (see table below).
+### Adding a building to a submenu
 
-The `OccupantGroupsAlt` property only affects menu placement, so both properties are needed.
-Without the DLL, the building still appears in the original menu as defined by `OccupantGroups`.
+To make a building appear in a submenu, add the following property to its building exemplar:
 
-To create a new submenu, create an item exemplar with two additional properties:
-- `Item Submenu Parent ID`: the parent Button ID that opens the submenu this item belongs to
-- `Item Button Class`: set to `1` for Submenu Button.
+- `Building Submenus` (0xaa1dd399): the Button IDs of the submenus this building appears in if the DLL is loaded.
 
-To add network items or flora to a submenu, set `Item Button Class` to `2` or `4`.
+Without the DLL, the building instead appears in the original menu as defined by the `OccupantGroups` property (see table below).
 
-The following table lists existing menus with their corresponding button IDs and occupant groups.
+### Creating a new submenu button
+
+To create a new submenu, create a copy of an existing submenu button exemplar and change its Instance ID to a new unique ID.
+It must be different from any [Occupant Group](https://www.sc4devotion.com/forums/index.php?topic=2378.msg533652#msg533652) in use.
+Update the properties `Exemplar Name`, `Item Icon`, `Item Order`, `Item Button ID`, `User Visible Name Key` and `Item Description Key` as needed.
+
+Additionally, adjust the property
+
+- `Item Submenu Parent ID` (0x8a2602ca): the parent Button ID that opens the submenu this item belongs to (see table below).
+
+The following property is required, but does not usually need to be changed:
+
+- `Item Button Class` (0x8a2602cc): set to `1 = Submenu Button`.
+  (For network or flora items in submenus, this is set to `2 = Network Item in Submenu` or `4 = Flora Item in Submenu` instead.)
+
+The following table lists the Button IDs for existing menus.
+The Occupant Groups are used as fallback to add buildings to a specific top-level menu if the DLL is not present.
 
     Menu            , Submenu Button ID   , Occupant Group
     -------------------------------------------------------
@@ -75,16 +92,16 @@ The following table lists existing menus with their corresponding button IDs and
     Sports Grounds  , 0xce21dbeb          , -
     Green Spaces    , 0xbf776d40          , -
 
-## Additional resources
+### Additional resources
 
-- [new_properties.xml](https://github.com/memo33/submenus-dll/blob/main/vendor/new_properties.xml) [(diff)](https://github.com/memo33/submenus-dll/compare/2e0caee0278d5f4106eca76b797ed323505eef3e..HEAD#diff-95420378434ddd70a81640150126a3fc1e232bf860080961df62d888a2cc4d8b)
+- [new_properties.xml](https://github.com/memo33/submenus-dll/blob/main/vendor/new_properties.xml) ([diff](https://github.com/memo33/submenus-dll/compare/2e0caee0278d5f4106eca76b797ed323505eef3e..HEAD#diff-95420378434ddd70a81640150126a3fc1e232bf860080961df62d888a2cc4d8b))
   adds names for the new properties to ILive's Reader 1.5.4 if you replace this file located in the Reader install directory
 - submenu [icon template](https://github.com/memo33/submenus-dll/releases/tag/1.0.0) for use with GIMP
 
 ------------------------------------------------------------
-# Information for developers
+## Information for developers
 
-## Building the plugin
+### Building the plugin
 
 The DLL is compiled using `clang` as a cross-compiler.
 Check the [Makefile](Makefile) for details.
@@ -93,12 +110,12 @@ make
 ```
 The source code is mostly compatible with the MSVC compiler as well, but some tweaks may be needed for that.
 
-## License
+### License
 
 This project is licensed under the terms of the GNU Lesser General Public License version 3.0.
 See [LICENSE.txt](LICENSE.txt) for more information.
 
-### 3rd party code
+#### 3rd party code
 
 - [gzcom-dll](https://github.com/nsgomez/gzcom-dll/tree/master) Located in the vendor folder, MIT License.
 - [Windows Implementation Library](https://github.com/microsoft/wil) MIT License
