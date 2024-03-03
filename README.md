@@ -72,6 +72,9 @@ The Occupant Groups are used as fallback to add buildings to a specific top-leve
     Menu            , Submenu Button ID   , Occupant Group
     -------------------------------------------------------
     Flora           , 0x4a22ea06          , -
+    Residential     , 0x29920899          , -
+    Commercial      , 0xa998af42          , -
+    Industrial      , 0xc998af00          , -
     Road            , 0x6999bf56          , -
     Highway         , 0x31                , -
     Rail            , 0x29                , 0x1300

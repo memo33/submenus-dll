@@ -62,14 +62,18 @@
 #define TRANSPORT_EXTRA_MENU_MIN 0x9a6c1200
 #define TRANSPORT_EXTRA_MENU_MAX 0x9a6c12ff
 
-// secondary menu IDs that determine the color of the menu frame
+// secondary menu PNG IIDs that determine the color of the menu frame
 #define FLORA_MENU_ID 0x14215ed0
+#define ZONE_MENU_ID 0x14215ed1
 #define TRANSPORT_MENU_ID 0x14215ed2
 #define UTILITY_MENU_ID 0x14215ed3
 #define CIVIC_MENU_ID 0x14215ed4
 
 // static menu button IDs
 #define FLORA_BUTTON_ID 0x4a22ea06
+#define ZONE_R_BUTTON_ID 0x29920899
+#define ZONE_C_BUTTON_ID 0xa998af42
+#define ZONE_I_BUTTON_ID 0xc998af00
 #define ROADWAY_BUTTON_ID 0x6999bf56
 #define HIGHWAY_BUTTON_ID 0x31
 #define RAIL_BUTTON_ID 0x29
@@ -115,6 +119,9 @@ static uint32_t HandleButtonActivated2_ContinueJump = 0x7f4ebe;
 static uint32_t DoUtilitiesMenu_InjectPoint = 0x7f3b5d;
 static uint32_t DoUtilitiesMenu_ContinueJump = 0x7f3b64;
 
+static uint32_t DoZoneCatalogView_InjectPoint = 0x7ec6e5;
+static uint32_t DoZoneCatalogView_ContinueJump = 0x7ec6ea;
+
 static uint32_t DoTransportMenuExtra_InjectPoint = 0x7f3d04;
 static uint32_t DoTransportMenuExtra_ContinueJump_NoMatch = 0x7f3d09;
 static uint32_t DoTransportMenuExtra_ContinueJump_Match = 0x7f3d50;
@@ -157,7 +164,7 @@ static uint32_t lastVirtualButtonId;  // virtual or physical button
 uint32_t occupantGroup = 0;
 uint32_t submenuPropValue = 0;
 
-// used as an additional argument for CreateBuildingMenu
+// used as an additional argument for CreateBuildingMenu and CreateCatalogView
 uint32_t buttonIdForCreateBuildingMenu = 0;
 
 // we keep track of the catalog item IIDs in order to avoid adding icons more than once in case the Plugins contain duplicates
@@ -374,11 +381,20 @@ nested:
 			je utilityColor;
 			cmp eax, FLORA_BUTTON_ID;
 			je floraColor;
+			cmp eax, ZONE_R_BUTTON_ID;
+			je zoneColor;
+			cmp eax, ZONE_C_BUTTON_ID;
+			je zoneColor;
+			cmp eax, ZONE_I_BUTTON_ID;
+			je zoneColor;
 			// else default to civic menu color
 			push CIVIC_MENU_ID;
 			jmp afterColor;
 floraColor:
 			push FLORA_MENU_ID;
+			jmp afterColor;
+zoneColor:
+			push ZONE_MENU_ID;
 			jmp afterColor;
 transportColor:
 			push TRANSPORT_MENU_ID;
@@ -499,6 +515,20 @@ skip:
 		}
 	}
 
+	// stores buttonId for use in CreateCatalogView for zoning menu
+	void NAKED_FUN Hook_DoZoneCatalogView(void)
+	{
+		__asm {
+			mov ebx, dword ptr [esp + 0xc];  // param_2 (buttonId)
+			mov dword ptr [lastVirtualButtonId], ebx;
+			mov dword ptr [buttonIdForCreateBuildingMenu], ebx;  // also used for CreateCatalogView
+			mov ebx, dword ptr [esp + 0x10];  // param_3
+			push esi;
+			push DoZoneCatalogView_ContinueJump;
+			ret;
+		}
+	}
+
 	// adds additional calls to CreateCatalogItemList in order to add submenu buttons and submenu items for flora and networks
 	void NAKED_FUN Hook_CreateBuildingMenu(void)
 	{
@@ -591,14 +621,25 @@ skipNetworkItems:
 			mov eax, dword ptr [nSC4UI_CreateCatalogItemList];
 			call eax;
 
+			// check if we come from flora menu
 			mov eax, dword ptr [esp + 0x3c];
 			cmp eax, TOOL_PLOP_FLORA;
-			jne rest;
+			je flora;
 
-			// else add second call to add submenu exemplars for flora menu
+			// check if we come from zoning menu
+			mov eax, dword ptr [buttonIdForCreateBuildingMenu];
+			cmp eax, 0;
+			je skipSubmenu;
+
+			// second call to add submenu buttons for zoning menu and flora menu
+			mov dword ptr [buttonIdForCreateBuildingMenu], 0;  // mark argument as used until next invocation
+			jmp addSubmenu;
+flora:
+			mov eax, FLORA_BUTTON_ID;
+addSubmenu:
 			add esp, 0x18;
 			push ITEM_BUTTON_CLASS_SUBMENU;
-			push FLORA_BUTTON_ID;  // virtual button id, matches against ITEM_SUBMENU_PARENT_ID_PROP
+			push eax;  // virtual button id, matches against ITEM_SUBMENU_PARENT_ID_PROP
 			push SUBMENU_ITEM_TYPE;
 			push ITEM_EXEMPLAR_GID_MISC_CATALOG;
 			lea edx, [esp + 0x20];
@@ -607,7 +648,7 @@ skipNetworkItems:
 			mov eax, dword ptr [nSC4UI_CreateCatalogItemList];
 			call eax;
 
-rest:
+skipSubmenu:
 			push CreateCatalogView_ContinueJump;
 			ret;
 		}
@@ -873,6 +914,7 @@ noTransportExtraMatch:  // continue regularly with airport menu branch
 			InstallHook(DoTransportMenuTarget2_InjectPoint, Hook_DoTransportMenuTarget2);
 			InstallHook(HandleButtonActivated2_InjectPoint, Hook_HandleButtonActivated2);
 			InstallHook(DoUtilitiesMenu_InjectPoint, Hook_DoUtilitiesMenu);
+			InstallHook(DoZoneCatalogView_InjectPoint, Hook_DoZoneCatalogView);
 			InstallHook(DoTransportMenuExtra_InjectPoint, Hook_DoTransportMenuExtra);
 			InstallHook(CreateBuildingMenu_InjectPoint, Hook_CreateBuildingMenu);
 			InstallHook(CreateCatalogView_InjectPoint, Hook_CreateCatalogView);
