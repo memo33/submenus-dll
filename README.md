@@ -49,7 +49,8 @@ To make a building appear in a submenu, add the following property to its buildi
 
 - `Building Submenus` (0xaa1dd399): the Button IDs of the submenus this building appears in if the DLL is loaded.
 
-Without the DLL, the building instead appears in the original menu as defined by the `OccupantGroups` property (see table below).
+Without the DLL or if the submenu does not exist or is not installed,
+the building instead appears in the original menu as defined by the `OccupantGroups` property (see table below).
 
 ### Creating a new submenu button
 
@@ -93,6 +94,8 @@ The Occupant Groups are used as fallback to add buildings to a specific top-leve
     Plazas          , 0xeb75882c          , -
     Sports Grounds  , 0xce21dbeb          , -
     Green Spaces    , 0xbf776d40          , -
+
+Note that empty submenus are hidden from the menus.
 
 ### Adding flora or network items to a submenu
 

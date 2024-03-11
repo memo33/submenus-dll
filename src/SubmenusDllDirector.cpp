@@ -33,6 +33,19 @@
 #include <stack>
 /* #include <iostream> */
 
+#include "cGZPersistResourceKey.h"
+#include "cIGZPersistResourceManager.h"
+#include "cIGZPersistResourceKeyList.h"
+#include "cISCResExemplar.h"
+#include "cISCPropertyHolder.h"
+#include "cISCProperty.h"
+#include "cIGZVariant.h"
+#include "cIGZPersistResourceKeyList.h"
+#include "cISC4BuildingDevelopmentSimulator.h"
+#include "cISC4City.h"
+#include "cISC4App.h"
+#include "PersistResourceKeyFilterByTypeAndGroup.h"
+
 #ifdef __clang__
 #define NAKED_FUN __attribute__((naked))
 #else
@@ -83,6 +96,13 @@
 #define POWER_BUTTON_ID 0x35
 #define WATER_BUTTON_ID 0x39
 #define GARBAGE_BUTTON_ID 0x40
+#define POLICE_BUTTON_ID 0x37
+#define FIRE_BUTTON_ID 0x38
+#define EDUCATION_BUTTON_ID 0x42
+#define HEALTH_BUTTON_ID 0x89dd5405
+#define LANDMARK_BUTTON_ID 0x09930709
+#define REWARD_BUTTON_ID 0x34
+#define PARK_BUTTON_ID 0x3
 
 #define NAM_CONTROLLER_MARKER_BUTTON_ID 0x6a47ffff
 
@@ -93,7 +113,10 @@
 
 #define ITEM_EXEMPLAR_GID_MISC_CATALOG 0x2a3858e4
 #define ITEM_EXEMPLAR_GID_FLORA 0xe83e0437
+#define EXEMPLAR_TID 0x6534284a
 
+
+static constexpr uint32_t kSC4ResExemplarID = 0xa52160f5;  // TODO GZCLSID, GZIID?
 
 static constexpr uint32_t kSubmenusDllDirectorID = 0xc0583f3b;
 
@@ -162,7 +185,7 @@ static uint32_t lastPhysicalButtonId = 0;  // ID of last button used for opening
 static uint32_t lastVirtualButtonId;  // virtual or physical button
 
 uint32_t occupantGroup = 0;
-uint32_t submenuPropValue = 0;
+uint32_t submenuPropValueBuffer = 0;
 
 // used as an additional argument for CreateBuildingMenu and CreateCatalogView
 uint32_t buttonIdForCreateBuildingMenu = 0;
@@ -276,8 +299,37 @@ namespace
 				result = physicalButtonId;
 			}
 		}
-		/* std::cout << "getMenuLayer(" << std::hex << openMenuId << "," << physicalButtonId << ") = " << result << "\n"; */
 		return result;
+	}
+
+	std::unordered_set<uint32_t> emptySubmenus = {};
+	std::unordered_set<uint32_t> reachableSubmenus = {  // initially just the top-level menus, submenus are added later
+		FLORA_BUTTON_ID,
+		ZONE_R_BUTTON_ID,
+		ZONE_C_BUTTON_ID,
+		ZONE_I_BUTTON_ID,
+		ROADWAY_BUTTON_ID,
+		HIGHWAY_BUTTON_ID,
+		RAIL_BUTTON_ID,
+		MISCTRANSP_BUTTON_ID,
+		AIRPORT_BUTTON_ID,
+		SEAPORT_BUTTON_ID,
+		POWER_BUTTON_ID,
+		WATER_BUTTON_ID,
+		GARBAGE_BUTTON_ID,
+		POLICE_BUTTON_ID,
+		FIRE_BUTTON_ID,
+		EDUCATION_BUTTON_ID,
+		HEALTH_BUTTON_ID,
+		LANDMARK_BUTTON_ID,
+		REWARD_BUTTON_ID,
+		PARK_BUTTON_ID
+	};
+
+	// returns false if item is not a submenu
+	bool isEmptySubmenu(const uint32_t buttonId)
+	{
+		return emptySubmenus.contains(buttonId);
 	}
 
 	// If catalog item is a submenu button, this triggers a static button click event to open a new catalog.
@@ -308,6 +360,61 @@ submenuButton:
 		}
 	}
 
+	template <typename F>
+	void propertyUint32ArrayForeach(cISCPropertyHolder* propHolder, const uint32_t propertyId, const cGZPersistResourceKey* keyOrNull, F&& callback)
+	{
+		if (propHolder->HasProperty((uint32_t)propertyId))
+		{
+			auto property = propHolder->GetProperty((uint32_t)propertyId);
+			property->AddRef();
+			const auto variant = property->GetPropertyValue();
+			variant->AddRef();
+			switch (variant->GetType())
+			{
+				case cIGZVariant::Type::Uint32:
+					uint32_t value;
+					variant->GetValUint32(value);
+					callback(value);
+					break;
+				case cIGZVariant::Type::Uint32Array:
+					uint32_t reps;
+					reps = variant->GetCount();
+					if (reps > 0) {
+						uint32_t* values = variant->RefUint32();
+						for (uint32_t j = 0; j < reps; j++) {
+							uint32_t value = values[j];  // it's important to create a copy
+							callback(value);
+						}
+					}
+					break;
+				default:
+					if (keyOrNull) {
+						Logger::GetInstance().WriteLineFormatted(
+								LogLevel::Error,
+								"Property 0x%08X requires type Uint32Array or Uint32: T:0x%08X G:0x%08X I:0x%08X",
+								propertyId, keyOrNull->type, keyOrNull->group, keyOrNull->instance);
+					} else {
+						Logger::GetInstance().WriteLineFormatted(
+								LogLevel::Error,
+								"Property 0x%08X requires type Uint32Array or Uint32",
+								propertyId);
+					}
+					break;
+			}
+			variant->Release();
+			property->Release();
+		}
+	}
+
+	bool shouldUseBuildingSubmenusProperty(cISCPropertyHolder* propHolder)
+	{
+		bool existsReachableSubmenu = false;
+		propertyUint32ArrayForeach(propHolder, OCCUPANT_GROUPS_ALT_PROP, nullptr, [&existsReachableSubmenu](uint32_t submenuId) {
+			existsReachableSubmenu |= reachableSubmenus.contains(submenuId);
+		});
+		return existsReachableSubmenu;
+	}
+
 	// If OCCUPANT_GROUPS_ALT_PROP is present, use it in place of OCCUPANT_GROUPS_PROP for the purpose of building the menu.
 	// This allows displaying items in different menus depending on whether DLL is loaded or not.
 	void NAKED_FUN Hook_AddBuildingsToItemList(void)
@@ -315,20 +422,18 @@ submenuButton:
 		__asm {
 			push eax;  // store
 
-			// check presence of alt OG property
 			push ecx;  // store
 			push edx;  // store
-			mov edx, dword ptr [edi];  // edi: cISCPropertyHolder*, edx: cISCPropertyHolder::vftable*, [edx+0xc]: HasProperty
-			push OCCUPANT_GROUPS_ALT_PROP;
-			mov ecx, edi;  // (this)
-			call dword ptr [edx + 0xc];  // HasProperty (thiscall)
+			push edi;  // cISCPropertyHolder*
+			call shouldUseBuildingSubmenusProperty;  // (cdecl)
+			add esp, 0x4;
 			pop edx;  // restore
 			pop ecx;  // restore
 
 			test al, al;
 			jz useRegularOG;
 
-			// use alt OG
+			// use alt OG (building submenus property)
 			pop eax;  // restore
 			push OCCUPANT_GROUPS_ALT_PROP;
 			push AddBuildingsToItemList_ContinueJump;
@@ -660,16 +765,16 @@ skipSubmenu:
 	}
 
 	// returns true if duplicate item should be discarded
-	bool addToItemList(const uint32_t *iid)
+	bool addToItemList(const uint32_t iid)
 	{
-		if (itemListIIDs.contains(*iid)) {
-			if (*iid == NAM_CONTROLLER_MARKER_BUTTON_ID) {
+		if (itemListIIDs.contains(iid)) {
+			if (iid == NAM_CONTROLLER_MARKER_BUTTON_ID) {
 				return false;  // for ease of debugging, keep duplicates of NAM Controller Marker button
 			} else {
 				return true;
 			}
 		} else {
-			itemListIIDs.insert(*iid);
+			itemListIIDs.insert(iid);
 			return false;
 		}
 	}
@@ -688,19 +793,25 @@ skipSubmenu:
 		}
 	}
 
-	// stores whether the current item exemplar should be discarded due to duplicate IID
+	// stores whether the current item exemplar should be discarded due to duplicate IID or when it is an empty submenu
 	void NAKED_FUN Hook_CreateCatalogItemList3(void)
 	{
 		__asm {
 			// eax contains resource key (TGI)
-			lea ecx, dword ptr [eax + 0x8];  // instance ID address
+			mov ecx, dword ptr [eax + 0x8];  // instance ID
 
 			push eax;  // store
 			push edx;  // store
+			push ecx;  // argument for isEmptySubmenu
 			push ecx;
 			call addToItemList;  // (cdecl)
 			add esp, 0x4;
+			test al, al;
+			jnz skipEmptinessCheck;
+			call isEmptySubmenu;  // (cdecl) note that here we assume that IID and Button ID are the same
+skipEmptinessCheck:
 			mov byte ptr [shouldDiscardItem], al;  // for later use
+			add esp, 0x4;
 			pop edx;  // restore
 			pop eax;  // restore
 
@@ -716,7 +827,7 @@ skipSubmenu:
 	void NAKED_FUN Hook_CreateCatalogItemList(void)
 	{
 		__asm {
-			// first check whether the exemplar is a duplicate
+			// first check whether the exemplar is a duplicate or an empty submenu
 			cmp byte ptr [shouldDiscardItem], 0;
 			jne discardItem;
 
@@ -740,16 +851,16 @@ checkSubmenuOrNetworkInSubmenu:
 			jz discardItem;  // if it does not have the property
 
 			// else has submenu, so get the value of the property
-			mov ecx, offset submenuPropValue;
+			mov ecx, offset submenuPropValueBuffer;
 			push ecx;
 			push ITEM_BUTTON_CLASS_PROP;
 			push edi;
-			mov eax, dword ptr [cSCPropertyHelp_GetPropertyValue];  // result is stored in submenuPropValue
+			mov eax, dword ptr [cSCPropertyHelp_GetPropertyValue];  // result is stored in submenuPropValueBuffer
 			call eax;  // (cdecl)
 			add esp, 0xc;
 
 			mov eax, dword ptr [esp + 0x64];  // param_6: desired property value
-			cmp eax, dword ptr [submenuPropValue];
+			cmp eax, dword ptr [submenuPropValueBuffer];
 			jne checkRegularNetworkItem;
 
 			// else directly add item
@@ -981,6 +1092,202 @@ public:
 		clearItemListIIDs();
 	}
 
+	std::unordered_map<uint32_t, uint32_t> submenuLinks = {};  // maps child to parent
+	std::unordered_map<uint32_t, std::unordered_set<uint32_t>*> submenuChildren = {};  // maps parent to children
+	std::unordered_set<uint32_t> nonemptySubmenus = {};
+
+	// Reads a single building exemplar and updates nonemptySubmenus if building belongs to a submenu.
+	void initializeSubmenusFromBuilding(cISC4BuildingDevelopmentSimulator* buildingDevSim, uint32_t buildingType)
+	{
+		Logger& logger = Logger::GetInstance();
+		bool success = true;
+		cIGZPersistResourceManagerPtr pResMan;
+
+		// TODO ignore GetBuildingProfile check which has unknown use
+		cGZPersistResourceKey key;
+		success = buildingDevSim->GetBuildingKeyFromType(buildingType, key);
+
+		cISCResExemplar* exemplar = nullptr;
+		// GetResource automatically adds a reference to the exemplar
+		pResMan->GetResource(key, kSC4ResExemplarID, reinterpret_cast<void**>(&exemplar), 0, nullptr);
+
+		auto propHolder = exemplar->AsISCPropertyHolder();
+		propertyUint32ArrayForeach(propHolder, OCCUPANT_GROUPS_ALT_PROP, &key, [this](uint32_t submenuId) { nonemptySubmenus.insert(submenuId); });
+		exemplar->Release();
+	}
+
+	bool isSubmenuEmptyUpdate(uint32_t buttonId)
+	{
+		if (nonemptySubmenus.contains(buttonId)) {
+			return false;
+		} else if (submenuChildren.contains(buttonId)) {
+			// If the menu contains only submenu buttons, we need to check recursively whether the nested menus are empty.
+			for (auto& childId : *(submenuChildren[buttonId])) {
+				if (!isSubmenuEmptyUpdate(childId)) {
+					nonemptySubmenus.insert(buttonId);
+					return false;
+				}
+			}
+			return true;
+		} else {
+			// submenu does not have child menus
+			return true;
+		}
+	}
+
+	bool isSubmenuReachableUpdate(uint32_t buttonId)
+	{
+		if (reachableSubmenus.contains(buttonId)) {
+			return true;
+		} else if (submenuLinks.contains(buttonId)) {
+			const uint32_t parentId = submenuLinks[buttonId];
+			if (isSubmenuReachableUpdate(parentId)) {
+				reachableSubmenus.insert(buttonId);
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;  // submenu without parent is not possible, so this buttonId is not a submenu
+		}
+	}
+
+	bool submenusInitialized = false;
+	void initializeSubmenus()
+	{
+		if (submenusInitialized) {  // TODO reinitialize for each city that is opened?
+			return;
+		}
+		cIGZPersistResourceManagerPtr pResMan;
+		cISC4AppPtr pApp;
+		if (!pResMan || !pApp)
+		{
+			return;
+		}
+		bool success = true;
+		Logger& logger = Logger::GetInstance();
+
+		// Parse all the item exemplars for submenu buttons, network items and flora items
+		// in order to determine which submenus are empty or are unreachable due to missing button exemplars.
+		for (const uint32_t itemGid : {(uint32_t)ITEM_EXEMPLAR_GID_MISC_CATALOG, (uint32_t)ITEM_EXEMPLAR_GID_FLORA})
+		{
+			cIGZPersistResourceKeyList* pResourceList = nullptr;
+			PersistResourceKeyFilterByTypeAndGroup* filter = new PersistResourceKeyFilterByTypeAndGroup(EXEMPLAR_TID, itemGid);
+			filter->AddRef();
+			pResMan->GetAvailableResourceList(&pResourceList, filter);
+			filter->Release();
+
+			pResourceList->AddRef();
+			if (pResourceList->Size() > 0)
+			{
+				pResourceList->EnumKeys([](auto key, void* pContext) {
+					auto this1 = reinterpret_cast<SubmenusDllDirector*>(pContext);
+					uint32_t itemGid = key.group;
+					cIGZPersistResourceManagerPtr pResMan;
+					cISCResExemplar* exemplar = nullptr;
+					// GetResource automatically adds a reference to the exemplar
+					pResMan->GetResource(key, kSC4ResExemplarID, reinterpret_cast<void**>(&exemplar), 0, nullptr);
+					auto propHolder = exemplar->AsISCPropertyHolder();
+
+					// check if item exemplar is a submenu button, network item or flora item
+					uint32_t propValueBuffer;
+					propHolder->GetProperty((uint32_t)ITEM_BUTTON_CLASS_PROP, propValueBuffer);
+					if (propValueBuffer == ITEM_BUTTON_CLASS_SUBMENU && itemGid == ITEM_EXEMPLAR_GID_MISC_CATALOG)
+					{
+						propHolder->GetProperty((uint32_t)ITEM_BUTTON_ID_PROP, propValueBuffer);
+						uint32_t buttonId = propValueBuffer;  // copy
+						propHolder->GetProperty((uint32_t)ITEM_SUBMENU_PARENT_ID_PROP, propValueBuffer);
+						uint32_t parentId = propValueBuffer;  // copy
+						if (buttonId != 0 && parentId != 0)
+						{
+							this1->submenuLinks[buttonId] = parentId;  // found valid submenu button, store it for later use
+							if (this1->submenuChildren.contains(parentId)) {
+								this1->submenuChildren[parentId]->insert(buttonId);
+							} else {
+								this1->submenuChildren[parentId] = new std::unordered_set<uint32_t>({buttonId});
+							}
+						}
+					}
+					else if (propValueBuffer == ITEM_BUTTON_CLASS_NETWORK && itemGid == ITEM_EXEMPLAR_GID_MISC_CATALOG
+							|| propValueBuffer == ITEM_BUTTON_CLASS_FLORA && itemGid == ITEM_EXEMPLAR_GID_FLORA)
+					{
+						propHolder->GetProperty((uint32_t)ITEM_SUBMENU_PARENT_ID_PROP, propValueBuffer);
+						if (propValueBuffer != 0)
+						{
+							uint32_t parentId = propValueBuffer;  // copy
+							this1->nonemptySubmenus.insert(parentId);  // found network or flora item
+						}
+					}
+
+					exemplar->Release();
+				}, this);
+			}
+			pResourceList->Release();
+		}
+
+		// Parse all the building exemplars in order to determine which submenus are not empty.
+		cISC4City* pCity = pApp->GetCity();
+		if (pCity)
+		{
+			pCity->AddRef();
+			cISC4BuildingDevelopmentSimulator* buildingDevSim = pCity->GetBuildingDevelopmentSimulator();
+			if (buildingDevSim)
+			{
+				buildingDevSim->AddRef();
+
+				uint32_t nCount;
+				success = buildingDevSim->GetAllBuildingTypes(nullptr, nCount);
+
+				if (success && nCount > 0)
+				{
+					uint32_t* buildingTypes{ new uint32_t[nCount]{} };  // TODO consider using eastl::vector
+					uint32_t nCount2;
+					success = buildingDevSim->GetAllBuildingTypes(buildingTypes, nCount2);
+					if (nCount2 != nCount || !success)  // should not happen
+					{
+						logger.WriteLineFormatted(LogLevel::Error, "Length mismatch of building-type arrays: %d vs %d", nCount, nCount2);
+					}
+					else
+					{
+						for (auto i = 0; i < nCount; i++)
+						{
+							initializeSubmenusFromBuilding(buildingDevSim, buildingTypes[i]);
+						}
+
+					}
+
+					delete[] buildingTypes;
+					buildingTypes = nullptr;
+				}
+
+				buildingDevSim->Release();
+			}
+			pCity->Release();
+		}
+
+		// Now that we know all submenu IDs, we recursively update nonemptySubmenus to cover the case in which a menu contains only empty submenus.
+		uint32_t numNonReachable = 0;
+		for (auto&& p : submenuLinks)
+		{
+			auto buttonId = p.first;
+			bool isEmpty = isSubmenuEmptyUpdate(buttonId);  // updates nonemptySubmenus if non-empty
+			if (isEmpty) {
+				emptySubmenus.insert(buttonId);
+				logger.WriteLineFormatted(LogLevel::Info, "Hiding empty submenu with Button ID 0x%08X", buttonId);
+			}
+			bool isReachable = isSubmenuReachableUpdate(buttonId);  // updates reachableSubmenus
+			if (!isReachable) {
+				numNonReachable++;
+				logger.WriteLineFormatted(LogLevel::Info, "Submenu with Button ID 0x%08X does not exist or is not reachable from top-level menus", buttonId);
+			}
+		}
+
+		logger.WriteLineFormatted(LogLevel::Info,
+			"Initialized %d submenus (%d empty, %d not reachable)",
+			submenuLinks.size(), emptySubmenus.size(), numNonReachable);
+		submenusInitialized = true;
+	}
+
 	bool DoMessage(cIGZMessage2* pMsg)
 	{
 		cIGZMessage2Standard* pStandardMessage = static_cast<cIGZMessage2Standard*>(pMsg);
@@ -989,6 +1296,9 @@ public:
 		switch (msgType)
 		{
 		case kSC4MessagePostCityInit:
+			initializeSubmenus();
+			clearState();
+			break;
 		case kSC4MessagePostCityShutdown:
 			clearState();
 			break;
