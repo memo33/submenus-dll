@@ -318,10 +318,10 @@ submenuButton:
 			// check presence of alt OG property
 			push ecx;  // store
 			push edx;  // store
-			mov edx, dword ptr [edi];
+			mov edx, dword ptr [edi];  // edi: cISCPropertyHolder*, edx: cISCPropertyHolder::vftable*, [edx+0xc]: HasProperty
 			push OCCUPANT_GROUPS_ALT_PROP;
-			mov ecx, edi;
-			call dword ptr [edx + 0xc];  // HasProperty
+			mov ecx, edi;  // (this)
+			call dword ptr [edx + 0xc];  // HasProperty (thiscall)
 			pop edx;  // restore
 			pop ecx;  // restore
 
@@ -439,7 +439,7 @@ rest:
 			push edx;  // store
 			push esi;  // physicalButtonId
 			push dword ptr [ebp + 0x204];  // openMenuId
-			call getMenuLayer;
+			call getMenuLayer;  // (cdecl)
 			add esp, 0x8;
 			cmp eax, 0;  // menu should be closed; this only happens in case the top-level menu is open, so can be ignored
 			je skip2;
@@ -553,7 +553,7 @@ commonCall:
 			push ebp;
 			push ecx;
 			mov eax, dword ptr [nSC4UI_CreateCatalogItemList];
-			call eax;
+			call eax;  // (cdecl)
 			add esp, 0x18;
 
 skipSubmenu:
@@ -571,7 +571,7 @@ skipSubmenu:
 			push ebp;
 			push ecx;
 			mov eax, dword ptr [nSC4UI_CreateCatalogItemList];
-			call eax;
+			call eax;  // (cdecl)
 			add esp, 0x18;
 
 skipFlora:
@@ -603,7 +603,7 @@ addNetworkItems:
 			push ebp;
 			push ecx;
 			mov eax,dword ptr [nSC4UI_CreateCatalogItemList];
-			call eax;
+			call eax;  // (cdecl)
 			add esp, 0x18;
 
 skipNetworkItems:
@@ -619,7 +619,7 @@ skipNetworkItems:
 	{
 		__asm {
 			mov eax, dword ptr [nSC4UI_CreateCatalogItemList];
-			call eax;
+			call eax;  // (cdecl)
 
 			// check if we come from flora menu
 			mov eax, dword ptr [esp + 0x3c];
@@ -646,7 +646,7 @@ addSubmenu:
 			push ebp;
 			push edx;
 			mov eax, dword ptr [nSC4UI_CreateCatalogItemList];
-			call eax;
+			call eax;  // (cdecl)
 
 skipSubmenu:
 			push CreateCatalogView_ContinueJump;
@@ -679,7 +679,7 @@ skipSubmenu:
 	{
 		__asm {
 			push eax;  // store
-			call clearItemListIIDs;
+			call clearItemListIIDs;  // (cdecl)
 			pop eax;  // restore
 			mov ecx, dword ptr [esp + 0x18];
 			mov edx, dword ptr [ecx];
@@ -698,14 +698,14 @@ skipSubmenu:
 			push eax;  // store
 			push edx;  // store
 			push ecx;
-			call addToItemList;
+			call addToItemList;  // (cdecl)
 			add esp, 0x4;
 			mov byte ptr [shouldDiscardItem], al;  // for later use
 			pop edx;  // restore
 			pop eax;  // restore
 
-			mov ecx, esi;
-			call dword ptr [edi + 0xc];
+			mov ecx, esi;  // (this)
+			call dword ptr [edi + 0xc];  // (thiscall)
 			push CreateCatalogItemList3_ContinueJump;
 			ret;
 		}
@@ -734,8 +734,8 @@ checkSubmenuOrNetworkInSubmenu:
 			mov edx, dword ptr [edi];
 			mov eax, ITEM_BUTTON_CLASS_PROP;
 			push eax;
-			mov ecx, edi;
-			call dword ptr [edx + 0xc];
+			mov ecx, edi;  // (this)
+			call dword ptr [edx + 0xc];  // HasProperty (thiscall)
 			test al, al;
 			jz discardItem;  // if it does not have the property
 
@@ -745,7 +745,7 @@ checkSubmenuOrNetworkInSubmenu:
 			push ITEM_BUTTON_CLASS_PROP;
 			push edi;
 			mov eax, dword ptr [cSCPropertyHelp_GetPropertyValue];  // result is stored in submenuPropValue
-			call eax;
+			call eax;  // (cdecl)
 			add esp, 0xc;
 
 			mov eax, dword ptr [esp + 0x64];  // param_6: desired property value
@@ -841,9 +841,9 @@ noTransportExtraMatch:
 			push eax;
 			lea eax, [esp + 0x14];
 			push eax;
-			lea ecx, [esp + 0x20];
+			lea ecx, [esp + 0x20];  // (this)
 			mov eax, dword ptr [DoTransportMenu_addOG];
-			call eax;
+			call eax;  // (thiscall)
 			xor ecx, ecx;  // network menu group = 0, so no network tools or puzzle pieces in this menu
 
 			// store new menu layer on stack
@@ -851,11 +851,11 @@ noTransportExtraMatch:
 			push edx;  // store
 			push dword ptr [occupantGroup];
 			push dword ptr [lastPhysicalButtonId];
-			call storeMenuLayer;
+			call storeMenuLayer;  // (cdecl)
 			add esp, 0x8;
 			// get cached catalog state or allocate it
 			push dword ptr [occupantGroup];
-			call getVirtualButtonCatalogState;
+			call getVirtualButtonCatalogState;  // (cdecl)
 			add esp, 0x4;
 			pop edx;  // restore
 			pop ecx;  // restore
