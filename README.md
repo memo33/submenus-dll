@@ -64,7 +64,6 @@ Additionally, adjust the property
 The following property is required, but does not usually need to be changed:
 
 - `Item Button Class` (0x8a2602cc): set to `1 = Submenu Button`.
-  (For network or flora items in submenus, this is set to `2 = Network Item in Submenu` or `4 = Flora Item in Submenu` instead.)
 
 The following table lists the Button IDs for existing menus.
 The Occupant Groups are used as fallback to add buildings to a specific top-level menu if the DLL is not present.
@@ -94,6 +93,12 @@ The Occupant Groups are used as fallback to add buildings to a specific top-leve
     Plazas          , 0xeb75882c          , -
     Sports Grounds  , 0xce21dbeb          , -
     Green Spaces    , 0xbf776d40          , -
+
+### Adding flora or network items to a submenu
+
+Add the properties `Item Submenu Parent ID` and `Item Button Class` to the catalog item Exemplar.
+The latter property is set to `2 = Network Item in Submenu` or `4 = Flora Item in Submenu`.
+(The `Building Submenus` property is not used for these items.)
 
 ### Additional resources
 
