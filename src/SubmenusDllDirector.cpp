@@ -45,6 +45,10 @@
 #include "cISC4City.h"
 #include "cISC4App.h"
 #include "PersistResourceKeyFilterByTypeAndGroup.h"
+#include "cIExemplarLoadHookServer.h"
+#include "ExemplarPatcher.h"
+#include "cRZAutoRefCount.h"
+
 
 #ifdef __clang__
 #define NAKED_FUN __attribute__((naked))
@@ -115,8 +119,6 @@
 #define ITEM_EXEMPLAR_GID_FLORA 0xe83e0437
 #define EXEMPLAR_TID 0x6534284a
 
-
-static constexpr uint32_t kSC4ResExemplarID = 0xa52160f5;  // TODO GZCLSID, GZIID?
 
 static constexpr uint32_t kSubmenusDllDirectorID = 0xc0583f3b;
 
@@ -391,12 +393,12 @@ submenuButton:
 					if (keyOrNull) {
 						Logger::GetInstance().WriteLineFormatted(
 								LogLevel::Error,
-								"Property 0x%08X requires type Uint32Array or Uint32: T:0x%08X G:0x%08X I:0x%08X",
+								"Property 0x%08X requires type Uint32Array or Uint32: T:0x%08X G:0x%08X I:0x%08X.",
 								propertyId, keyOrNull->type, keyOrNull->group, keyOrNull->instance);
 					} else {
 						Logger::GetInstance().WriteLineFormatted(
 								LogLevel::Error,
-								"Property 0x%08X requires type Uint32Array or Uint32",
+								"Property 0x%08X requires type Uint32Array or Uint32.",
 								propertyId);
 					}
 					break;
@@ -1109,7 +1111,7 @@ public:
 
 		cISCResExemplar* exemplar = nullptr;
 		// GetResource automatically adds a reference to the exemplar
-		pResMan->GetResource(key, kSC4ResExemplarID, reinterpret_cast<void**>(&exemplar), 0, nullptr);
+		pResMan->GetResource(key, GZIID_cISCResExemplar, reinterpret_cast<void**>(&exemplar), 0, nullptr);
 
 		auto propHolder = exemplar->AsISCPropertyHolder();
 		propertyUint32ArrayForeach(propHolder, OCCUPANT_GROUPS_ALT_PROP, &key, [this](uint32_t submenuId) { nonemptySubmenus.insert(submenuId); });
@@ -1122,7 +1124,7 @@ public:
 			return false;
 		} else if (submenuChildren.contains(buttonId)) {
 			// If the menu contains only submenu buttons, we need to check recursively whether the nested menus are empty.
-			for (auto& childId : *(submenuChildren[buttonId])) {
+			for (auto&& childId : *(submenuChildren[buttonId])) {
 				if (!isSubmenuEmptyUpdate(childId)) {
 					nonemptySubmenus.insert(buttonId);
 					return false;
@@ -1180,13 +1182,13 @@ public:
 			pResourceList->AddRef();
 			if (pResourceList->Size() > 0)
 			{
-				pResourceList->EnumKeys([](auto key, void* pContext) {
-					auto this1 = reinterpret_cast<SubmenusDllDirector*>(pContext);
+				pResourceList->EnumKeys([](const auto& key, void* pContext) {
+					auto this1 = static_cast<SubmenusDllDirector*>(pContext);
 					uint32_t itemGid = key.group;
 					cIGZPersistResourceManagerPtr pResMan;
 					cISCResExemplar* exemplar = nullptr;
 					// GetResource automatically adds a reference to the exemplar
-					pResMan->GetResource(key, kSC4ResExemplarID, reinterpret_cast<void**>(&exemplar), 0, nullptr);
+					pResMan->GetResource(key, GZIID_cISCResExemplar, reinterpret_cast<void**>(&exemplar), 0, nullptr);
 					auto propHolder = exemplar->AsISCPropertyHolder();
 
 					// check if item exemplar is a submenu button, network item or flora item
@@ -1245,7 +1247,7 @@ public:
 					success = buildingDevSim->GetAllBuildingTypes(buildingTypes, nCount2);
 					if (nCount2 != nCount || !success)  // should not happen
 					{
-						logger.WriteLineFormatted(LogLevel::Error, "Length mismatch of building-type arrays: %d vs %d", nCount, nCount2);
+						logger.WriteLineFormatted(LogLevel::Error, "Length mismatch of building-type arrays: %d vs %d.", nCount, nCount2);
 					}
 					else
 					{
@@ -1273,17 +1275,17 @@ public:
 			bool isEmpty = isSubmenuEmptyUpdate(buttonId);  // updates nonemptySubmenus if non-empty
 			if (isEmpty) {
 				emptySubmenus.insert(buttonId);
-				logger.WriteLineFormatted(LogLevel::Info, "Hiding empty submenu with Button ID 0x%08X", buttonId);
+				logger.WriteLineFormatted(LogLevel::Info, "Hiding empty submenu with Button ID 0x%08X.", buttonId);
 			}
 			bool isReachable = isSubmenuReachableUpdate(buttonId);  // updates reachableSubmenus
 			if (!isReachable) {
 				numNonReachable++;
-				logger.WriteLineFormatted(LogLevel::Info, "Submenu with Button ID 0x%08X does not exist or is not reachable from top-level menus", buttonId);
+				logger.WriteLineFormatted(LogLevel::Info, "Submenu with Button ID 0x%08X does not exist or is not reachable from top-level menus.", buttonId);
 			}
 		}
 
 		logger.WriteLineFormatted(LogLevel::Info,
-			"Initialized %d submenus (%d empty, %d not reachable)",
+			"Initialized %d submenus (%d empty, %d not reachable).",
 			submenuLinks.size(), emptySubmenus.size(), numNonReachable);
 		submenusInitialized = true;
 	}
@@ -1305,6 +1307,34 @@ public:
 		}
 
 		return true;
+	}
+
+	bool PreAppInit()
+	{
+		if (exemplarPatcher) {
+			return false;
+		} else {
+			cIGZCOM* const pCOM = GZCOM();
+			cRZAutoRefCount<cIExemplarLoadHookServer> exemplarLoadHookServer;
+			Logger& logger = Logger::GetInstance();
+
+			// Get an instance of the cIExemplarLoadHookServer class from GZCOM.
+			if (pCOM->GetClassObject(
+				GZCLSID_cIExemplarLoadHookServer,
+				GZIID_cIExemplarLoadHookServer,
+				exemplarLoadHookServer.AsPPVoid()))
+			{
+				exemplarPatcher = new ExemplarPatcher();
+				exemplarLoadHookServer->AddLoadNotification(exemplarPatcher);
+				logger.WriteLine(LogLevel::Info, "Installed the Exemplar Patching feature.");
+			}
+			else
+			{
+				logger.WriteLine(LogLevel::Error, "Failed to reach the Exemplar-load-hook server. Please install the SC4ResourceLoadingHooks DLL:\n\n  https://github.com/0xC0000054/sc4-resource-loading-hooks/releases\n");
+			}
+
+			return true;
+		}
 	}
 
 	bool PostAppInit()
@@ -1331,6 +1361,11 @@ public:
 		{
 			logger.WriteLine(LogLevel::Error, "Failed to subscribe to the required notifications.");
 			return false;
+		}
+
+		if (exemplarPatcher)
+		{
+			exemplarPatcher->LoadPatches();
 		}
 
 		return true;
@@ -1370,6 +1405,8 @@ public:
 private:
 
 	const SC4VersionDetection versionDetection;
+
+	ExemplarPatcher* exemplarPatcher = nullptr;
 };
 
 cRZCOMDllDirector* RZGetCOMDllDirector() {
