@@ -7,6 +7,7 @@ Submenus for SimCity 4.
 - enables submenu functionality: This DLL is a dependency for other submenu-compatible plugins.
 - adds submenus for Plazas, Green Spaces and Sports Grounds to the Parks menu
 - fixes the game's duplicate menu icons bug that occurs when loading some plugins, such as the NAM, twice
+- implements Exemplar Patching functionality
 
 ## System requirements
 
@@ -14,9 +15,13 @@ Submenus for SimCity 4.
   ([more info](https://community.simtropolis.com/forums/topic/762980-the-future-of-sc4-modding-the-matter-of-digital-vs-disc-and-windows-vs-macos-in-the-dll-era/))
 - Windows 7+ or Linux
 
+## Dependencies
+
+- [SC4ResourceLoadingHooks DLL](https://github.com/0xC0000054/sc4-resource-loading-hooks/releases)
+
 ## Installation
 
-- Copy the DLL into the top-level directory of either Plugins folder
+- Copy the DLLs into the top-level directory of either Plugins folder
   (place it directly in `<Documents>\SimCity 4\Plugins` or `<SC4 install folder>\Plugins`, not in a subfolder).
 - Copy the file `parks-submenus.dat` anywhere into your Plugins folder.
 
@@ -51,6 +56,10 @@ To make a building appear in a submenu, add the following property to its buildi
 
 Without the DLL or if the submenu does not exist or is not installed,
 the building instead appears in the original menu as defined by the `OccupantGroups` property (see table below).
+
+(Instead of modifying the building exemplars directly, you may use Exemplar patching to change Exemplar files (see below).
+This is useful if you are not the owner of the Exemplar files you want to change, as it does not alter the original files,
+so this can help avoid some conflicts.)
 
 ### Creating a new submenu button
 
@@ -103,9 +112,44 @@ Add the properties `Item Submenu Parent ID` and `Item Button Class` to the catal
 The latter property is set to `2 = Network Item in Submenu` or `4 = Flora Item in Submenu`.
 (The `Building Submenus` property is not used for these items.)
 
+### Exemplar patching
+
+Exemplar patching is a technique to change the behavior of Exemplar files on-the-fly at runtime, without altering the original DBPF files.
+An **Exemplar Patch** is a Cohort file with Group ID 0xb03697d1 (and arbitrary Instance ID) containing the property:
+
+- `Exemplar Patch Targets` (0x0062e78a): list of Exemplar files this patch applies to
+  (format: Group ID 1, Instance ID 1, Group ID 2, Instance ID 2,…).
+  The list must contain an even number of IDs.
+
+All the other properties of the Cohort file (except for `Exemplar Name`) are injected into these target Exemplar files
+whenever the game loads an Exemplar file from this list.
+This allows to add or overwrite specific properties of Exemplar files without affecting any unrelated properties.
+
+You can think of an Exemplar Patch as a "Child Cohort" file, mirroring the usual Parent Cohort structure.
+An Exemplar Patch can target multiple Exemplar files simultaneously.
+Conversely, multiple Exemplar Patches can be applied to the same Exemplar file.
+
+
+                Parent Cohort
+                 /        \
+                /          \
+               /            \
+              /              \
+       Exemplar A          Exemplar B
+           |   \_____       /   |
+           |    _____\_____/    |
+           |   /      \______   |
+           |  /              \  |
+    Exemplar Patch 1     Exemplar Patch 2
+
+
+If two Cohort files have the same Instance ID, only the one loading last has an effect.
+Therefore, you should usually change the Instance ID whenever you copy an existing Exemplar Patch Cohort file.
+
+
 ### Additional resources
 
-- [new_properties.xml](https://github.com/memo33/submenus-dll/blob/main/vendor/new_properties.xml) ([diff](https://github.com/memo33/submenus-dll/compare/2e0caee0278d5f4106eca76b797ed323505eef3e..HEAD#diff-95420378434ddd70a81640150126a3fc1e232bf860080961df62d888a2cc4d8b))
+- [new_properties.xml](vendor/new_properties.xml) ([diff](https://github.com/memo33/submenus-dll/compare/2e0caee0278d5f4106eca76b797ed323505eef3e..HEAD#diff-95420378434ddd70a81640150126a3fc1e232bf860080961df62d888a2cc4d8b))
   adds names for the new properties to ILive's Reader 1.5.4 if you replace this file located in the Reader install directory
 - submenu [icon template](https://github.com/memo33/submenus-dll/releases/tag/1.0.0) for use with GIMP
 
@@ -132,3 +176,4 @@ See [LICENSE.txt](LICENSE.txt) for more information.
 - [Windows Implementation Library](https://github.com/microsoft/wil) MIT License
 - [SC4Fix](https://github.com/nsgomez/sc4fix) MIT License
 - [NAM-dll](https://github.com/NAMTeam/nam-dll) LGPL 3.0
+- [SC4ResourceLoadingHooks](https://github.com/0xC0000054/sc4-resource-loading-hooks) MIT License
