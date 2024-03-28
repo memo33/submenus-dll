@@ -161,6 +161,7 @@ Therefore, you should usually change the Instance ID whenever you copy an existi
 The DLL is compiled using `clang` as a cross-compiler.
 Check the [Makefile](Makefile) for details.
 ```
+git submodule update --init
 make
 ```
 The source code is mostly compatible with the MSVC compiler as well, but some tweaks may be needed for that.

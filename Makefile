@@ -24,10 +24,10 @@ compile:
 		/D "_WIN32" /D "NDEBUG" /D "_UNICODE" /D "UNICODE" \
 		/D "_USRDLL" /D "_WINDLL" \
 		/imsvc ../vendor/xwin/crt/include /imsvc ../vendor/xwin/sdk/include/ucrt /imsvc ../vendor/xwin/sdk/include/um /imsvc ../vendor/xwin/sdk/include/shared \
-		/I ../vendor/gzcom-dll/include \
+		/I ../vendor/gzcom-dll/gzcom-dll/include \
 		/I ../vendor/wil/include \
 		/I ../vendor/sc4-resource-loading-hooks/src/public/include \
-		/o memo.submenus.dll ./*.cpp ../vendor/gzcom-dll/src/* \
+		/o memo.submenus.dll ./*.cpp ../vendor/gzcom-dll/gzcom-dll/src/{cRZCOMDllDirector,cRZBaseString}.cpp \
 		/link /libpath:../vendor/xwin/crt/lib/x86 /libpath:../vendor/xwin/sdk/lib/um/x86 /libpath:../vendor/xwin/sdk/lib/ucrt/x86 \
 		version.lib ole32.lib
 #
