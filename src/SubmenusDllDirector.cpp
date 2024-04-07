@@ -47,7 +47,10 @@
 #include "PersistResourceKeyFilterByTypeAndGroup.h"
 #include "cIExemplarLoadHookServer.h"
 #include "ExemplarPatcher.h"
+#include "PropertyUtil.h"
 #include "cRZAutoRefCount.h"
+#include "MenuIds.h"
+#include "Categorization.h"
 
 
 #ifdef __clang__
@@ -85,30 +88,6 @@
 #define TRANSPORT_MENU_ID 0x14215ed2
 #define UTILITY_MENU_ID 0x14215ed3
 #define CIVIC_MENU_ID 0x14215ed4
-
-// static menu button IDs
-#define FLORA_BUTTON_ID 0x4a22ea06
-#define ZONE_R_BUTTON_ID 0x29920899
-#define ZONE_C_BUTTON_ID 0xa998af42
-#define ZONE_I_BUTTON_ID 0xc998af00
-#define ROADWAY_BUTTON_ID 0x6999bf56
-#define HIGHWAY_BUTTON_ID 0x31
-#define RAIL_BUTTON_ID 0x29
-#define MISCTRANSP_BUTTON_ID 0x299237bf
-#define AIRPORT_BUTTON_ID 0xe99234b3
-#define SEAPORT_BUTTON_ID 0xa99234a6
-#define POWER_BUTTON_ID 0x35
-#define WATER_BUTTON_ID 0x39
-#define GARBAGE_BUTTON_ID 0x40
-#define POLICE_BUTTON_ID 0x37
-#define FIRE_BUTTON_ID 0x38
-#define EDUCATION_BUTTON_ID 0x42
-#define HEALTH_BUTTON_ID 0x89dd5405
-#define LANDMARK_BUTTON_ID 0x09930709
-#define REWARD_BUTTON_ID 0x34
-#define PARK_BUTTON_ID 0x3
-
-#define NAM_CONTROLLER_MARKER_BUTTON_ID 0x6a47ffff
 
 // item types of menu items
 #define TOOL_PLOP_NETWORK 0x4a2b2467
@@ -160,8 +139,10 @@ static uint32_t DoTransportMenuTarget2_ContinueJump = 0x7f3d70;
 static uint32_t HandleButtonActivatedReopen_InjectPoint = 0x7f46a3;
 static uint32_t HandleButtonActivatedReopen_ContinueJump = 0x7f46aa;
 
-static uint32_t AddBuildingsToItemList_InjectPoint = 0x7f0073;
-static uint32_t AddBuildingsToItemList_ContinueJump = 0x7f0078;
+static constexpr uint32_t AddBuildingsToItemList_InjectPoint = 0x7f0073;
+static constexpr uint32_t AddBuildingsToItemList_ContinueJump_Skip = 0x7f065b;
+static constexpr uint32_t AddBuildingsToItemList_ContinueJump_Keep = 0x7f0194;
+static constexpr uint32_t AddBuildingsToItemList_ContinueJump_UseOrigProp = 0x7f0078;
 
 static uint32_t CreateBuildingMenu_InjectPoint = 0x7f074e;
 static uint32_t CreateBuildingMenu_ContinueJump = 0x7f0756;
@@ -197,6 +178,8 @@ std::unordered_set<uint32_t> itemListIIDs = {};
 
 bool shouldDiscardItem = 0;
 
+
+static Categorization* spCategorization = nullptr;
 
 namespace
 {
@@ -305,28 +288,7 @@ namespace
 	}
 
 	std::unordered_set<uint32_t> emptySubmenus = {};
-	std::unordered_set<uint32_t> reachableSubmenus = {  // initially just the top-level menus, submenus are added later
-		FLORA_BUTTON_ID,
-		ZONE_R_BUTTON_ID,
-		ZONE_C_BUTTON_ID,
-		ZONE_I_BUTTON_ID,
-		ROADWAY_BUTTON_ID,
-		HIGHWAY_BUTTON_ID,
-		RAIL_BUTTON_ID,
-		MISCTRANSP_BUTTON_ID,
-		AIRPORT_BUTTON_ID,
-		SEAPORT_BUTTON_ID,
-		POWER_BUTTON_ID,
-		WATER_BUTTON_ID,
-		GARBAGE_BUTTON_ID,
-		POLICE_BUTTON_ID,
-		FIRE_BUTTON_ID,
-		EDUCATION_BUTTON_ID,
-		HEALTH_BUTTON_ID,
-		LANDMARK_BUTTON_ID,
-		REWARD_BUTTON_ID,
-		PARK_BUTTON_ID
-	};
+	std::unordered_set<uint32_t> reachableSubmenus(Categorization::toplevelMenuButtons);  // initially just the top-level menus, submenus are added later
 
 	// returns false if item is not a submenu
 	bool isEmptySubmenu(const uint32_t buttonId)
@@ -362,88 +324,54 @@ submenuButton:
 		}
 	}
 
-	template <typename F>
-	void propertyUint32ArrayForeach(cISCPropertyHolder* propHolder, const uint32_t propertyId, const cGZPersistResourceKey* keyOrNull, F&& callback)
+	Categorization::TriState call_belongsToMenu(cISCPropertyHolder* propHolder, uint32_t menuId)
 	{
-		if (propHolder->HasProperty((uint32_t)propertyId))
-		{
-			auto property = propHolder->GetProperty((uint32_t)propertyId);
-			property->AddRef();
-			const auto variant = property->GetPropertyValue();
-			variant->AddRef();
-			switch (variant->GetType())
-			{
-				case cIGZVariant::Type::Uint32:
-					uint32_t value;
-					variant->GetValUint32(value);
-					callback(value);
-					break;
-				case cIGZVariant::Type::Uint32Array:
-					uint32_t reps;
-					reps = variant->GetCount();
-					if (reps > 0) {
-						uint32_t* values = variant->RefUint32();
-						for (uint32_t j = 0; j < reps; j++) {
-							uint32_t value = values[j];  // it's important to create a copy
-							callback(value);
-						}
-					}
-					break;
-				default:
-					if (keyOrNull) {
-						Logger::GetInstance().WriteLineFormatted(
-								LogLevel::Error,
-								"Property 0x%08X requires type Uint32Array or Uint32: T:0x%08X G:0x%08X I:0x%08X.",
-								propertyId, keyOrNull->type, keyOrNull->group, keyOrNull->instance);
-					} else {
-						Logger::GetInstance().WriteLineFormatted(
-								LogLevel::Error,
-								"Property 0x%08X requires type Uint32Array or Uint32.",
-								propertyId);
-					}
-					break;
-			}
-			variant->Release();
-			property->Release();
-		}
+		return spCategorization->belongsToMenu(propHolder, menuId);
 	}
 
-	bool shouldUseBuildingSubmenusProperty(cISCPropertyHolder* propHolder)
-	{
-		bool existsReachableSubmenu = false;
-		propertyUint32ArrayForeach(propHolder, OCCUPANT_GROUPS_ALT_PROP, nullptr, [&existsReachableSubmenu](uint32_t submenuId) {
-			existsReachableSubmenu |= reachableSubmenus.contains(submenuId);
-		});
-		return existsReachableSubmenu;
-	}
-
-	// If OCCUPANT_GROUPS_ALT_PROP is present, use it in place of OCCUPANT_GROUPS_PROP for the purpose of building the menu.
-	// This allows displaying items in different menus depending on whether DLL is loaded or not.
+	// Determine whether the current building should be added to the menu or not, based on its building exemplar data.
+	// This takes into account whether menus are non-reachable or empty and also auto-categorizes some buildings without submenu.
 	void NAKED_FUN Hook_AddBuildingsToItemList(void)
 	{
 		__asm {
+			// edi contains cISCPropertyHolder*
 			push eax;  // store
-
 			push ecx;  // store
 			push edx;  // store
+
+			// choose between top-level menuId and submenuId argument
+			cmp dword ptr [lastVirtualButtonId], VIRTUAL_SUBMENU_ITEM_TYPE;
+			je pushSubmenuId;
+			push dword ptr [lastVirtualButtonId];  // top-level menuId
+			jmp afterMenuId;
+pushSubmenuId:
+			push dword ptr [occupantGroup];  // submenuId
+afterMenuId:
 			push edi;  // cISCPropertyHolder*
-			call shouldUseBuildingSubmenusProperty;  // (cdecl)
-			add esp, 0x4;
+			call call_belongsToMenu; // (cdecl)
+			add esp, 0x8;
 			pop edx;  // restore
 			pop ecx;  // restore
 
-			test al, al;
-			jz useRegularOG;
+			cmp al, Categorization::TriState::No;
+			je skip;
+			cmp al, Categorization::TriState::Yes;
+			je keep;
+			// else Categorization::TriState::Maybe, so use original occupant groups evaluation code
 
-			// use alt OG (building submenus property)
-			pop eax;  // restore
-			push OCCUPANT_GROUPS_ALT_PROP;
-			push AddBuildingsToItemList_ContinueJump;
-			ret;
-useRegularOG:
 			pop eax;  // restore
 			push OCCUPANT_GROUPS_PROP;
-			push AddBuildingsToItemList_ContinueJump;
+			push AddBuildingsToItemList_ContinueJump_UseOrigProp;
+			ret;
+
+skip:
+			pop eax;  // restore
+			push AddBuildingsToItemList_ContinueJump_Skip;
+			ret;
+
+keep:
+			pop eax;  // restore
+			push AddBuildingsToItemList_ContinueJump_Keep;
 			ret;
 		}
 	}
@@ -1062,7 +990,7 @@ class SubmenusDllDirector final : public cRZMessage2COMDirector
 {
 public:
 
-	SubmenusDllDirector()
+	SubmenusDllDirector() : categorization(Categorization(&reachableSubmenus))
 	{
 		std::filesystem::path dllFolderPath = GetDllFolderPath();
 
@@ -1072,6 +1000,8 @@ public:
 		Logger& logger = Logger::GetInstance();
 		logger.Init(logFilePath, LogLevel::Error);
 		logger.WriteLogFileHeader("Submenus DLL " PLUGIN_VERSION_STR);
+
+		spCategorization = &categorization;
 	}
 
 	uint32_t GetDirectorID() const
@@ -1114,7 +1044,16 @@ public:
 		pResMan->GetResource(key, GZIID_cISCResExemplar, reinterpret_cast<void**>(&exemplar), 0, nullptr);
 
 		auto propHolder = exemplar->AsISCPropertyHolder();
-		propertyUint32ArrayForeach(propHolder, OCCUPANT_GROUPS_ALT_PROP, &key, [this](uint32_t submenuId) { nonemptySubmenus.insert(submenuId); });
+		PropertyUtil::arrayForeach(propHolder, OCCUPANT_GROUPS_ALT_PROP, &key, [this](uint32_t submenuId) { nonemptySubmenus.insert(submenuId); });
+
+		// Auto-filled submenus can be non-empty, despite not having buildings with the corresponding submenu parent property.
+		// TODO Here we could save some cycles by iterating only over the autoPrefilledSubmenus that have not been inserted yet.
+		for (auto&& submenuId : Categorization::autoPrefilledSubmenus) {
+			if (!nonemptySubmenus.contains(submenuId) && categorization.belongsToSubmenu(propHolder, submenuId)) {
+				nonemptySubmenus.insert(submenuId);
+			}
+		}
+
 		exemplar->Release();
 	}
 
@@ -1227,7 +1166,21 @@ public:
 			pResourceList->Release();
 		}
 
-		// Parse all the building exemplars in order to determine which submenus are not empty.
+		// Now that we know all submenu IDs, we recursively update reachableSubmenus to determine which buildings must appear in their default menu instead
+		uint32_t numNonReachable = 0;
+		for (auto&& p : submenuLinks)
+		{
+			auto buttonId = p.first;
+			bool isReachable = isSubmenuReachableUpdate(buttonId);  // updates reachableSubmenus
+			if (!isReachable) {
+				numNonReachable++;
+				logger.WriteLineFormatted(LogLevel::Info, "Submenu with Button ID 0x%08X does not exist or is not reachable from top-level menus.", buttonId);
+			}
+		}
+
+		// Now that we know which submenus are installed and reachable,
+		// we parse all building exemplars to check which submenus are empty in order to hide them.
+		// Auto-filled submenus can be non-empty, despite not having buildings with the corresponding submenu parent property.
 		cISC4City* pCity = pApp->GetCity();
 		if (pCity)
 		{
@@ -1267,8 +1220,7 @@ public:
 			pCity->Release();
 		}
 
-		// Now that we know all submenu IDs, we recursively update nonemptySubmenus to cover the case in which a menu contains only empty submenus.
-		uint32_t numNonReachable = 0;
+		// We recursively update nonemptySubmenus to cover the case in which a menu contains only empty submenus.
 		for (auto&& p : submenuLinks)
 		{
 			auto buttonId = p.first;
@@ -1276,11 +1228,6 @@ public:
 			if (isEmpty) {
 				emptySubmenus.insert(buttonId);
 				logger.WriteLineFormatted(LogLevel::Info, "Hiding empty submenu with Button ID 0x%08X.", buttonId);
-			}
-			bool isReachable = isSubmenuReachableUpdate(buttonId);  // updates reachableSubmenus
-			if (!isReachable) {
-				numNonReachable++;
-				logger.WriteLineFormatted(LogLevel::Info, "Submenu with Button ID 0x%08X does not exist or is not reachable from top-level menus.", buttonId);
 			}
 		}
 
@@ -1407,6 +1354,8 @@ private:
 	const SC4VersionDetection versionDetection;
 
 	ExemplarPatcher* exemplarPatcher = nullptr;
+
+	Categorization categorization;
 };
 
 cRZCOMDllDirector* RZGetCOMDllDirector() {
