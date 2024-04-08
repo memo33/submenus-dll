@@ -28,8 +28,11 @@
 static constexpr uint32_t occupantGroupsPropId = 0xaa1dd396;
 static constexpr uint32_t itemSubmenuParentPropId = 0xaa1dd399;  // occupantGroupsAltPropId
 static constexpr uint32_t capacitySatisfiedPropId = 0x27812834;
+static constexpr uint32_t budgetItemDepartmentPropId = 0xea54d283;
+static constexpr uint32_t budgetItemDepartmentProp_HealthCoverage = 0xaa538cb3;
 
 static constexpr uint32_t educationButtonId = EDUCATION_BUTTON_ID;
+static constexpr uint32_t healthButtonId = HEALTH_BUTTON_ID;
 static constexpr uint32_t landmarkButtonId = LANDMARK_BUTTON_ID;
 
 static constexpr uint32_t schoolOG = 0x1503;  // there is no dedicated education OG
@@ -39,6 +42,11 @@ static constexpr uint32_t museumOG = 0x1506;
 static constexpr uint32_t schoolElementaryOG = 0x150F;
 static constexpr uint32_t schoolHighOG = 0x1510;
 static constexpr uint32_t schoolPrivateOG = 0x1514;
+
+static constexpr uint32_t healthOG = 0x1507;
+static constexpr uint32_t hospitalOG = 0x1513;
+static constexpr uint32_t largeHealthOG = 0x151a;
+static constexpr uint32_t healthOtherOG = 0x151c;
 
 static constexpr uint32_t landmarkOG = 0x150a;
 static constexpr uint32_t cs1OG = 0x13110;
@@ -55,6 +63,10 @@ static constexpr uint32_t elementarySchoolSubmenuId = 0x9FE5C428;
 static constexpr uint32_t highSchoolSubmenuId = 0xA08063D0;
 static constexpr uint32_t collegeSubmenuId = 0xAC706063;
 static constexpr uint32_t libraryMuseumSubmenuId = 0xAEDD9FAA;
+
+static constexpr uint32_t healthSmallSubmenuId = 0xB1F7AC5B;  // medical clinic
+static constexpr uint32_t healthMediumSubmenuId = 0xB7B594D6;  // hospital with helicopter
+static constexpr uint32_t healthLargeSubmenuId = 0xBC251B69;  // medical center with helicopter
 
 static constexpr uint32_t cs1SubmenuId = 0x11BF1CA9;
 static constexpr uint32_t cs2SubmenuId = 0x24C43253;

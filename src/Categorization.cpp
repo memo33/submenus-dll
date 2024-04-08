@@ -17,6 +17,7 @@ const std::unordered_set<uint32_t> Categorization::autoPrefilledSubmenus = {
 	co2SubmenuId, co3SubmenuId,
 	iaSubmenuId, idSubmenuId, imSubmenuId, ihtSubmenuId,
 	elementarySchoolSubmenuId, highSchoolSubmenuId, collegeSubmenuId, libraryMuseumSubmenuId,
+	healthSmallSubmenuId, healthMediumSubmenuId, healthLargeSubmenuId,
 };
 
 Categorization::Categorization(std::unordered_set<uint32_t>* reachableSubmenus) : reachableSubmenus(reachableSubmenus)
@@ -63,6 +64,11 @@ bool Categorization::belongsToSubmenu(cISCPropertyHolder* propHolder, uint32_t s
 			case collegeSubmenuId:          return hasOG(collegeOG);
 			case libraryMuseumSubmenuId:    return hasOG(libraryOG) || hasOG(museumOG);
 
+			case healthSmallSubmenuId:  return hasOG(healthOG) && hasOG(hospitalOG) && !hasOG(largeHealthOG) && !hasOG(healthOtherOG);
+			case healthMediumSubmenuId: return hasOG(healthOG) && hasOG(hospitalOG) && hasOG(largeHealthOG) && !hasOG(healthOtherOG);
+			case healthLargeSubmenuId:  return hasOG(healthOG) && hasOG(healthOtherOG)
+			                                && PropertyUtil::arrayContains(propHolder, budgetItemDepartmentPropId, nullptr, budgetItemDepartmentProp_HealthCoverage);
+
 			default: // generic submenu
 				return false;
 		}
@@ -102,6 +108,13 @@ Categorization::TriState Categorization::belongsToMenu(cISCPropertyHolder* propH
 						&& !belongsToSubmenu(propHolder, highSchoolSubmenuId)
 						&& !belongsToSubmenu(propHolder, collegeSubmenuId)
 						&& !belongsToSubmenu(propHolder, libraryMuseumSubmenuId)
+					);
+
+			case healthButtonId:
+				return bool2tri(hasOG(healthOG)
+						&& !belongsToSubmenu(propHolder, healthSmallSubmenuId)
+						&& !belongsToSubmenu(propHolder, healthMediumSubmenuId)
+						&& !belongsToSubmenu(propHolder, healthLargeSubmenuId)
 					);
 
 			default:
