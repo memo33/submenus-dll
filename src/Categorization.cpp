@@ -46,32 +46,32 @@ bool Categorization::belongsToSubmenu(cISCPropertyHolder* propHolder, uint32_t s
 	}
 	else  // no reachable submenu configured, so try to automatically put building into a submenu using OG or other available data
 	{
-		auto hasOG = [&propHolder](uint32_t og) { return PropertyUtil::arrayContains(propHolder, occupantGroupsPropId, nullptr, og); };
+		auto hasOg = [&propHolder](uint32_t og) { return PropertyUtil::arrayContains(propHolder, occupantGroupsPropId, nullptr, og); };
 		switch (submenuId)
 		{
 			// TODO Check that higher-wealth OG not present?
-			case cs1SubmenuId: return hasOG(landmarkOG) && hasOG(cs1OG) && propHolder->HasProperty(capacitySatisfiedPropId);
-			case cs2SubmenuId: return hasOG(landmarkOG) && hasOG(cs2OG) && propHolder->HasProperty(capacitySatisfiedPropId);
-			case cs3SubmenuId: return hasOG(landmarkOG) && hasOG(cs3OG) && propHolder->HasProperty(capacitySatisfiedPropId);
-			case co2SubmenuId: return hasOG(landmarkOG) && hasOG(co2OG) && propHolder->HasProperty(capacitySatisfiedPropId);
-			case co3SubmenuId: return hasOG(landmarkOG) && hasOG(co3OG) && propHolder->HasProperty(capacitySatisfiedPropId);
-			case iaSubmenuId:  return hasOG(landmarkOG) && hasOG(iaOG)  && propHolder->HasProperty(capacitySatisfiedPropId);
-			case idSubmenuId:  return hasOG(landmarkOG) && hasOG(idOG)  && propHolder->HasProperty(capacitySatisfiedPropId);
-			case imSubmenuId:  return hasOG(landmarkOG) && hasOG(imOG)  && propHolder->HasProperty(capacitySatisfiedPropId);
-			case ihtSubmenuId: return hasOG(landmarkOG) && hasOG(ihtOG) && propHolder->HasProperty(capacitySatisfiedPropId);
+			case cs1SubmenuId: return hasOg(OgLandmark) && hasOg(OgCs1) && propHolder->HasProperty(capacitySatisfiedPropId);
+			case cs2SubmenuId: return hasOg(OgLandmark) && hasOg(OgCs2) && propHolder->HasProperty(capacitySatisfiedPropId);
+			case cs3SubmenuId: return hasOg(OgLandmark) && hasOg(OgCs3) && propHolder->HasProperty(capacitySatisfiedPropId);
+			case co2SubmenuId: return hasOg(OgLandmark) && hasOg(OgCo2) && propHolder->HasProperty(capacitySatisfiedPropId);
+			case co3SubmenuId: return hasOg(OgLandmark) && hasOg(OgCo3) && propHolder->HasProperty(capacitySatisfiedPropId);
+			case iaSubmenuId:  return hasOg(OgLandmark) && hasOg(OgIa)  && propHolder->HasProperty(capacitySatisfiedPropId);
+			case idSubmenuId:  return hasOg(OgLandmark) && hasOg(OgId)  && propHolder->HasProperty(capacitySatisfiedPropId);
+			case imSubmenuId:  return hasOg(OgLandmark) && hasOg(OgIm)  && propHolder->HasProperty(capacitySatisfiedPropId);
+			case ihtSubmenuId: return hasOg(OgLandmark) && hasOg(OgIht) && propHolder->HasProperty(capacitySatisfiedPropId);
 
-			case policeSmallSubmenuId:  return hasOG(policeOG) && (hasOG(policeSmallOG) || hasOG(policeKioskOG));
-			case policeMediumSubmenuId: return hasOG(policeOG) && hasOG(policeBigOG) && !hasOG(policeDeluxeOG);
-			case policeLargeSubmenuId:  return hasOG(policeOG) && hasOG(policeDeluxeOG);
+			case policeSmallSubmenuId:  return hasOg(OgPolice) && (hasOg(OgPoliceSmall) || hasOg(OgPoliceKiosk));
+			case policeMediumSubmenuId: return hasOg(OgPolice) && hasOg(OgPoliceBig) && !hasOg(OgPoliceDeluxe);
+			case policeLargeSubmenuId:  return hasOg(OgPolice) && hasOg(OgPoliceDeluxe);
 
-			case elementarySchoolSubmenuId: return hasOG(schoolOG) && hasOG(schoolElementaryOG);
-			case highSchoolSubmenuId:       return hasOG(schoolOG) && (hasOG(schoolHighOG) || hasOG(schoolPrivateOG));
-			case collegeSubmenuId:          return hasOG(collegeOG);
-			case libraryMuseumSubmenuId:    return hasOG(libraryOG) || hasOG(museumOG);
+			case elementarySchoolSubmenuId: return hasOg(OgSchool) && hasOg(OgSchoolElementary);
+			case highSchoolSubmenuId:       return hasOg(OgSchool) && (hasOg(OgSchoolHigh) || hasOg(OgSchoolPrivate));
+			case collegeSubmenuId:          return hasOg(OgCollege);
+			case libraryMuseumSubmenuId:    return hasOg(OgLibrary) || hasOg(OgMuseum);
 
-			case healthSmallSubmenuId:  return hasOG(healthOG) && hasOG(hospitalOG) && !hasOG(largeHealthOG) && !hasOG(healthOtherOG);
-			case healthMediumSubmenuId: return hasOG(healthOG) && hasOG(hospitalOG) && hasOG(largeHealthOG) && !hasOG(healthOtherOG);
-			case healthLargeSubmenuId:  return hasOG(healthOG) && hasOG(healthOtherOG)
+			case healthSmallSubmenuId:  return hasOg(OgHealth) && hasOg(OgHospital) && !hasOg(OgHealthLarge) && !hasOg(OgHealthOther);
+			case healthMediumSubmenuId: return hasOg(OgHealth) && hasOg(OgHospital) && hasOg(OgHealthLarge) && !hasOg(OgHealthOther);
+			case healthLargeSubmenuId:  return hasOg(OgHealth) && hasOg(OgHealthOther)
 			                                && PropertyUtil::arrayContains(propHolder, budgetItemDepartmentPropId, nullptr, budgetItemDepartmentProp_HealthCoverage);
 
 			default: // generic submenu
@@ -90,11 +90,11 @@ Categorization::TriState Categorization::belongsToMenu(cISCPropertyHolder* propH
 	}
 	else  // TODO consider also checking itemSubmenuParentPropId for top-level menus
 	{
-		auto hasOG = [&propHolder](uint32_t og) { return PropertyUtil::arrayContains(propHolder, occupantGroupsPropId, nullptr, og); };
+		auto hasOg = [&propHolder](uint32_t og) { return PropertyUtil::arrayContains(propHolder, occupantGroupsPropId, nullptr, og); };
 		switch (menuId)
 		{
 			case landmarkButtonId:
-				return bool2tri(hasOG(landmarkOG)
+				return bool2tri(hasOg(OgLandmark)
 						&& !belongsToSubmenu(propHolder, cs1SubmenuId)
 						&& !belongsToSubmenu(propHolder, cs2SubmenuId)
 						&& !belongsToSubmenu(propHolder, cs3SubmenuId)
@@ -107,7 +107,7 @@ Categorization::TriState Categorization::belongsToMenu(cISCPropertyHolder* propH
 					);
 
 			case policeButtonId:
-				return bool2tri((hasOG(policeOG) || hasOG(jailOG))
+				return bool2tri((hasOg(OgPolice) || hasOg(OgJail))
 						&& !belongsToSubmenu(propHolder, policeSmallSubmenuId)
 						&& !belongsToSubmenu(propHolder, policeMediumSubmenuId)
 						&& !belongsToSubmenu(propHolder, policeLargeSubmenuId)
@@ -115,7 +115,7 @@ Categorization::TriState Categorization::belongsToMenu(cISCPropertyHolder* propH
 
 			case educationButtonId:
 				// this implementation looks redundant, but ensures that menu placement is correct even if some submenus are not installed
-				return bool2tri((hasOG(schoolOG) || hasOG(collegeOG) || hasOG(libraryOG) || hasOG(museumOG))
+				return bool2tri((hasOg(OgSchool) || hasOg(OgCollege) || hasOg(OgLibrary) || hasOg(OgMuseum))
 						&& !belongsToSubmenu(propHolder, elementarySchoolSubmenuId)
 						&& !belongsToSubmenu(propHolder, highSchoolSubmenuId)
 						&& !belongsToSubmenu(propHolder, collegeSubmenuId)
@@ -123,7 +123,7 @@ Categorization::TriState Categorization::belongsToMenu(cISCPropertyHolder* propH
 					);
 
 			case healthButtonId:
-				return bool2tri(hasOG(healthOG)
+				return bool2tri(hasOg(OgHealth)
 						&& !belongsToSubmenu(propHolder, healthSmallSubmenuId)
 						&& !belongsToSubmenu(propHolder, healthMediumSubmenuId)
 						&& !belongsToSubmenu(propHolder, healthLargeSubmenuId)
