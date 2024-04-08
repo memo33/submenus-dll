@@ -16,6 +16,7 @@ const std::unordered_set<uint32_t> Categorization::autoPrefilledSubmenus = {
 	cs1SubmenuId, cs2SubmenuId, cs3SubmenuId,
 	co2SubmenuId, co3SubmenuId,
 	iaSubmenuId, idSubmenuId, imSubmenuId, ihtSubmenuId,
+	policeSmallSubmenuId, policeMediumSubmenuId, policeLargeSubmenuId,
 	elementarySchoolSubmenuId, highSchoolSubmenuId, collegeSubmenuId, libraryMuseumSubmenuId,
 	healthSmallSubmenuId, healthMediumSubmenuId, healthLargeSubmenuId,
 };
@@ -59,6 +60,10 @@ bool Categorization::belongsToSubmenu(cISCPropertyHolder* propHolder, uint32_t s
 			case imSubmenuId:  return hasOG(landmarkOG) && hasOG(imOG)  && propHolder->HasProperty(capacitySatisfiedPropId);
 			case ihtSubmenuId: return hasOG(landmarkOG) && hasOG(ihtOG) && propHolder->HasProperty(capacitySatisfiedPropId);
 
+			case policeSmallSubmenuId:  return hasOG(policeOG) && (hasOG(policeSmallOG) || hasOG(policeKioskOG));
+			case policeMediumSubmenuId: return hasOG(policeOG) && hasOG(policeBigOG) && !hasOG(policeDeluxeOG);
+			case policeLargeSubmenuId:  return hasOG(policeOG) && hasOG(policeDeluxeOG);
+
 			case elementarySchoolSubmenuId: return hasOG(schoolOG) && hasOG(schoolElementaryOG);
 			case highSchoolSubmenuId:       return hasOG(schoolOG) && (hasOG(schoolHighOG) || hasOG(schoolPrivateOG));
 			case collegeSubmenuId:          return hasOG(collegeOG);
@@ -83,7 +88,7 @@ Categorization::TriState Categorization::belongsToMenu(cISCPropertyHolder* propH
 	{
 		return bool2tri(belongsToSubmenu(propHolder, menuId));
 	}
-	else
+	else  // TODO consider also checking itemSubmenuParentPropId for top-level menus
 	{
 		auto hasOG = [&propHolder](uint32_t og) { return PropertyUtil::arrayContains(propHolder, occupantGroupsPropId, nullptr, og); };
 		switch (menuId)
@@ -99,6 +104,13 @@ Categorization::TriState Categorization::belongsToMenu(cISCPropertyHolder* propH
 						&& !belongsToSubmenu(propHolder, idSubmenuId)
 						&& !belongsToSubmenu(propHolder, imSubmenuId)
 						&& !belongsToSubmenu(propHolder, ihtSubmenuId)
+					);
+
+			case policeButtonId:
+				return bool2tri((hasOG(policeOG) || hasOG(jailOG))
+						&& !belongsToSubmenu(propHolder, policeSmallSubmenuId)
+						&& !belongsToSubmenu(propHolder, policeMediumSubmenuId)
+						&& !belongsToSubmenu(propHolder, policeLargeSubmenuId)
 					);
 
 			case educationButtonId:

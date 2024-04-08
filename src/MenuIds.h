@@ -31,9 +31,17 @@ static constexpr uint32_t capacitySatisfiedPropId = 0x27812834;
 static constexpr uint32_t budgetItemDepartmentPropId = 0xea54d283;
 static constexpr uint32_t budgetItemDepartmentProp_HealthCoverage = 0xaa538cb3;
 
+static constexpr uint32_t policeButtonId = POLICE_BUTTON_ID;
 static constexpr uint32_t educationButtonId = EDUCATION_BUTTON_ID;
 static constexpr uint32_t healthButtonId = HEALTH_BUTTON_ID;
 static constexpr uint32_t landmarkButtonId = LANDMARK_BUTTON_ID;
+
+static constexpr uint32_t policeOG = 0x1500;
+static constexpr uint32_t jailOG = 0x1501;
+static constexpr uint32_t policeBigOG = 0x150D;
+static constexpr uint32_t policeSmallOG = 0x150E;
+static constexpr uint32_t policeDeluxeOG = 0x1515;
+static constexpr uint32_t policeKioskOG = 0x1516;
 
 static constexpr uint32_t schoolOG = 0x1503;  // there is no dedicated education OG
 static constexpr uint32_t collegeOG = 0x1504;
@@ -58,6 +66,10 @@ static constexpr uint32_t iaOG = 0x14100;
 static constexpr uint32_t idOG = 0x14200;
 static constexpr uint32_t imOG = 0x14300;
 static constexpr uint32_t ihtOG = 0x14400;
+
+static constexpr uint32_t policeSmallSubmenuId = 0x65D88585;
+static constexpr uint32_t policeMediumSubmenuId = 0x7D6DC8BC;
+static constexpr uint32_t policeLargeSubmenuId = 0x8157CA0E;
 
 static constexpr uint32_t elementarySchoolSubmenuId = 0x9FE5C428;
 static constexpr uint32_t highSchoolSubmenuId = 0xA08063D0;
