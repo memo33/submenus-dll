@@ -15,6 +15,7 @@ const std::unordered_set<uint32_t> Categorization::toplevelMenuButtons = {
 const std::unordered_set<uint32_t> Categorization::autoPrefilledSubmenus = {
 	cs1SubmenuId, cs2SubmenuId, cs3SubmenuId,
 	co2SubmenuId, co3SubmenuId,
+	iaSubmenuId, idSubmenuId, imSubmenuId, ihtSubmenuId,
 	elementarySchoolSubmenuId, highSchoolSubmenuId, collegeSubmenuId, libraryMuseumSubmenuId,
 };
 
@@ -47,11 +48,15 @@ bool Categorization::belongsToSubmenu(cISCPropertyHolder* propHolder, uint32_t s
 		switch (submenuId)
 		{
 			// TODO Check that higher-wealth OG not present?
-			case cs1SubmenuId: return hasOG(landmarkOG) && hasOG(cs1OG);
-			case cs2SubmenuId: return hasOG(landmarkOG) && hasOG(cs2OG);
-			case cs3SubmenuId: return hasOG(landmarkOG) && hasOG(cs3OG);
-			case co2SubmenuId: return hasOG(landmarkOG) && hasOG(co2OG);
-			case co3SubmenuId: return hasOG(landmarkOG) && hasOG(co3OG);
+			case cs1SubmenuId: return hasOG(landmarkOG) && hasOG(cs1OG) && propHolder->HasProperty(capacitySatisfiedPropId);
+			case cs2SubmenuId: return hasOG(landmarkOG) && hasOG(cs2OG) && propHolder->HasProperty(capacitySatisfiedPropId);
+			case cs3SubmenuId: return hasOG(landmarkOG) && hasOG(cs3OG) && propHolder->HasProperty(capacitySatisfiedPropId);
+			case co2SubmenuId: return hasOG(landmarkOG) && hasOG(co2OG) && propHolder->HasProperty(capacitySatisfiedPropId);
+			case co3SubmenuId: return hasOG(landmarkOG) && hasOG(co3OG) && propHolder->HasProperty(capacitySatisfiedPropId);
+			case iaSubmenuId:  return hasOG(landmarkOG) && hasOG(iaOG)  && propHolder->HasProperty(capacitySatisfiedPropId);
+			case idSubmenuId:  return hasOG(landmarkOG) && hasOG(idOG)  && propHolder->HasProperty(capacitySatisfiedPropId);
+			case imSubmenuId:  return hasOG(landmarkOG) && hasOG(imOG)  && propHolder->HasProperty(capacitySatisfiedPropId);
+			case ihtSubmenuId: return hasOG(landmarkOG) && hasOG(ihtOG) && propHolder->HasProperty(capacitySatisfiedPropId);
 
 			case elementarySchoolSubmenuId: return hasOG(schoolOG) && hasOG(schoolElementaryOG);
 			case highSchoolSubmenuId:       return hasOG(schoolOG) && (hasOG(schoolHighOG) || hasOG(schoolPrivateOG));
@@ -78,20 +83,26 @@ Categorization::TriState Categorization::belongsToMenu(cISCPropertyHolder* propH
 		switch (menuId)
 		{
 			case landmarkButtonId:
-				return bool2tri(hasOG(landmarkOG) &&
-					!belongsToSubmenu(propHolder, cs1SubmenuId) &&
-					!belongsToSubmenu(propHolder, cs2SubmenuId) &&
-					!belongsToSubmenu(propHolder, cs3SubmenuId) &&
-					!belongsToSubmenu(propHolder, co2SubmenuId) &&
-					!belongsToSubmenu(propHolder, co3SubmenuId));
+				return bool2tri(hasOG(landmarkOG)
+						&& !belongsToSubmenu(propHolder, cs1SubmenuId)
+						&& !belongsToSubmenu(propHolder, cs2SubmenuId)
+						&& !belongsToSubmenu(propHolder, cs3SubmenuId)
+						&& !belongsToSubmenu(propHolder, co2SubmenuId)
+						&& !belongsToSubmenu(propHolder, co3SubmenuId)
+						&& !belongsToSubmenu(propHolder, iaSubmenuId)
+						&& !belongsToSubmenu(propHolder, idSubmenuId)
+						&& !belongsToSubmenu(propHolder, imSubmenuId)
+						&& !belongsToSubmenu(propHolder, ihtSubmenuId)
+					);
 
 			case educationButtonId:
 				// this implementation looks redundant, but ensures that menu placement is correct even if some submenus are not installed
-				return bool2tri((hasOG(schoolOG) || hasOG(collegeOG) || hasOG(libraryOG) || hasOG(museumOG)) &&
-						!belongsToSubmenu(propHolder, elementarySchoolSubmenuId) &&
-						!belongsToSubmenu(propHolder, highSchoolSubmenuId) &&
-						!belongsToSubmenu(propHolder, collegeSubmenuId) &&
-						!belongsToSubmenu(propHolder, libraryMuseumSubmenuId));
+				return bool2tri((hasOG(schoolOG) || hasOG(collegeOG) || hasOG(libraryOG) || hasOG(museumOG))
+						&& !belongsToSubmenu(propHolder, elementarySchoolSubmenuId)
+						&& !belongsToSubmenu(propHolder, highSchoolSubmenuId)
+						&& !belongsToSubmenu(propHolder, collegeSubmenuId)
+						&& !belongsToSubmenu(propHolder, libraryMuseumSubmenuId)
+					);
 
 			default:
 				return Categorization::TriState::Maybe; // other top level menus require evaluating the original inclusion/exclusion rules of their occupant groups

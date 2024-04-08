@@ -27,6 +27,7 @@
 
 static constexpr uint32_t occupantGroupsPropId = 0xaa1dd396;
 static constexpr uint32_t itemSubmenuParentPropId = 0xaa1dd399;  // occupantGroupsAltPropId
+static constexpr uint32_t capacitySatisfiedPropId = 0x27812834;
 
 static constexpr uint32_t educationButtonId = EDUCATION_BUTTON_ID;
 static constexpr uint32_t landmarkButtonId = LANDMARK_BUTTON_ID;
@@ -45,6 +46,10 @@ static constexpr uint32_t cs2OG = 0x13120;
 static constexpr uint32_t cs3OG = 0x13130;
 static constexpr uint32_t co2OG = 0x13320;
 static constexpr uint32_t co3OG = 0x13330;
+static constexpr uint32_t iaOG = 0x14100;
+static constexpr uint32_t idOG = 0x14200;
+static constexpr uint32_t imOG = 0x14300;
+static constexpr uint32_t ihtOG = 0x14400;
 
 static constexpr uint32_t elementarySchoolSubmenuId = 0x9FE5C428;
 static constexpr uint32_t highSchoolSubmenuId = 0xA08063D0;
@@ -56,3 +61,7 @@ static constexpr uint32_t cs2SubmenuId = 0x24C43253;
 static constexpr uint32_t cs3SubmenuId = 0x9BDEFE2B;
 static constexpr uint32_t co2SubmenuId = 0xA7FF7CF0;
 static constexpr uint32_t co3SubmenuId = 0xE27B7EF6;
+static constexpr uint32_t iaSubmenuId = 0xC220B7D8;
+static constexpr uint32_t idSubmenuId = 0x62D82695;
+static constexpr uint32_t imSubmenuId = 0x68B3E5FD;
+static constexpr uint32_t ihtSubmenuId = 0x954E20FE;
