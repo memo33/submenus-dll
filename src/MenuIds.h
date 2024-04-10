@@ -30,11 +30,26 @@ static constexpr uint32_t itemSubmenuParentPropId = 0xaa1dd399;  // occupantGrou
 static constexpr uint32_t capacitySatisfiedPropId = 0x27812834;
 static constexpr uint32_t budgetItemDepartmentPropId = 0xea54d283;
 static constexpr uint32_t budgetItemDepartmentProp_HealthCoverage = 0xaa538cb3;
+static constexpr uint32_t occupantSizePropId = 0x27812810;
+
+static constexpr uint32_t railButtonId = RAIL_BUTTON_ID;
+static constexpr uint32_t miscTransitButtonId = MISCTRANSP_BUTTON_ID;
 
 static constexpr uint32_t policeButtonId = POLICE_BUTTON_ID;
 static constexpr uint32_t educationButtonId = EDUCATION_BUTTON_ID;
 static constexpr uint32_t healthButtonId = HEALTH_BUTTON_ID;
 static constexpr uint32_t landmarkButtonId = LANDMARK_BUTTON_ID;
+
+static constexpr uint32_t OgRail = 0x1300;
+static constexpr uint32_t OgBus = 0x1301;
+static constexpr uint32_t OgSubway = 0x1302;
+static constexpr uint32_t OgLightrail = 0x1303;
+static constexpr uint32_t OgPassengerRail = 0x1305;
+static constexpr uint32_t OgFreightRail = 0x1306;
+static constexpr uint32_t OgMonorail = 0x1307;
+static constexpr uint32_t OgAirport = 0x1508;
+static constexpr uint32_t OgSeaport = 0x1509;
+static constexpr uint32_t OgMiscTransit = 0x130A;
 
 static constexpr uint32_t OgPolice = 0x1500;
 static constexpr uint32_t OgJail = 0x1501;
@@ -66,6 +81,19 @@ static constexpr uint32_t OgIa = 0x14100;
 static constexpr uint32_t OgId = 0x14200;
 static constexpr uint32_t OgIm = 0x14300;
 static constexpr uint32_t OgIht = 0x14400;
+
+static constexpr uint32_t passengerRailSubmenuId = 0x35380C75;
+static constexpr uint32_t freightRailSubmenuId = 0x3557F0A1;
+static constexpr uint32_t yardsSubmenuId = 0x39BA25C7;
+static constexpr uint32_t hybridRailwaySubmenuId = 0x2B294CC2;
+static constexpr uint32_t monorailSubmenuId = 0x3A1D9854;
+
+static constexpr uint32_t busSubmenuId = 0x1FDDE184;
+static constexpr uint32_t glrSubmenuId = 0x26B51B28;
+static constexpr uint32_t elRailSubmenuId = 0x244F77E1;
+static constexpr uint32_t subwaySubmenuId = 0x231A97D3;
+static constexpr uint32_t multiModalStationsSubmenuId = 0x322C7959;
+static constexpr uint32_t parkingSubmenuId = 0x217B6C35;
 
 static constexpr uint32_t policeSmallSubmenuId = 0x65D88585;
 static constexpr uint32_t policeMediumSubmenuId = 0x7D6DC8BC;

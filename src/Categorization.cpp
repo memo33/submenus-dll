@@ -16,6 +16,8 @@ const std::unordered_set<uint32_t> Categorization::autoPrefilledSubmenus = {
 	cs1SubmenuId, cs2SubmenuId, cs3SubmenuId,
 	co2SubmenuId, co3SubmenuId,
 	iaSubmenuId, idSubmenuId, imSubmenuId, ihtSubmenuId,
+	freightRailSubmenuId, passengerRailSubmenuId, monorailSubmenuId, hybridRailwaySubmenuId, yardsSubmenuId,
+	busSubmenuId, subwaySubmenuId, elRailSubmenuId, glrSubmenuId, multiModalStationsSubmenuId,
 	policeSmallSubmenuId, policeMediumSubmenuId, policeLargeSubmenuId,
 	elementarySchoolSubmenuId, highSchoolSubmenuId, collegeSubmenuId, libraryMuseumSubmenuId,
 	healthSmallSubmenuId, healthMediumSubmenuId, healthLargeSubmenuId,
@@ -23,6 +25,27 @@ const std::unordered_set<uint32_t> Categorization::autoPrefilledSubmenus = {
 
 Categorization::Categorization(std::unordered_set<uint32_t>* reachableSubmenus) : reachableSubmenus(reachableSubmenus)
 {
+}
+
+static bool isHeightBelow(cISCPropertyHolder* propHolder, float_t height)
+{
+	bool result = false;
+	if (propHolder->HasProperty((uint32_t)occupantSizePropId)) {
+		auto property = propHolder->GetProperty((uint32_t)occupantSizePropId);
+		property->AddRef();
+		const auto variant = property->GetPropertyValue();
+		variant->AddRef();
+		if (variant->GetType() == cIGZVariant::Type::Float32Array) {
+			uint32_t reps = variant->GetCount();
+			if (reps == 3) {
+				float_t* values = variant->RefFloat32();
+				result |= (values[1] <= height);
+			}
+		}
+		variant->Release();
+		property->Release();
+	}
+	return result;
 }
 
 static inline Categorization::TriState bool2tri(bool b)
@@ -59,6 +82,19 @@ bool Categorization::belongsToSubmenu(cISCPropertyHolder* propHolder, uint32_t s
 			case idSubmenuId:  return hasOg(OgLandmark) && hasOg(OgId)  && propHolder->HasProperty(capacitySatisfiedPropId);
 			case imSubmenuId:  return hasOg(OgLandmark) && hasOg(OgIm)  && propHolder->HasProperty(capacitySatisfiedPropId);
 			case ihtSubmenuId: return hasOg(OgLandmark) && hasOg(OgIht) && propHolder->HasProperty(capacitySatisfiedPropId);
+
+			case freightRailSubmenuId:   return hasOg(OgRail) && hasOg(OgFreightRail)                         && !hasOg(OgAirport) && !hasOg(OgSeaport);
+			case passengerRailSubmenuId: return hasOg(OgRail) && hasOg(OgPassengerRail) && !hasOg(OgMonorail) && !hasOg(OgAirport) && !hasOg(OgSeaport) && !hasOg(OgLightrail);
+			case monorailSubmenuId:      return hasOg(OgRail) && hasOg(OgMonorail) && !hasOg(OgPassengerRail) && !hasOg(OgAirport) && !hasOg(OgSeaport) && !hasOg(OgLightrail);
+			case hybridRailwaySubmenuId: return hasOg(OgRail) && hasOg(OgMonorail) &&  hasOg(OgPassengerRail) && !hasOg(OgAirport) && !hasOg(OgSeaport) && !hasOg(OgLightrail);
+			case yardsSubmenuId: return hasOg(OgRail) && !hasOg(OgPassengerRail) && !hasOg(OgFreightRail) && !hasOg(OgMonorail) && !hasOg(OgAirport) && !hasOg(OgSeaport);
+
+			case busSubmenuId: return hasOg(OgMiscTransit) && hasOg(OgBus) && !hasOg(OgSubway) && !hasOg(OgLightrail) && !hasOg(OgPassengerRail) && !hasOg(OgMonorail) && !hasOg(OgAirport) && !hasOg(OgSeaport);
+			case subwaySubmenuId: return hasOg(OgMiscTransit) && hasOg(OgSubway) && !hasOg(OgLightrail) && !hasOg(OgPassengerRail) && !hasOg(OgMonorail) && !hasOg(OgAirport) && !hasOg(OgSeaport) && !propHolder->HasProperty(capacitySatisfiedPropId);
+			case elRailSubmenuId: return hasOg(OgMiscTransit) && hasOg(OgLightrail) && !hasOg(OgPassengerRail) && !hasOg(OgMonorail) && !hasOg(OgAirport) && !hasOg(OgSeaport) && !isHeightBelow(propHolder, 15.5);
+			case glrSubmenuId: return hasOg(OgMiscTransit) && hasOg(OgLightrail) && !hasOg(OgPassengerRail) && !hasOg(OgMonorail) && !hasOg(OgAirport) && !hasOg(OgSeaport) && isHeightBelow(propHolder, 15.5);
+			case multiModalStationsSubmenuId: return (hasOg(OgRail) || hasOg(OgMiscTransit)) && hasOg(OgLightrail) && (hasOg(OgPassengerRail) || hasOg(OgMonorail)) && !hasOg(OgAirport) && !hasOg(OgSeaport);
+			// case parkingSubmenuId:
 
 			case policeSmallSubmenuId:  return hasOg(OgPolice) && (hasOg(OgPoliceSmall) || hasOg(OgPoliceKiosk));
 			case policeMediumSubmenuId: return hasOg(OgPolice) && hasOg(OgPoliceBig) && !hasOg(OgPoliceDeluxe);
@@ -104,6 +140,26 @@ Categorization::TriState Categorization::belongsToMenu(cISCPropertyHolder* propH
 						&& !belongsToSubmenu(propHolder, idSubmenuId)
 						&& !belongsToSubmenu(propHolder, imSubmenuId)
 						&& !belongsToSubmenu(propHolder, ihtSubmenuId)
+					);
+
+			case railButtonId:
+				return bool2tri(hasOg(OgRail)
+						&& !belongsToSubmenu(propHolder, freightRailSubmenuId)
+						&& !belongsToSubmenu(propHolder, passengerRailSubmenuId)
+						&& !belongsToSubmenu(propHolder, monorailSubmenuId)
+						&& !belongsToSubmenu(propHolder, hybridRailwaySubmenuId)
+						&& !belongsToSubmenu(propHolder, multiModalStationsSubmenuId)
+						&& !belongsToSubmenu(propHolder, yardsSubmenuId)
+					);
+
+			case miscTransitButtonId:
+				return bool2tri(hasOg(OgMiscTransit)
+						&& !belongsToSubmenu(propHolder, busSubmenuId)
+						&& !belongsToSubmenu(propHolder, subwaySubmenuId)
+						&& !belongsToSubmenu(propHolder, elRailSubmenuId)
+						&& !belongsToSubmenu(propHolder, glrSubmenuId)
+						&& !belongsToSubmenu(propHolder, multiModalStationsSubmenuId)
+						// && !belongsToSubmenu(propHolder, parkingSubmenuId)
 					);
 
 			case policeButtonId:
