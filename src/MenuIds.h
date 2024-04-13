@@ -25,6 +25,7 @@
 #define NAM_CONTROLLER_MARKER_BUTTON_ID 0x6a47ffff
 
 
+static constexpr uint32_t exemplarNamePropId = 0x20;
 static constexpr uint32_t occupantGroupsPropId = 0xaa1dd396;
 static constexpr uint32_t itemSubmenuParentPropId = 0xaa1dd399;  // occupantGroupsAltPropId
 static constexpr uint32_t capacitySatisfiedPropId = 0x27812834;

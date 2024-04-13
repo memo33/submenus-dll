@@ -1027,6 +1027,7 @@ public:
 	std::unordered_map<uint32_t, uint32_t> submenuLinks = {};  // maps child to parent
 	std::unordered_map<uint32_t, std::unordered_set<uint32_t>*> submenuChildren = {};  // maps parent to children
 	std::unordered_set<uint32_t> nonemptySubmenus = {};
+	std::unordered_map<uint32_t, cIGZString*> submenuNames = {};  // for debugging
 
 	// Reads a single building exemplar and updates nonemptySubmenus if building belongs to a submenu.
 	void initializeSubmenusFromBuilding(cISC4BuildingDevelopmentSimulator* buildingDevSim, uint32_t buildingType)
@@ -1147,6 +1148,16 @@ public:
 							} else {
 								this1->submenuChildren[parentId] = new std::unordered_set<uint32_t>({buttonId});
 							}
+							if (!this1->submenuNames.contains(buttonId) && propHolder->HasProperty(exemplarNamePropId)) {
+								auto nameProperty = propHolder->GetProperty(exemplarNamePropId);
+								const auto variant = nameProperty->GetPropertyValue();
+								variant->AddRef();
+								cIGZString* exemplarName = nullptr;
+								if (variant->CreateValString(&exemplarName)) {
+									this1->submenuNames[buttonId] = exemplarName;  // transfer of ownership
+								}
+								variant->Release();
+							}
 						}
 					}
 					else if (propValueBuffer == ITEM_BUTTON_CLASS_NETWORK && itemGid == ITEM_EXEMPLAR_GID_MISC_CATALOG
@@ -1227,9 +1238,19 @@ public:
 			bool isEmpty = isSubmenuEmptyUpdate(buttonId);  // updates nonemptySubmenus if non-empty
 			if (isEmpty) {
 				emptySubmenus.insert(buttonId);
-				logger.WriteLineFormatted(LogLevel::Info, "Hiding empty submenu with Button ID 0x%08X.", buttonId);
+				if (submenuNames.contains(buttonId)) {
+					logger.WriteLineFormatted(LogLevel::Info, "Hiding empty submenu with Button ID 0x%08X: %s", buttonId, submenuNames[buttonId]->ToChar());
+				} else {
+					logger.WriteLineFormatted(LogLevel::Info, "Hiding empty submenu with Button ID 0x%08X.", buttonId);
+				}
 			}
 		}
+		// Now after initialization of submenus, there is no need for the submenu names anymore.
+		for (auto&& p : submenuNames)
+		{
+			p.second->Release();
+		}
+		submenuNames.clear();
 
 		logger.WriteLineFormatted(LogLevel::Info,
 			"Initialized %d submenus (%d empty, %d not reachable).",
