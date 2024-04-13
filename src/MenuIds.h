@@ -31,9 +31,13 @@ static constexpr uint32_t capacitySatisfiedPropId = 0x27812834;
 static constexpr uint32_t budgetItemDepartmentPropId = 0xea54d283;
 static constexpr uint32_t budgetItemDepartmentProp_HealthCoverage = 0xaa538cb3;
 static constexpr uint32_t occupantSizePropId = 0x27812810;
+static constexpr uint32_t powerPlantTypePropId = 0x27812853;
+enum PowerPlantType : uint32_t { Coal = 1, Hydrogen = 2, NaturalGas = 3, Nuclear = 5, Oil = 6, Solar = 7, Waste = 8, Wind = 9, Auxiliary = 0xA };
 
 static constexpr uint32_t railButtonId = RAIL_BUTTON_ID;
 static constexpr uint32_t miscTransitButtonId = MISCTRANSP_BUTTON_ID;
+
+static constexpr uint32_t powerButtonId = POWER_BUTTON_ID;
 
 static constexpr uint32_t policeButtonId = POLICE_BUTTON_ID;
 static constexpr uint32_t educationButtonId = EDUCATION_BUTTON_ID;
@@ -50,6 +54,8 @@ static constexpr uint32_t OgMonorail = 0x1307;
 static constexpr uint32_t OgAirport = 0x1508;
 static constexpr uint32_t OgSeaport = 0x1509;
 static constexpr uint32_t OgMiscTransit = 0x130A;
+
+static constexpr uint32_t OgPower = 0x1400;
 
 static constexpr uint32_t OgPolice = 0x1500;
 static constexpr uint32_t OgJail = 0x1501;
@@ -94,6 +100,10 @@ static constexpr uint32_t elRailSubmenuId = 0x244F77E1;
 static constexpr uint32_t subwaySubmenuId = 0x231A97D3;
 static constexpr uint32_t multiModalStationsSubmenuId = 0x322C7959;
 static constexpr uint32_t parkingSubmenuId = 0x217B6C35;
+
+static constexpr uint32_t energyDirtySubmenuId = 0x4B465151;
+static constexpr uint32_t energyCleanSubmenuId =0xCDE0316B;
+static constexpr uint32_t miscPowerSubmenuId = 0xD013F32D;
 
 static constexpr uint32_t policeSmallSubmenuId = 0x65D88585;
 static constexpr uint32_t policeLargeSubmenuId = 0x7D6DC8BC;

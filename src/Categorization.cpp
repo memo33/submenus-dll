@@ -18,6 +18,7 @@ const std::unordered_set<uint32_t> Categorization::autoPrefilledSubmenus = {
 	iaSubmenuId, idSubmenuId, imSubmenuId, ihtSubmenuId,
 	freightRailSubmenuId, passengerRailSubmenuId, monorailSubmenuId, hybridRailwaySubmenuId, yardsSubmenuId,
 	busSubmenuId, subwaySubmenuId, elRailSubmenuId, glrSubmenuId, multiModalStationsSubmenuId,
+	energyDirtySubmenuId, energyCleanSubmenuId, miscPowerSubmenuId,
 	policeSmallSubmenuId, policeLargeSubmenuId, policeDeluxeSubmenuId,
 	elementarySchoolSubmenuId, highSchoolSubmenuId, collegeSubmenuId, libraryMuseumSubmenuId,
 	healthSmallSubmenuId, healthMediumSubmenuId, healthLargeSubmenuId,
@@ -96,6 +97,26 @@ bool Categorization::belongsToSubmenu(cISCPropertyHolder* propHolder, uint32_t s
 			case multiModalStationsSubmenuId: return (hasOg(OgRail) || hasOg(OgMiscTransit)) && hasOg(OgLightrail) && (hasOg(OgPassengerRail) || hasOg(OgMonorail)) && !hasOg(OgAirport) && !hasOg(OgSeaport);
 			// case parkingSubmenuId:
 
+			case energyDirtySubmenuId:
+				return hasOg(OgPower) && (
+					PropertyUtil::arrayContains(propHolder, powerPlantTypePropId, nullptr, PowerPlantType::Coal) ||
+					PropertyUtil::arrayContains(propHolder, powerPlantTypePropId, nullptr, PowerPlantType::NaturalGas) ||
+					PropertyUtil::arrayContains(propHolder, powerPlantTypePropId, nullptr, PowerPlantType::Oil) ||
+					PropertyUtil::arrayContains(propHolder, powerPlantTypePropId, nullptr, PowerPlantType::Waste)
+				);
+			case energyCleanSubmenuId:
+				return hasOg(OgPower) && (
+					PropertyUtil::arrayContains(propHolder, powerPlantTypePropId, nullptr, PowerPlantType::Hydrogen) ||
+					PropertyUtil::arrayContains(propHolder, powerPlantTypePropId, nullptr, PowerPlantType::Nuclear) ||
+					PropertyUtil::arrayContains(propHolder, powerPlantTypePropId, nullptr, PowerPlantType::Solar) ||
+					PropertyUtil::arrayContains(propHolder, powerPlantTypePropId, nullptr, PowerPlantType::Wind)
+				);
+			case miscPowerSubmenuId:
+				return hasOg(OgPower) && (
+					!propHolder->HasProperty(powerPlantTypePropId) ||
+					PropertyUtil::arrayContains(propHolder, powerPlantTypePropId, nullptr, PowerPlantType::Auxiliary)
+				);
+
 			case policeSmallSubmenuId:  return hasOg(OgPolice) && (hasOg(OgPoliceSmall) || hasOg(OgPoliceKiosk));
 			case policeLargeSubmenuId: return hasOg(OgPolice) && hasOg(OgPoliceBig) && !hasOg(OgPoliceDeluxe);
 			case policeDeluxeSubmenuId:  return hasOg(OgPolice) && hasOg(OgPoliceDeluxe);
@@ -167,6 +188,13 @@ Categorization::TriState Categorization::belongsToMenu(cISCPropertyHolder* propH
 						&& !belongsToSubmenu(propHolder, glrSubmenuId)
 						&& !belongsToSubmenu(propHolder, multiModalStationsSubmenuId)
 						// && !belongsToSubmenu(propHolder, parkingSubmenuId)
+					);
+
+			case powerButtonId:
+				return bool2tri(hasOg(OgPower)
+						&& !belongsToSubmenu(propHolder, energyDirtySubmenuId)
+						&& !belongsToSubmenu(propHolder, energyCleanSubmenuId)
+						&& !belongsToSubmenu(propHolder, miscPowerSubmenuId)
 					);
 
 			case policeButtonId:
