@@ -96,8 +96,8 @@ static constexpr uint32_t multiModalStationsSubmenuId = 0x322C7959;
 static constexpr uint32_t parkingSubmenuId = 0x217B6C35;
 
 static constexpr uint32_t policeSmallSubmenuId = 0x65D88585;
-static constexpr uint32_t policeMediumSubmenuId = 0x7D6DC8BC;
-static constexpr uint32_t policeLargeSubmenuId = 0x8157CA0E;
+static constexpr uint32_t policeLargeSubmenuId = 0x7D6DC8BC;
+static constexpr uint32_t policeDeluxeSubmenuId = 0x8157CA0E;
 
 static constexpr uint32_t elementarySchoolSubmenuId = 0x9FE5C428;
 static constexpr uint32_t highSchoolSubmenuId = 0xA08063D0;

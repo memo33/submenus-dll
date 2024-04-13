@@ -18,7 +18,7 @@ const std::unordered_set<uint32_t> Categorization::autoPrefilledSubmenus = {
 	iaSubmenuId, idSubmenuId, imSubmenuId, ihtSubmenuId,
 	freightRailSubmenuId, passengerRailSubmenuId, monorailSubmenuId, hybridRailwaySubmenuId, yardsSubmenuId,
 	busSubmenuId, subwaySubmenuId, elRailSubmenuId, glrSubmenuId, multiModalStationsSubmenuId,
-	policeSmallSubmenuId, policeMediumSubmenuId, policeLargeSubmenuId,
+	policeSmallSubmenuId, policeLargeSubmenuId, policeDeluxeSubmenuId,
 	elementarySchoolSubmenuId, highSchoolSubmenuId, collegeSubmenuId, libraryMuseumSubmenuId,
 	healthSmallSubmenuId, healthMediumSubmenuId, healthLargeSubmenuId,
 };
@@ -97,8 +97,8 @@ bool Categorization::belongsToSubmenu(cISCPropertyHolder* propHolder, uint32_t s
 			// case parkingSubmenuId:
 
 			case policeSmallSubmenuId:  return hasOg(OgPolice) && (hasOg(OgPoliceSmall) || hasOg(OgPoliceKiosk));
-			case policeMediumSubmenuId: return hasOg(OgPolice) && hasOg(OgPoliceBig) && !hasOg(OgPoliceDeluxe);
-			case policeLargeSubmenuId:  return hasOg(OgPolice) && hasOg(OgPoliceDeluxe);
+			case policeLargeSubmenuId: return hasOg(OgPolice) && hasOg(OgPoliceBig) && !hasOg(OgPoliceDeluxe);
+			case policeDeluxeSubmenuId:  return hasOg(OgPolice) && hasOg(OgPoliceDeluxe);
 
 			case elementarySchoolSubmenuId: return hasOg(OgSchool) && hasOg(OgSchoolElementary);
 			case highSchoolSubmenuId:       return hasOg(OgSchool) && (hasOg(OgSchoolHigh) || hasOg(OgSchoolPrivate));
@@ -172,8 +172,8 @@ Categorization::TriState Categorization::belongsToMenu(cISCPropertyHolder* propH
 			case policeButtonId:
 				return bool2tri((hasOg(OgPolice) || hasOg(OgJail))
 						&& !belongsToSubmenu(propHolder, policeSmallSubmenuId)
-						&& !belongsToSubmenu(propHolder, policeMediumSubmenuId)
 						&& !belongsToSubmenu(propHolder, policeLargeSubmenuId)
+						&& !belongsToSubmenu(propHolder, policeDeluxeSubmenuId)
 					);
 
 			case educationButtonId:
