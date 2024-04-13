@@ -124,7 +124,14 @@ Categorization::TriState Categorization::belongsToMenu(cISCPropertyHolder* propH
 	{
 		return bool2tri(belongsToSubmenu(propHolder, menuId));
 	}
-	else  // TODO consider also checking itemSubmenuParentPropId for top-level menus
+	else if (propHolder->HasProperty(itemSubmenuParentPropId) &&
+			PropertyUtil::arrayExists(propHolder, itemSubmenuParentPropId, nullptr, [this](uint32_t id) {
+				return this->reachableSubmenus->contains(id);
+			}))
+	{
+		return bool2tri(PropertyUtil::arrayContains(propHolder, itemSubmenuParentPropId, nullptr, menuId));
+	}
+	else
 	{
 		auto hasOg = [&propHolder](uint32_t og) { return PropertyUtil::arrayContains(propHolder, occupantGroupsPropId, nullptr, og); };
 		switch (menuId)
