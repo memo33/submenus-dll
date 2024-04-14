@@ -13,6 +13,7 @@ const std::unordered_set<uint32_t> Categorization::toplevelMenuButtons = {
 };
 
 const std::unordered_set<uint32_t> Categorization::autoPrefilledSubmenus = {
+	r1SubmenuId, r2SubmenuId, r3SubmenuId,
 	cs1SubmenuId, cs2SubmenuId, cs3SubmenuId,
 	co2SubmenuId, co3SubmenuId,
 	iaSubmenuId, idSubmenuId, imSubmenuId, ihtSubmenuId,
@@ -73,7 +74,6 @@ bool Categorization::belongsToSubmenu(cISCPropertyHolder* propHolder, uint32_t s
 		auto hasOg = [&propHolder](uint32_t og) { return PropertyUtil::arrayContains(propHolder, occupantGroupsPropId, nullptr, og); };
 		switch (submenuId)
 		{
-			// TODO Check that higher-wealth OG not present?
 			case cs1SubmenuId: return hasOg(OgLandmark) && hasOg(OgCs1) && propHolder->HasProperty(capacitySatisfiedPropId);
 			case cs2SubmenuId: return hasOg(OgLandmark) && hasOg(OgCs2) && propHolder->HasProperty(capacitySatisfiedPropId);
 			case cs3SubmenuId: return hasOg(OgLandmark) && hasOg(OgCs3) && propHolder->HasProperty(capacitySatisfiedPropId);
@@ -83,6 +83,9 @@ bool Categorization::belongsToSubmenu(cISCPropertyHolder* propHolder, uint32_t s
 			case idSubmenuId:  return hasOg(OgLandmark) && hasOg(OgId)  && propHolder->HasProperty(capacitySatisfiedPropId);
 			case imSubmenuId:  return hasOg(OgLandmark) && hasOg(OgIm)  && propHolder->HasProperty(capacitySatisfiedPropId);
 			case ihtSubmenuId: return hasOg(OgLandmark) && hasOg(OgIht) && propHolder->HasProperty(capacitySatisfiedPropId);
+			case r1SubmenuId:  return hasOg(OgLandmark) && hasOg(OgR1)  && propHolder->HasProperty(capacitySatisfiedPropId);
+			case r2SubmenuId:  return hasOg(OgLandmark) && hasOg(OgR2)  && propHolder->HasProperty(capacitySatisfiedPropId);
+			case r3SubmenuId:  return hasOg(OgLandmark) && hasOg(OgR3)  && propHolder->HasProperty(capacitySatisfiedPropId);
 
 			case freightRailSubmenuId:   return hasOg(OgRail) && hasOg(OgFreightRail)                         && !hasOg(OgAirport) && !hasOg(OgSeaport);
 			case passengerRailSubmenuId: return hasOg(OgRail) && hasOg(OgPassengerRail) && !hasOg(OgMonorail) && !hasOg(OgAirport) && !hasOg(OgSeaport) && !hasOg(OgLightrail);
@@ -168,6 +171,9 @@ Categorization::TriState Categorization::belongsToMenu(cISCPropertyHolder* propH
 						&& !belongsToSubmenu(propHolder, idSubmenuId)
 						&& !belongsToSubmenu(propHolder, imSubmenuId)
 						&& !belongsToSubmenu(propHolder, ihtSubmenuId)
+						&& !belongsToSubmenu(propHolder, r1SubmenuId)
+						&& !belongsToSubmenu(propHolder, r2SubmenuId)
+						&& !belongsToSubmenu(propHolder, r3SubmenuId)
 					);
 
 			case railButtonId:

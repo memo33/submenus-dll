@@ -79,6 +79,9 @@ static constexpr uint32_t OgHealthLarge = 0x151a;
 static constexpr uint32_t OgHealthOther = 0x151c;
 
 static constexpr uint32_t OgLandmark = 0x150a;
+static constexpr uint32_t OgR1 = 0x11010;
+static constexpr uint32_t OgR2 = 0x11020;
+static constexpr uint32_t OgR3 = 0x11030;
 static constexpr uint32_t OgCs1 = 0x13110;
 static constexpr uint32_t OgCs2 = 0x13120;
 static constexpr uint32_t OgCs3 = 0x13130;
@@ -119,6 +122,9 @@ static constexpr uint32_t healthSmallSubmenuId = 0xB1F7AC5B;  // medical clinic
 static constexpr uint32_t healthMediumSubmenuId = 0xB7B594D6;  // hospital with helicopter
 static constexpr uint32_t healthLargeSubmenuId = 0xBC251B69;  // medical center with helicopter
 
+static constexpr uint32_t r1SubmenuId = 0x93DADFE9;
+static constexpr uint32_t r2SubmenuId = 0x984E5034;
+static constexpr uint32_t r3SubmenuId = 0x9F83F133;
 static constexpr uint32_t cs1SubmenuId = 0x11BF1CA9;
 static constexpr uint32_t cs2SubmenuId = 0x24C43253;
 static constexpr uint32_t cs3SubmenuId = 0x9BDEFE2B;
