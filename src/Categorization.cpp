@@ -19,6 +19,7 @@ const std::unordered_set<uint32_t> Categorization::autoPrefilledSubmenus = {
 	iaSubmenuId, idSubmenuId, imSubmenuId, ihtSubmenuId,
 	freightRailSubmenuId, passengerRailSubmenuId, monorailSubmenuId, hybridRailwaySubmenuId, yardsSubmenuId,
 	busSubmenuId, subwaySubmenuId, elRailSubmenuId, glrSubmenuId, multiModalStationsSubmenuId,
+	portFerrySubmenuId, canalSubmenuId, waterfrontSubmenuId,
 	energyDirtySubmenuId, energyCleanSubmenuId, miscPowerSubmenuId,
 	policeSmallSubmenuId, policeLargeSubmenuId, policeDeluxeSubmenuId,
 	elementarySchoolSubmenuId, highSchoolSubmenuId, collegeSubmenuId, libraryMuseumSubmenuId,
@@ -98,7 +99,12 @@ bool Categorization::belongsToSubmenu(cISCPropertyHolder* propHolder, uint32_t s
 			case elRailSubmenuId: return hasOg(OgMiscTransit) && hasOg(OgLightrail) && !hasOg(OgPassengerRail) && !hasOg(OgMonorail) && !hasOg(OgAirport) && !hasOg(OgSeaport) && !isHeightBelow(propHolder, 15.5);
 			case glrSubmenuId: return hasOg(OgMiscTransit) && hasOg(OgLightrail) && !hasOg(OgPassengerRail) && !hasOg(OgMonorail) && !hasOg(OgAirport) && !hasOg(OgSeaport) && isHeightBelow(propHolder, 15.5);
 			case multiModalStationsSubmenuId: return (hasOg(OgRail) || hasOg(OgMiscTransit)) && hasOg(OgLightrail) && (hasOg(OgPassengerRail) || hasOg(OgMonorail)) && !hasOg(OgAirport) && !hasOg(OgSeaport);
-			// case parkingSubmenuId:
+			// case parkingSubmenuId:  // no auto-categorization
+
+			case portFerrySubmenuId: return hasOg(OgWaterTransit) && (hasOg(OgPassengerFerry) || hasOg(OgCarFerry) || hasOg(OgSeaport)) && !hasOg(OgAirport);
+			case canalSubmenuId:  return (hasOg(OgWaterTransit) || hasOg(OgPark)) && hasOg(OgBteInlandWaterways);
+			// case seawallSubmenuId:  // no auto-categorization
+			case waterfrontSubmenuId: return hasOg(OgWaterTransit) && hasOg(OgBteWaterfront) && !hasOg(OgBteInlandWaterways) && !(hasOg(OgPassengerFerry) || hasOg(OgCarFerry) || hasOg(OgSeaport));
 
 			case energyDirtySubmenuId:
 				return hasOg(OgPower) && (
@@ -196,8 +202,16 @@ Categorization::TriState Categorization::belongsToMenu(cISCPropertyHolder* propH
 						// && !belongsToSubmenu(propHolder, parkingSubmenuId)
 					);
 
+			case seaportButtonId:
+				return bool2tri(hasOg(OgWaterTransit)
+						&& !belongsToSubmenu(propHolder, portFerrySubmenuId)
+						&& !belongsToSubmenu(propHolder, canalSubmenuId)
+						// && !belongsToSubmenu(propHolder, seawallSubmenuId)
+						&& !belongsToSubmenu(propHolder, waterfrontSubmenuId)
+					);
+
 			case powerButtonId:
-				return bool2tri(hasOg(OgPower)
+				return bool2tri(hasOg(OgPower)  // originally also excludes OgLandfill
 						&& !belongsToSubmenu(propHolder, energyDirtySubmenuId)
 						&& !belongsToSubmenu(propHolder, energyCleanSubmenuId)
 						&& !belongsToSubmenu(propHolder, miscPowerSubmenuId)
@@ -224,6 +238,11 @@ Categorization::TriState Categorization::belongsToMenu(cISCPropertyHolder* propH
 						&& !belongsToSubmenu(propHolder, healthSmallSubmenuId)
 						&& !belongsToSubmenu(propHolder, healthMediumSubmenuId)
 						&& !belongsToSubmenu(propHolder, healthLargeSubmenuId)
+					);
+
+			case parkButtonId:
+				return bool2tri(hasOg(OgPark)
+						&& !belongsToSubmenu(propHolder, canalSubmenuId)
 					);
 
 			default:

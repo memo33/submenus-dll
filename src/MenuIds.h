@@ -37,6 +37,7 @@ enum PowerPlantType : uint32_t { Coal = 1, Hydrogen = 2, NaturalGas = 3, Nuclear
 
 static constexpr uint32_t railButtonId = RAIL_BUTTON_ID;
 static constexpr uint32_t miscTransitButtonId = MISCTRANSP_BUTTON_ID;
+static constexpr uint32_t seaportButtonId = SEAPORT_BUTTON_ID;
 
 static constexpr uint32_t powerButtonId = POWER_BUTTON_ID;
 
@@ -44,6 +45,7 @@ static constexpr uint32_t policeButtonId = POLICE_BUTTON_ID;
 static constexpr uint32_t educationButtonId = EDUCATION_BUTTON_ID;
 static constexpr uint32_t healthButtonId = HEALTH_BUTTON_ID;
 static constexpr uint32_t landmarkButtonId = LANDMARK_BUTTON_ID;
+static constexpr uint32_t parkButtonId = PARK_BUTTON_ID;
 
 static constexpr uint32_t OgRail = 0x1300;
 static constexpr uint32_t OgBus = 0x1301;
@@ -52,9 +54,15 @@ static constexpr uint32_t OgLightrail = 0x1303;
 static constexpr uint32_t OgPassengerRail = 0x1305;
 static constexpr uint32_t OgFreightRail = 0x1306;
 static constexpr uint32_t OgMonorail = 0x1307;
+static constexpr uint32_t OgCarFerry = 0x1308;
+static constexpr uint32_t OgPassengerFerry = 0x1309;
+static constexpr uint32_t OgMiscTransit = 0x130A;
 static constexpr uint32_t OgAirport = 0x1508;
 static constexpr uint32_t OgSeaport = 0x1509;
-static constexpr uint32_t OgMiscTransit = 0x130A;
+static constexpr uint32_t OgWaterTransit = 0x1519;
+
+static constexpr uint32_t OgBteWaterfront = 0xB5C00DD6;
+static constexpr uint32_t OgBteInlandWaterways = 0xB5C00DD8;
 
 static constexpr uint32_t OgPower = 0x1400;
 
@@ -92,6 +100,8 @@ static constexpr uint32_t OgId = 0x14200;
 static constexpr uint32_t OgIm = 0x14300;
 static constexpr uint32_t OgIht = 0x14400;
 
+static constexpr uint32_t OgPark = 0x1006;
+
 static constexpr uint32_t passengerRailSubmenuId = 0x35380C75;
 static constexpr uint32_t freightRailSubmenuId = 0x3557F0A1;
 static constexpr uint32_t yardsSubmenuId = 0x39BA25C7;
@@ -104,6 +114,11 @@ static constexpr uint32_t elRailSubmenuId = 0x244F77E1;
 static constexpr uint32_t subwaySubmenuId = 0x231A97D3;
 static constexpr uint32_t multiModalStationsSubmenuId = 0x322C7959;
 static constexpr uint32_t parkingSubmenuId = 0x217B6C35;
+
+static constexpr uint32_t portFerrySubmenuId = 0x07047B22;
+static constexpr uint32_t canalSubmenuId = 0x03C6629C;
+static constexpr uint32_t seawallSubmenuId = 0x1CD18678;
+static constexpr uint32_t waterfrontSubmenuId = 0x84D42CD6;
 
 static constexpr uint32_t energyDirtySubmenuId = 0x4B465151;
 static constexpr uint32_t energyCleanSubmenuId =0xCDE0316B;
