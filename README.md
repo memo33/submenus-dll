@@ -5,7 +5,7 @@ Submenus for SimCity 4.
 ## Features
 
 - enables submenu functionality: This DLL is a dependency for other submenu-compatible plugins.
-- adds submenus for Plazas, Green Spaces and Sports Grounds to the Parks menu
+- adds a number of standard submenus such as Plazas, Green Spaces, Sports.
 - fixes the game's duplicate menu icons bug that occurs when loading some plugins, such as the NAM, twice
 - implements Exemplar Patching functionality
 
@@ -23,18 +23,102 @@ Submenus for SimCity 4.
 
 - Copy the DLLs into the top-level directory of either Plugins folder
   (place it directly in `<Documents>\SimCity 4\Plugins` or `<SC4 install folder>\Plugins`, not in a subfolder).
-- Copy the file `parks-submenus.dat` anywhere into your Plugins folder.
+- Copy the file `submenu-essentials.dat` and optionally the individual submenu files anywhere into your Plugins folder.
+  You may skip installing an optional submenu if it contains neither Flora nor any sub-submenus.
+  In that case, the buildings of that submenu will appear in the default top-level menu instead.
 
 ## Troubleshooting
 
 The plugin should write a `.log` file in the folder containing the plugin.
 The log contains status information for the most recent run of the plugin.
 
-If the parks submenus appear empty in the game,
-there is a conflicting mod in your Plugins that overwrites properties of the Maxis parks.
-Check if a submenu-compatible version of that mod is available
-or move the `parks-submenus.dat` to a folder loading later.
-In any case, the DLL can still be used as a dependency for other plugins.
+If no `.log` file is written, the DLL failed to load.
+In this case, make sure the [Microsoft Visual C++ 2022+ x86 Redistributable](https://aka.ms/vs/17/release/vc_redist.x86.exe) is installed.
+
+## Credits
+
+- Submenu icons created by Panda
+- Exemplar Patching implemented in collaboration with Null 45
+
+## Standard Submenus
+
+This mod adds the following submenus. Additional menus may be added by third-party mods.
+
+Residential:
+- Ploppable R$ (0x93DADFE9)*
+- Ploppable R$$ (0x984E5034)*
+- Ploppable R$$$ (0x9F83F133)*
+
+Commercial:
+- Ploppable CS$ (0x11BF1CA9)*
+- Ploppable CS$$ (0x24C43253)*
+- Ploppable CS$$$ (0x9BDEFE2B)*
+- Ploppable CO$$ (0xA7FF7CF0)*
+- Ploppable CO$$$ (0xE27B7EF6)*
+
+Industrial:
+- Ploppable Farms (0xC220B7D8)*
+- Ploppable Dirty Industry (0x62D82695)*
+- Ploppable Manufacturing Industry (0x68B3E5FD)*
+- Ploppable High-Tech Industry (0x954E20FE)*
+
+Rail:
+- Passenger Rail Stations (0x35380C75)*
+- Freight Rail Stations (0x3557F0A1)*
+- Yards (0x39BA25C7)* (non-functional lots, sidings, spurs)
+- Hybrid Railway Stations (0x2B294CC2)*
+- Monorail Stations (0x3A1D9854)*
+
+Misc. Transit:
+- Bus (0x1FDDE184)*
+- GLR (0x26B51B28)*
+- El-Rail (0x244F77E1)*
+- Subway (0x231A97D3)*
+- Multi-modal Stations (0x322C7959)*
+- Parking (0x217B6C35)
+
+Water Transit:
+- Seaports and Ferry Terminals (0x07047B22)*
+- Canals (0x03C6629C)*
+- Seawalls (0x1CD18678)
+- Waterfront (0x84D42CD6)*
+
+Power:
+- Dirty Energy (0x4B465151)*
+- Clean Energy (0xCDE0316B)*
+- Miscellaneous Power Utilities (0xD013F32D)* (substations, poles,…)
+
+Police:
+- Small (0x65D88585)*
+- Large (0x7D6DC8BC)*
+- Deluxe (0x8157CA0E)*
+- Military (0x8BA49621)
+
+Education:
+- Elementary Schools (0x9FE5C428)*
+- High Schools (0xA08063D0)* (including private schools)
+- Higher Education (0xAC706063)* (colleges and universities)
+- Libraries and Museums (0xAEDD9FAA)*
+
+Health:
+- Small (0xB1F7AC5B)*
+- Medium (0xB7B594D6)*
+- Large (0xBC251B69)*
+
+Parks:
+- Green Spaces (0xBF776D40)
+- Plazas (0xEB75882C)
+- Sports Grounds (0xCE21DBEB)
+- Paths and Modular Parks (0xDEFFD960)
+- Embankments and Retaining Walls (0xBB531946)
+- Fillers (0xF034265C) (diagonal fillers, roundabout fillers, industrial fillers, etc.)
+
+Many of these submenus are pre-filled automatically with suitable items from your plugins.
+Others remain empty (and therefore hidden) until you install plugins that have been updated for submenu functionality.
+
+Wether an item appears in a submenu can be explicit or implicit:
+explicit if the item was modified to use a particular submenu;
+implicit if the item belongs to a category associated with a submenu marked with `*`.
 
 ------------------------------------------------------------
 ## Information for modders
@@ -75,7 +159,7 @@ The following property is required, but does not usually need to be changed:
 
 - `Item Button Class` (0x8a2602cc): set to `1 = Submenu Button`.
 
-The following table lists the Button IDs for existing menus.
+The following table lists the Button IDs for existing top-level menus.
 The Occupant Groups are used as fallback to add buildings to a specific top-level menu if the DLL is not present.
 
     Menu            , Submenu Button ID   , Occupant Group
@@ -100,9 +184,6 @@ The Occupant Groups are used as fallback to add buildings to a specific top-leve
     Landmark        , 0x09930709          , 0x150a
     Reward          , 0x34                , 0x150b
     Park            , 0x3                 , 0x1006
-    Plazas          , 0xeb75882c          , -
-    Sports Grounds  , 0xce21dbeb          , -
-    Green Spaces    , 0xbf776d40          , -
 
 Note that empty submenus are hidden from the menus.
 
@@ -173,7 +254,7 @@ See [LICENSE.txt](LICENSE.txt) for more information.
 
 #### 3rd party code
 
-- [gzcom-dll](https://github.com/nsgomez/gzcom-dll/tree/master) Located in the vendor folder, MIT License.
+- [gzcom-dll](https://github.com/nsgomez/gzcom-dll/tree/master) MIT License
 - [Windows Implementation Library](https://github.com/microsoft/wil) MIT License
 - [SC4Fix](https://github.com/nsgomez/sc4fix) MIT License
 - [NAM-dll](https://github.com/NAMTeam/nam-dll) LGPL 3.0
