@@ -82,7 +82,7 @@
 #define TRANSPORT_EXTRA_MENU_MIN 0x9a6c1200
 #define TRANSPORT_EXTRA_MENU_MAX 0x9a6c12ff
 
-// secondary menu PNG IIDs that determine the color of the menu frame
+// secondary menu PNG IIDs that determine the color of the (top-level) menu frame
 #define FLORA_MENU_ID 0x14215ed0
 #define ZONE_MENU_ID 0x14215ed1
 #define TRANSPORT_MENU_ID 0x14215ed2
@@ -376,6 +376,40 @@ keep:
 		}
 	}
 
+	uint32_t menuFramePngFlora = FLORA_MENU_ID;
+	uint32_t menuFramePngZone = ZONE_MENU_ID;
+	uint32_t menuFramePngTransport = TRANSPORT_MENU_ID;
+	uint32_t menuFramePngUtility = UTILITY_MENU_ID;
+	uint32_t menuFramePngCivic = CIVIC_MENU_ID;
+
+	void initializeMenuFrames()
+	{
+		cIGZPersistResourceManagerPtr pResMan;
+		if (!pResMan) {
+			return;
+		}
+		auto key = cGZPersistResourceKey(0x856DDBAC, 0x46A006B0, 0xAC581B70);
+		if (pResMan->TestForKey(key)) {
+			menuFramePngFlora = key.instance;
+		}
+		key.instance = 0xAC581B71;
+		if (pResMan->TestForKey(key)) {
+			menuFramePngZone = key.instance;
+		}
+		key.instance = 0xAC581B72;
+		if (pResMan->TestForKey(key)) {
+			menuFramePngTransport = key.instance;
+		}
+		key.instance = 0xAC581B73;
+		if (pResMan->TestForKey(key)) {
+			menuFramePngUtility = key.instance;
+		}
+		key.instance = 0xAC581B74;
+		if (pResMan->TestForKey(key)) {
+			menuFramePngCivic = key.instance;
+		}
+	}
+
 	// Alters the call of InvokeTertiaryMenu to change which button the displayed catalog menu is attached to.
 	void NAKED_FUN Hook_DoTransportMenuTarget(void)
 	{
@@ -423,19 +457,19 @@ nested:
 			cmp eax, ZONE_I_BUTTON_ID;
 			je zoneColor;
 			// else default to civic menu color
-			push CIVIC_MENU_ID;
+			push dword ptr [menuFramePngCivic];
 			jmp afterColor;
 floraColor:
-			push FLORA_MENU_ID;
+			push dword ptr [menuFramePngFlora];
 			jmp afterColor;
 zoneColor:
-			push ZONE_MENU_ID;
+			push dword ptr [menuFramePngZone];
 			jmp afterColor;
 transportColor:
-			push TRANSPORT_MENU_ID;
+			push dword ptr [menuFramePngTransport];
 			jmp afterColor;
 utilityColor:
-			push UTILITY_MENU_ID;
+			push dword ptr [menuFramePngUtility];
 
 afterColor:
 			mov eax, dword ptr [esp + 0x40];  // restore
@@ -1251,6 +1285,8 @@ public:
 			p.second->Release();
 		}
 		submenuNames.clear();
+
+		initializeMenuFrames();
 
 		logger.WriteLineFormatted(LogLevel::Info,
 			"Initialized %d submenus (%d empty, %d not reachable).",
