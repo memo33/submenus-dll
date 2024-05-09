@@ -144,6 +144,9 @@ static constexpr uint32_t AddBuildingsToItemList_ContinueJump_Skip = 0x7f065b;
 static constexpr uint32_t AddBuildingsToItemList_ContinueJump_Keep = 0x7f0194;
 static constexpr uint32_t AddBuildingsToItemList_ContinueJump_UseOrigProp = 0x7f0078;
 
+static constexpr uint32_t AddBuildingsToItemList2_InjectPoint = 0x7f036a;
+static constexpr uint32_t AddBuildingsToItemList2_ContinueJump = 0x7f0371;
+
 static uint32_t CreateBuildingMenu_InjectPoint = 0x7f074e;
 static uint32_t CreateBuildingMenu_ContinueJump = 0x7f0756;
 
@@ -372,6 +375,37 @@ skip:
 keep:
 			pop eax;  // restore
 			push AddBuildingsToItemList_ContinueJump_Keep;
+			ret;
+		}
+	}
+
+	uint32_t replaceIconIfMissing(uint32_t itemIconId)
+	{
+		cIGZPersistResourceManagerPtr pResMan;
+		if (pResMan) {
+			auto key = cGZPersistResourceKey(0x856ddbac, 0x6a386d26, itemIconId);
+			if (!pResMan->TestForKey(key)) {
+				return 0x144161ec;  // missing thumb icon IID
+			}
+		}
+		return itemIconId;
+	}
+
+	// replaces missing icons by "Missing Thumb" icon to avoid the game's off-by-one icon bug
+	void NAKED_FUN Hook_AddBuildingsToItemList2(void)
+	{
+		__asm {
+			push eax;  // store
+			push ecx;  // store
+			push edx;  // store
+			push ecx;  // itemIconId
+			call replaceIconIfMissing;  // (cdecl)
+			add esp, 0x4;
+			mov dword ptr [esp + 0xc4 + 0xc], eax;  // item icon or missing thumb icon IID
+			pop edx;  // restore
+			pop ecx;  // restore
+			pop eax;  // restore
+			push AddBuildingsToItemList2_ContinueJump;
 			ret;
 		}
 	}
@@ -958,16 +992,17 @@ noTransportExtraMatch:  // continue regularly with airport menu branch
 			InstallHook(CreateCatalogItemList_InjectPoint, Hook_CreateCatalogItemList);
 			InstallHook(CreateCatalogItemList2_InjectPoint, Hook_CreateCatalogItemList2);
 			InstallHook(CreateCatalogItemList3_InjectPoint, Hook_CreateCatalogItemList3);
+			InstallHook(AddBuildingsToItemList2_InjectPoint, Hook_AddBuildingsToItemList2);
 
 			logger.WriteLine(
 				LogLevel::Info,
-				"Installed the Duplicate Menu Icons fix.");
+				"Installed the Duplicate/Missing Menu Icons fix.");
 		}
 		catch (const wil::ResultException& e)
 		{
 			logger.WriteLineFormatted(
 				LogLevel::Error,
-				"Failed to install the Duplicate Menu Icons fix.\n%s",
+				"Failed to install the Duplicate/Missing Menu Icons fix.\n%s",
 				e.what());
 		}
 	}
