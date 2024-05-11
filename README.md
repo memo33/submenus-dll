@@ -27,6 +27,8 @@ Submenus for SimCity 4.
   You may skip installing an optional submenu if it contains neither Flora nor any sub-submenus.
   In that case, the buildings of that submenu will appear in the default top-level menu instead.
 
+Alternatively, the mod can be installed with Sc4pac: [memo:submenus-dll](https://memo33.github.io/sc4pac/channel/?pkg=memo:submenus-dll)
+
 ## Troubleshooting
 
 The plugin should write a `.log` file in the folder containing the plugin.
@@ -63,11 +65,11 @@ Industrial:
 - Ploppable High-Tech Industry (0x954E20FE)*
 
 Rail:
-- Passenger Rail Stations (0x35380C75)*
+- Passenger Rail (0x35380C75)*
 - Freight Rail Stations (0x3557F0A1)*
 - Yards (0x39BA25C7)* (non-functional lots, sidings, spurs)
-- Hybrid Railway Stations (0x2B294CC2)*
-- Monorail Stations (0x3A1D9854)*
+- Hybrid Railway (0x2B294CC2)*
+- Monorail (0x3A1D9854)*
 
 Misc. Transit:
 - Bus (0x1FDDE184)*
@@ -116,7 +118,7 @@ Parks:
 Many of these submenus are pre-filled automatically with suitable items from your plugins.
 Others remain empty (and therefore hidden) until you install plugins that have been updated for submenu functionality.
 
-Wether an item appears in a submenu can be explicit or implicit:
+Whether an item appears in a submenu can be explicit or implicit:
 explicit if the item was modified to use a particular submenu;
 implicit if the item belongs to a category associated with a submenu marked with `*`.
 

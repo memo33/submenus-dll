@@ -1,3 +1,11 @@
+/*
+ * ╔══╗   ╔═╗
+ * ║ ═╬═╦═╣ ╚═╦═════╦════╦═══╦═╦═╦══╗
+ * ╠═ ║ ║ ║ ║ ║ ║ ║ ║ ╚═╦╣ ║ ║ ║ ║ ═╣
+ * ╚══╩═══╩═══╩═╩═╩═╩═══╝╚═╩═╩══╦╩═ ║
+ *                              ╚═══╝
+ */
+
 // Portions of this file have been adapted from the nam-dll project:
 /*
  * Copyright (c) 2023 NAM Team contributors
