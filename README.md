@@ -17,7 +17,7 @@ Submenus for SimCity 4.
 
 ## Dependencies
 
-- [SC4ResourceLoadingHooks DLL](https://github.com/0xC0000054/sc4-resource-loading-hooks/releases)
+- [SC4ResourceLoadingHooks DLL](https://community.simtropolis.com/files/file/36242-resource-loading-hooks-dll-for-simcity-4/)
 
 ## Installation
 
