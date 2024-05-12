@@ -431,24 +431,35 @@ keep:
 			return;
 		}
 		auto key = cGZPersistResourceKey(0x856DDBAC, 0x46A006B0, 0xAC581B70);
+		bool foundEssentials = false;
 		if (pResMan->TestForKey(key)) {
 			menuFramePngFlora = key.instance;
+			foundEssentials = true;
 		}
 		key.instance = 0xAC581B71;
 		if (pResMan->TestForKey(key)) {
 			menuFramePngZone = key.instance;
+			foundEssentials = true;
 		}
 		key.instance = 0xAC581B72;
 		if (pResMan->TestForKey(key)) {
 			menuFramePngTransport = key.instance;
+			foundEssentials = true;
 		}
 		key.instance = 0xAC581B73;
 		if (pResMan->TestForKey(key)) {
 			menuFramePngUtility = key.instance;
+			foundEssentials = true;
 		}
 		key.instance = 0xAC581B74;
 		if (pResMan->TestForKey(key)) {
 			menuFramePngCivic = key.instance;
+			foundEssentials = true;
+		}
+		if (!foundEssentials) {
+			Logger& logger = Logger::GetInstance();
+			logger.WriteLineFormatted(LogLevel::Error,
+				"Failed to load the submenu essentials file. Please make sure to put it into your Plugins folder.");
 		}
 	}
 
@@ -1334,6 +1345,10 @@ public:
 		logger.WriteLineFormatted(LogLevel::Info,
 			"Initialized %d submenus (%d empty, %d not reachable).",
 			submenuLinks.size(), emptySubmenus.size(), numNonReachable);
+		if (submenuLinks.empty()) {
+			logger.WriteLineFormatted(LogLevel::Error,
+				"It looks like you did not install any of the individual submenus. Please make sure to put the .dat file for each submenu you want to use into your Plugins folder. They are located in the subfolders of the \"submenus\" folder.");
+		}
 		submenusInitialized = true;
 	}
 
