@@ -126,7 +126,7 @@ bool Categorization::belongsToSubmenu(cISCPropertyHolder* propHolder, uint32_t s
 					PropertyUtil::arrayContains(propHolder, powerPlantTypePropId, nullptr, PowerPlantType::Auxiliary)
 				);
 
-			case policeSmallSubmenuId:  return hasOg(OgPolice) && (hasOg(OgPoliceSmall) || hasOg(OgPoliceKiosk));
+			case policeSmallSubmenuId: return hasOg(OgPolice) && (hasOg(OgPoliceSmall) || hasOg(OgPoliceKiosk)) && !hasOg(OgPoliceBig) && !hasOg(OgPoliceDeluxe);
 			case policeLargeSubmenuId: return hasOg(OgPolice) && hasOg(OgPoliceBig) && !hasOg(OgPoliceDeluxe);
 			case policeDeluxeSubmenuId:  return hasOg(OgPolice) && hasOg(OgPoliceDeluxe);
 
