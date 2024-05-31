@@ -80,6 +80,7 @@
 #define ITEM_BUTTON_CLASS_SUBMENU 0x00000001
 #define ITEM_BUTTON_CLASS_NETWORK 0x00000002
 #define ITEM_BUTTON_CLASS_FLORA 0x00000004  // currently not enforced (subject to change)
+#define ITEM_BUTTON_CLASS_BUILDING_UNHIDE 0x00000008  // (hidden reward) building that should be unhidden in submenus
 
 // the catalog item type of submenu buttons
 #define SUBMENU_ITEM_TYPE 0x9ab38dac
@@ -154,6 +155,9 @@ static constexpr uint32_t AddBuildingsToItemList_ContinueJump_UseOrigProp = 0x7f
 
 static constexpr uint32_t AddBuildingsToItemList2_InjectPoint = 0x7f036a;
 static constexpr uint32_t AddBuildingsToItemList2_ContinueJump = 0x7f0371;
+
+static constexpr uint32_t AddBuildingsToItemList3_InjectPoint = 0x7f0493;
+static constexpr uint32_t AddBuildingsToItemList3_ContinueJump = 0x7f049c;
 
 static uint32_t CreateBuildingMenu_InjectPoint = 0x7f074e;
 static uint32_t CreateBuildingMenu_ContinueJump = 0x7f0756;
@@ -414,6 +418,43 @@ keep:
 			pop ecx;  // restore
 			pop eax;  // restore
 			push AddBuildingsToItemList2_ContinueJump;
+			ret;
+		}
+	}
+
+	bool shouldForciblyUnhideBuilding(cISCPropertyHolder* propHolder)
+	{
+		bool isSubmenuActive = (lastVirtualButtonId == VIRTUAL_SUBMENU_ITEM_TYPE);
+		if (!isSubmenuActive) {
+			return false;  // we are in a top-level menu (like Reward menu) in which we do not unhide hidden buildings
+		} else {
+			uint32_t propValueBuffer = 0;
+			propHolder->GetProperty((uint32_t)ITEM_BUTTON_CLASS_PROP, propValueBuffer);
+			return propValueBuffer == ITEM_BUTTON_CLASS_BUILDING_UNHIDE;
+		}
+	}
+
+	// forcibly unhide (locked) reward buildings if they are inside a submenu and have the corresponding property set
+	void NAKED_FUN Hook_AddBuildingsToItemList3(void)
+	{
+		__asm {
+			test byte ptr [esi], 0x1;
+			jz skipHiding;
+
+			push eax;  // store
+			push ecx;  // store
+			push edx;  // store
+			push edi;  // propHolder
+			call shouldForciblyUnhideBuilding;  // (cdecl)
+			add esp, 0x4;
+			pop edx;  // restore
+			pop ecx;  // restore
+			test al, al;
+			pop eax;  // restore
+			jnz skipHiding;
+			mov byte ptr [esp + 0x12], bl;  // hides hidden building
+skipHiding:
+			push AddBuildingsToItemList3_ContinueJump;
 			ret;
 		}
 	}
@@ -1048,6 +1089,7 @@ noTransportExtraMatch:  // continue regularly with airport menu branch
 			InstallHook(CreateBuildingMenu_InjectPoint, Hook_CreateBuildingMenu);
 			InstallHook(CreateCatalogView_InjectPoint, Hook_CreateCatalogView);
 			InstallHook(AddBuildingsToItemList_InjectPoint, Hook_AddBuildingsToItemList);
+			InstallHook(AddBuildingsToItemList3_InjectPoint, Hook_AddBuildingsToItemList3);
 			InstallHook(InvokeTertiaryMenu_InjectPoint, Hook_InvokeTertiaryMenu);
 
 			// With the following replacement, plugins can be designed for use with and without the DLL.

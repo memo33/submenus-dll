@@ -195,6 +195,20 @@ Add the properties `Item Submenu Parent ID` and `Item Button Class` to the catal
 The latter property is set to `2 = Network Item in Submenu` or `4 = Flora Item in Submenu`.
 (The `Building Submenus` property is not used for these items.)
 
+### Reward buildings
+
+Reward buildings normally do not require any special considerations for submenus.
+They can be included in submenus just like any other buildings.
+
+If you want to include a *hidden* reward building in the Reward menu *and* in a submenu,
+and want the item to be hidden in the Reward menu while unlocked, but unhidden in the submenu, then:
+- include the two menu IDs in the `Building Submenus` property
+- `Item Button Class` (0x8a2602cc): set to `8 = Building unhidden in Submenu`.
+For example, this applies to the House of Worship.
+(For *non-hidden* reward buildings such as the Mayor's House, this is not needed.)
+
+This way, unlocked rewards can be found in the Reward menu as usual, but also in a thematic submenu.
+
 ### Exemplar patching
 
 Exemplar patching is a technique to change the behavior of Exemplar files on-the-fly at runtime, without altering the original DBPF files.

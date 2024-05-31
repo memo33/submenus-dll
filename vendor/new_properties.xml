@@ -5244,6 +5244,8 @@ For use with Submenus DLL: classifier that determines the function of this item
     </OPTION>
     <OPTION Value="0x0004" Name="Flora Item in Submenu">
     </OPTION>
+    <OPTION Value="0x0008" Name="Building unhidden in Submenu">
+    </OPTION>
   </PROPERTY>
   <PROPERTY Name="Port Type Exemplar IDs" ID="0x8a270fc3" Type="Uint32" Count="-1" Default="0x00000000" ShowAsHex="Y">
     <HELP>
