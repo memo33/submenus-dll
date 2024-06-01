@@ -107,6 +107,9 @@ Health:
 - Medium (0xB7B594D6)*
 - Large (0xBC251B69)*
 
+Landmark:
+- Religion (0x26EB3057)*
+
 Parks:
 - Green Spaces (0xBF776D40)
 - Plazas (0xEB75882C)

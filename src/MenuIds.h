@@ -100,6 +100,9 @@ static constexpr uint32_t OgId = 0x14200;
 static constexpr uint32_t OgIm = 0x14300;
 static constexpr uint32_t OgIht = 0x14400;
 
+static constexpr uint32_t OgWorship = 0x1907;
+static constexpr uint32_t OgCemetery = 0x1700;
+
 static constexpr uint32_t OgPark = 0x1006;
 
 static constexpr uint32_t passengerRailSubmenuId = 0x35380C75;
@@ -136,6 +139,8 @@ static constexpr uint32_t libraryMuseumSubmenuId = 0xAEDD9FAA;
 static constexpr uint32_t healthSmallSubmenuId = 0xB1F7AC5B;  // medical clinic
 static constexpr uint32_t healthMediumSubmenuId = 0xB7B594D6;  // hospital with helicopter
 static constexpr uint32_t healthLargeSubmenuId = 0xBC251B69;  // medical center with helicopter
+
+static constexpr uint32_t religionSubmenuId = 0x26EB3057;
 
 static constexpr uint32_t r1SubmenuId = 0x93DADFE9;
 static constexpr uint32_t r2SubmenuId = 0x984E5034;

@@ -24,6 +24,7 @@ const std::unordered_set<uint32_t> Categorization::autoPrefilledSubmenus = {
 	policeSmallSubmenuId, policeLargeSubmenuId, policeDeluxeSubmenuId,
 	elementarySchoolSubmenuId, highSchoolSubmenuId, collegeSubmenuId, libraryMuseumSubmenuId,
 	healthSmallSubmenuId, healthMediumSubmenuId, healthLargeSubmenuId,
+	religionSubmenuId,
 };
 
 Categorization::Categorization(std::unordered_set<uint32_t>* reachableSubmenus) : reachableSubmenus(reachableSubmenus)
@@ -140,6 +141,8 @@ bool Categorization::belongsToSubmenu(cISCPropertyHolder* propHolder, uint32_t s
 			case healthLargeSubmenuId:  return hasOg(OgHealth) && hasOg(OgHealthOther)
 			                                && PropertyUtil::arrayContains(propHolder, budgetItemDepartmentPropId, nullptr, budgetItemDepartmentProp_HealthCoverage);
 
+			case religionSubmenuId: return hasOg(OgWorship) || hasOg(OgCemetery);
+
 			default: // generic submenu
 				return false;
 		}
@@ -180,6 +183,7 @@ Categorization::TriState Categorization::belongsToMenu(cISCPropertyHolder* propH
 						&& !belongsToSubmenu(propHolder, r1SubmenuId)
 						&& !belongsToSubmenu(propHolder, r2SubmenuId)
 						&& !belongsToSubmenu(propHolder, r3SubmenuId)
+						&& !belongsToSubmenu(propHolder, religionSubmenuId)
 					);
 
 			case railButtonId:
@@ -240,9 +244,12 @@ Categorization::TriState Categorization::belongsToMenu(cISCPropertyHolder* propH
 						&& !belongsToSubmenu(propHolder, healthLargeSubmenuId)
 					);
 
+			// case rewardButtonId  // for now, we do not exclude rewards like churches from the Reward menu
+
 			case parkButtonId:
 				return bool2tri(hasOg(OgPark)
 						&& !belongsToSubmenu(propHolder, canalSubmenuId)
+						&& !belongsToSubmenu(propHolder, religionSubmenuId)
 					);
 
 			default:
