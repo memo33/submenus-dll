@@ -24,7 +24,7 @@ const std::unordered_set<uint32_t> Categorization::autoPrefilledSubmenus = {
 	policeSmallSubmenuId, policeLargeSubmenuId, policeDeluxeSubmenuId,
 	elementarySchoolSubmenuId, highSchoolSubmenuId, collegeSubmenuId, libraryMuseumSubmenuId,
 	healthSmallSubmenuId, healthMediumSubmenuId, healthLargeSubmenuId,
-	religionSubmenuId,
+	governmentSubmenuId, religionSubmenuId,
 };
 
 Categorization::Categorization(std::unordered_set<uint32_t>* reachableSubmenus) : reachableSubmenus(reachableSubmenus)
@@ -151,6 +151,10 @@ bool Categorization::belongsToSubmenu(cISCPropertyHolder* propHolder, uint32_t s
 			case healthLargeSubmenuId:  return hasOg(OgHealth) && hasOg(OgHealthOther)
 			                                && PropertyUtil::arrayContains(propHolder, budgetItemDepartmentPropId, nullptr, budgetItemDepartmentProp_HealthCoverage);
 
+			case governmentSubmenuId:
+				return PropertyUtil::arrayContains(propHolder, budgetItemDepartmentPropId, nullptr, budgetItemDepartmentProp_GovernmentBuildings)
+					|| hasOg(OgMayorHouse) || hasOg(OgBureaucracy) || hasOg(OgConventionCrowd) || hasOg(OgStockExchange)
+					|| (hasOg(OgCourthouse) && !hasOg(OgLandmark));  // to exclude US Capitol
 			case religionSubmenuId: return hasOg(OgWorship) || hasOg(OgCemetery);
 
 			default: // generic submenu
@@ -193,6 +197,7 @@ Categorization::TriState Categorization::belongsToMenu(cISCPropertyHolder* propH
 						&& !belongsToSubmenu(propHolder, r1SubmenuId)
 						&& !belongsToSubmenu(propHolder, r2SubmenuId)
 						&& !belongsToSubmenu(propHolder, r3SubmenuId)
+						&& !belongsToSubmenu(propHolder, governmentSubmenuId)
 						&& !belongsToSubmenu(propHolder, religionSubmenuId)
 					);
 
@@ -257,9 +262,11 @@ Categorization::TriState Categorization::belongsToMenu(cISCPropertyHolder* propH
 			// for buildings in submenus (e.g. Religion), we keep a copy here
 			// if they are *conditional* reward buildings (to make them easy to find when unlocked)
 			case rewardButtonId:
-				return bool2tri(hasOg(OgReward)
-						&& (!belongsToSubmenu(propHolder, religionSubmenuId) || isConditional(propHolder))
-					);
+				return bool2tri(hasOg(OgReward) && (
+						isConditional(propHolder)
+						|| !belongsToSubmenu(propHolder, governmentSubmenuId)
+						&& !belongsToSubmenu(propHolder, religionSubmenuId)
+					));
 
 			case parkButtonId:
 				return bool2tri(hasOg(OgPark)

@@ -31,6 +31,7 @@ static constexpr uint32_t itemSubmenuParentPropId = 0xaa1dd399;  // occupantGrou
 static constexpr uint32_t capacitySatisfiedPropId = 0x27812834;
 static constexpr uint32_t budgetItemDepartmentPropId = 0xea54d283;
 static constexpr uint32_t budgetItemDepartmentProp_HealthCoverage = 0xaa538cb3;
+static constexpr uint32_t budgetItemDepartmentProp_GovernmentBuildings = 0xea59717a;
 static constexpr uint32_t occupantSizePropId = 0x27812810;
 static constexpr uint32_t powerPlantTypePropId = 0x27812853;
 enum PowerPlantType : uint32_t { Coal = 1, Hydrogen = 2, NaturalGas = 3, Nuclear = 5, Oil = 6, Solar = 7, Waste = 8, Wind = 9, Auxiliary = 0xA };
@@ -103,6 +104,11 @@ static constexpr uint32_t OgIm = 0x14300;
 static constexpr uint32_t OgIht = 0x14400;
 
 static constexpr uint32_t OgReward = 0x150B;
+static constexpr uint32_t OgMayorHouse = 0x1938;
+static constexpr uint32_t OgCourthouse = 0x1511;  // or city hall
+static constexpr uint32_t OgBureaucracy = 0x1905;  // DMV
+static constexpr uint32_t OgStockExchange = 0x1913;  // Biz Lawyer Attack
+static constexpr uint32_t OgConventionCrowd = 0x1921;
 static constexpr uint32_t OgWorship = 0x1907;
 static constexpr uint32_t OgCemetery = 0x1700;
 
@@ -143,6 +149,7 @@ static constexpr uint32_t healthSmallSubmenuId = 0xB1F7AC5B;  // medical clinic
 static constexpr uint32_t healthMediumSubmenuId = 0xB7B594D6;  // hospital with helicopter
 static constexpr uint32_t healthLargeSubmenuId = 0xBC251B69;  // medical center with helicopter
 
+static constexpr uint32_t governmentSubmenuId = 0x9FAF7A3B;
 static constexpr uint32_t religionSubmenuId = 0x26EB3057;
 
 static constexpr uint32_t r1SubmenuId = 0x93DADFE9;
