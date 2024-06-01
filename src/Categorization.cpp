@@ -52,6 +52,16 @@ static bool isHeightBelow(cISCPropertyHolder* propHolder, float_t height)
 	return result;
 }
 
+static bool isConditional(cISCPropertyHolder* propHolder)
+{
+	bool result = false;
+	if (propHolder->HasProperty(conditionalBuildingPropId)) {
+		auto property = propHolder->GetProperty(conditionalBuildingPropId);
+		property->GetPropertyValue()->GetValBool(result);
+	}
+	return result;
+}
+
 static inline Categorization::TriState bool2tri(bool b)
 {
 	return b ? Categorization::TriState::Yes : Categorization::TriState::No;
@@ -244,7 +254,12 @@ Categorization::TriState Categorization::belongsToMenu(cISCPropertyHolder* propH
 						&& !belongsToSubmenu(propHolder, healthLargeSubmenuId)
 					);
 
-			// case rewardButtonId  // for now, we do not exclude rewards like churches from the Reward menu
+			// for buildings in submenus (e.g. Religion), we keep a copy here
+			// if they are *conditional* reward buildings (to make them easy to find when unlocked)
+			case rewardButtonId:
+				return bool2tri(hasOg(OgReward)
+						&& (!belongsToSubmenu(propHolder, religionSubmenuId) || isConditional(propHolder))
+					);
 
 			case parkButtonId:
 				return bool2tri(hasOg(OgPark)

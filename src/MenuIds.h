@@ -34,6 +34,7 @@ static constexpr uint32_t budgetItemDepartmentProp_HealthCoverage = 0xaa538cb3;
 static constexpr uint32_t occupantSizePropId = 0x27812810;
 static constexpr uint32_t powerPlantTypePropId = 0x27812853;
 enum PowerPlantType : uint32_t { Coal = 1, Hydrogen = 2, NaturalGas = 3, Nuclear = 5, Oil = 6, Solar = 7, Waste = 8, Wind = 9, Auxiliary = 0xA };
+static constexpr uint32_t conditionalBuildingPropId = 0xea3209f8;
 
 static constexpr uint32_t railButtonId = RAIL_BUTTON_ID;
 static constexpr uint32_t miscTransitButtonId = MISCTRANSP_BUTTON_ID;
@@ -45,6 +46,7 @@ static constexpr uint32_t policeButtonId = POLICE_BUTTON_ID;
 static constexpr uint32_t educationButtonId = EDUCATION_BUTTON_ID;
 static constexpr uint32_t healthButtonId = HEALTH_BUTTON_ID;
 static constexpr uint32_t landmarkButtonId = LANDMARK_BUTTON_ID;
+static constexpr uint32_t rewardButtonId = REWARD_BUTTON_ID;
 static constexpr uint32_t parkButtonId = PARK_BUTTON_ID;
 
 static constexpr uint32_t OgRail = 0x1300;
@@ -100,6 +102,7 @@ static constexpr uint32_t OgId = 0x14200;
 static constexpr uint32_t OgIm = 0x14300;
 static constexpr uint32_t OgIht = 0x14400;
 
+static constexpr uint32_t OgReward = 0x150B;
 static constexpr uint32_t OgWorship = 0x1907;
 static constexpr uint32_t OgCemetery = 0x1700;
 
