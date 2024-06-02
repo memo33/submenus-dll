@@ -5,9 +5,9 @@ Submenus for SimCity 4.
 ## Features
 
 - enables submenu functionality: This DLL is a dependency for other submenu-compatible plugins.
-- adds a number of standard submenus such as Plazas, Green Spaces, Sports and many more.
+- adds more than 50 standard submenus such as Plazas, Green Spaces, Sports and many more.
 - fixes the game's menu rendering issues caused by duplicate or missing menu icons.
-- implements Exemplar Patching functionality
+- implements Exemplar Patching functionality.
 
 ## System requirements
 
@@ -110,7 +110,7 @@ Health:
 Landmark:
 - Government (0x9FAF7A3B)*
 - Churches and Cemeteries (0x26EB3057)*
-- Entertainment (0xBE9FDA0C)* (theaters, operas, cinemas, stadiums, night clubs, etc.)
+- Entertainment (0xBE9FDA0C)* (stadiums, opera houses, theaters, night clubs, casinos, etc.)
 Ploppable landmarks with jobs appear in the zoning menus.
 
 Parks:
