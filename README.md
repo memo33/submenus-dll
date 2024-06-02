@@ -5,8 +5,8 @@ Submenus for SimCity 4.
 ## Features
 
 - enables submenu functionality: This DLL is a dependency for other submenu-compatible plugins.
-- adds a number of standard submenus such as Plazas, Green Spaces, Sports.
-- fixes the game's menu rendering issues caused by duplicate or missing menu icons
+- adds a number of standard submenus such as Plazas, Green Spaces, Sports and many more.
+- fixes the game's menu rendering issues caused by duplicate or missing menu icons.
 - implements Exemplar Patching functionality
 
 ## System requirements

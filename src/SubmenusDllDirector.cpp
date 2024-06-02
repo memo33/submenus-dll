@@ -129,6 +129,9 @@ static uint32_t HandleButtonActivated_ContinueJump_Transport = 0x7f4add;
 static uint32_t HandleButtonActivated2_InjectPoint = 0x7f4eb5;
 static uint32_t HandleButtonActivated2_ContinueJump = 0x7f4ebe;
 
+static constexpr uint32_t HandleButtonActivatedReward_InjectPoint = 0x7f4dbe;
+static constexpr uint32_t HandleButtonActivatedReward_ContinueJump = 0x7f4ea0;
+
 static uint32_t DoUtilitiesMenu_InjectPoint = 0x7f3b5d;
 static uint32_t DoUtilitiesMenu_ContinueJump = 0x7f3b64;
 
@@ -978,6 +981,7 @@ noTransportExtraMatch:
 
 	std::unordered_map<uint32_t, CatalogState*> catalogStates = {};
 
+	// also handles reward menu button
 	CatalogState* getVirtualButtonCatalogState(const uint32_t virtualButtonId)
 	{
 		if (catalogStates.contains(virtualButtonId))
@@ -1039,6 +1043,25 @@ noTransportExtraMatch:  // continue regularly with airport menu branch
 		}
 	}
 
+	// adds catalog state for reward menu
+	void NAKED_FUN Hook_HandleButtonActivatedReward(void)
+	{
+		__asm {
+			push eax;  // store
+			push ecx;  // store
+			push edx;  // store
+			push dword ptr [rewardButtonId];
+			call getVirtualButtonCatalogState;  // (cdecl)
+			add esp, 0x4;
+			mov ebx, eax;  // pointer to catalog state of reward menu
+			pop edx;  // restore
+			pop ecx;  // restore
+			pop eax;  // restore
+			push HandleButtonActivatedReward_ContinueJump;
+			ret;
+		}
+	}
+
 	void InstallDuplicateIconsPatch(const uint16_t gameVersion)
 	{
 		Logger& logger = Logger::GetInstance();
@@ -1091,6 +1114,7 @@ noTransportExtraMatch:  // continue regularly with airport menu branch
 			InstallHook(AddBuildingsToItemList_InjectPoint, Hook_AddBuildingsToItemList);
 			InstallHook(AddBuildingsToItemList3_InjectPoint, Hook_AddBuildingsToItemList3);
 			InstallHook(InvokeTertiaryMenu_InjectPoint, Hook_InvokeTertiaryMenu);
+			InstallHook(HandleButtonActivatedReward_InjectPoint, Hook_HandleButtonActivatedReward);
 
 			// With the following replacement, plugins can be designed for use with and without the DLL.
 			// The property ITEM_SUBMENU_PARENT_ID_PROP is not loaded without the DLL, but otherwise behaves like ITEM_SUBMENU_PROP.
