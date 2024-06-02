@@ -52,6 +52,19 @@ static bool isHeightBelow(cISCPropertyHolder* propHolder, float_t height)
 	return result;
 }
 
+static bool isPatientCapacityGreaterThan(cISCPropertyHolder* propHolder, uint32_t threshold)
+{
+	if (propHolder->HasProperty(hospitalPatientCapacityPropId)) {
+		auto property = propHolder->GetProperty(hospitalPatientCapacityPropId);
+		uint32_t capacity = threshold;
+		bool success = property->GetPropertyValue()->GetValUint32(capacity);
+		if (success) {
+			return capacity > threshold;
+		}
+	}
+	return false;
+}
+
 static bool isConditional(cISCPropertyHolder* propHolder)
 {
 	bool result = false;
@@ -146,10 +159,13 @@ bool Categorization::belongsToSubmenu(cISCPropertyHolder* propHolder, uint32_t s
 			case collegeSubmenuId:          return hasOg(OgCollege);
 			case libraryMuseumSubmenuId:    return hasOg(OgLibrary) || hasOg(OgMuseum);
 
-			case healthSmallSubmenuId:  return hasOg(OgHealth) && hasOg(OgHospital) && !hasOg(OgHealthLarge) && !hasOg(OgHealthOther);
-			case healthMediumSubmenuId: return hasOg(OgHealth) && hasOg(OgHospital) && hasOg(OgHealthLarge) && !hasOg(OgHealthOther);
-			case healthLargeSubmenuId:  return hasOg(OgHealth) && hasOg(OgHealthOther)
-			                                && PropertyUtil::arrayContains(propHolder, budgetItemDepartmentPropId, nullptr, budgetItemDepartmentProp_HealthCoverage);
+			case healthSmallSubmenuId:  return hasOg(OgHealth) && hasOg(OgHospital) && !hasOg(OgHealthOther) &&  (hasOg(OgClinic) || !hasOg(OgHealthLarge) && !hasOg(OgAmbulanceMaker));
+			case healthMediumSubmenuId: return hasOg(OgHealth) && hasOg(OgHospital) && !hasOg(OgHealthOther) && !(hasOg(OgClinic) || !hasOg(OgHealthLarge) && !hasOg(OgAmbulanceMaker))
+				&& !isPatientCapacityGreaterThan(propHolder, 20000);
+			case healthLargeSubmenuId:  return hasOg(OgHealth) && (
+					hasOg(OgHealthOther) && PropertyUtil::arrayContains(propHolder, budgetItemDepartmentPropId, nullptr, budgetItemDepartmentProp_HealthCoverage)
+					|| isPatientCapacityGreaterThan(propHolder, 20000)
+				);
 
 			case governmentSubmenuId:
 				return PropertyUtil::arrayContains(propHolder, budgetItemDepartmentPropId, nullptr, budgetItemDepartmentProp_GovernmentBuildings)

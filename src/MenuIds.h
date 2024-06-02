@@ -36,6 +36,7 @@ static constexpr uint32_t occupantSizePropId = 0x27812810;
 static constexpr uint32_t powerPlantTypePropId = 0x27812853;
 enum PowerPlantType : uint32_t { Coal = 1, Hydrogen = 2, NaturalGas = 3, Nuclear = 5, Oil = 6, Solar = 7, Waste = 8, Wind = 9, Auxiliary = 0xA };
 static constexpr uint32_t conditionalBuildingPropId = 0xea3209f8;
+static constexpr uint32_t hospitalPatientCapacityPropId = 0x69220415;
 
 static constexpr uint32_t railButtonId = RAIL_BUTTON_ID;
 static constexpr uint32_t miscTransitButtonId = MISCTRANSP_BUTTON_ID;
@@ -86,9 +87,11 @@ static constexpr uint32_t OgSchoolHigh = 0x1510;
 static constexpr uint32_t OgSchoolPrivate = 0x1514;
 
 static constexpr uint32_t OgHealth = 0x1507;
+static constexpr uint32_t OgClinic = 0x1512;
 static constexpr uint32_t OgHospital = 0x1513;
 static constexpr uint32_t OgHealthLarge = 0x151a;
 static constexpr uint32_t OgHealthOther = 0x151c;
+static constexpr uint32_t OgAmbulanceMaker = 0x1904;
 
 static constexpr uint32_t OgLandmark = 0x150a;
 static constexpr uint32_t OgR1 = 0x11010;
