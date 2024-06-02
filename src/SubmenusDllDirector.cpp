@@ -80,6 +80,7 @@
 #define ITEM_BUTTON_CLASS_SUBMENU 0x00000001
 #define ITEM_BUTTON_CLASS_NETWORK 0x00000002
 #define ITEM_BUTTON_CLASS_FLORA 0x00000004  // currently not enforced (subject to change)
+#define ITEM_BUTTON_CLASS_BUILDING_UNHIDE 0x00000008  // (hidden reward) building that should be unhidden in submenus
 
 // the catalog item type of submenu buttons
 #define SUBMENU_ITEM_TYPE 0x9ab38dac
@@ -128,6 +129,9 @@ static uint32_t HandleButtonActivated_ContinueJump_Transport = 0x7f4add;
 static uint32_t HandleButtonActivated2_InjectPoint = 0x7f4eb5;
 static uint32_t HandleButtonActivated2_ContinueJump = 0x7f4ebe;
 
+static constexpr uint32_t HandleButtonActivatedReward_InjectPoint = 0x7f4dbe;
+static constexpr uint32_t HandleButtonActivatedReward_ContinueJump = 0x7f4ea0;
+
 static uint32_t DoUtilitiesMenu_InjectPoint = 0x7f3b5d;
 static uint32_t DoUtilitiesMenu_ContinueJump = 0x7f3b64;
 
@@ -154,6 +158,9 @@ static constexpr uint32_t AddBuildingsToItemList_ContinueJump_UseOrigProp = 0x7f
 
 static constexpr uint32_t AddBuildingsToItemList2_InjectPoint = 0x7f036a;
 static constexpr uint32_t AddBuildingsToItemList2_ContinueJump = 0x7f0371;
+
+static constexpr uint32_t AddBuildingsToItemList3_InjectPoint = 0x7f0493;
+static constexpr uint32_t AddBuildingsToItemList3_ContinueJump = 0x7f049c;
 
 static uint32_t CreateBuildingMenu_InjectPoint = 0x7f074e;
 static uint32_t CreateBuildingMenu_ContinueJump = 0x7f0756;
@@ -414,6 +421,43 @@ keep:
 			pop ecx;  // restore
 			pop eax;  // restore
 			push AddBuildingsToItemList2_ContinueJump;
+			ret;
+		}
+	}
+
+	bool shouldForciblyUnhideBuilding(cISCPropertyHolder* propHolder)
+	{
+		bool isSubmenuActive = (lastVirtualButtonId == VIRTUAL_SUBMENU_ITEM_TYPE);
+		if (!isSubmenuActive) {
+			return false;  // we are in a top-level menu (like Reward menu) in which we do not unhide hidden buildings
+		} else {
+			uint32_t propValueBuffer = 0;
+			propHolder->GetProperty((uint32_t)ITEM_BUTTON_CLASS_PROP, propValueBuffer);
+			return propValueBuffer == ITEM_BUTTON_CLASS_BUILDING_UNHIDE;
+		}
+	}
+
+	// forcibly unhide (locked) reward buildings if they are inside a submenu and have the corresponding property set
+	void NAKED_FUN Hook_AddBuildingsToItemList3(void)
+	{
+		__asm {
+			test byte ptr [esi], 0x1;
+			jz skipHiding;
+
+			push eax;  // store
+			push ecx;  // store
+			push edx;  // store
+			push edi;  // propHolder
+			call shouldForciblyUnhideBuilding;  // (cdecl)
+			add esp, 0x4;
+			pop edx;  // restore
+			pop ecx;  // restore
+			test al, al;
+			pop eax;  // restore
+			jnz skipHiding;
+			mov byte ptr [esp + 0x12], bl;  // hides hidden building
+skipHiding:
+			push AddBuildingsToItemList3_ContinueJump;
 			ret;
 		}
 	}
@@ -937,6 +981,7 @@ noTransportExtraMatch:
 
 	std::unordered_map<uint32_t, CatalogState*> catalogStates = {};
 
+	// also handles reward menu button
 	CatalogState* getVirtualButtonCatalogState(const uint32_t virtualButtonId)
 	{
 		if (catalogStates.contains(virtualButtonId))
@@ -998,6 +1043,25 @@ noTransportExtraMatch:  // continue regularly with airport menu branch
 		}
 	}
 
+	// adds catalog state for reward menu
+	void NAKED_FUN Hook_HandleButtonActivatedReward(void)
+	{
+		__asm {
+			push eax;  // store
+			push ecx;  // store
+			push edx;  // store
+			push dword ptr [rewardButtonId];
+			call getVirtualButtonCatalogState;  // (cdecl)
+			add esp, 0x4;
+			mov ebx, eax;  // pointer to catalog state of reward menu
+			pop edx;  // restore
+			pop ecx;  // restore
+			pop eax;  // restore
+			push HandleButtonActivatedReward_ContinueJump;
+			ret;
+		}
+	}
+
 	void InstallDuplicateIconsPatch(const uint16_t gameVersion)
 	{
 		Logger& logger = Logger::GetInstance();
@@ -1048,7 +1112,9 @@ noTransportExtraMatch:  // continue regularly with airport menu branch
 			InstallHook(CreateBuildingMenu_InjectPoint, Hook_CreateBuildingMenu);
 			InstallHook(CreateCatalogView_InjectPoint, Hook_CreateCatalogView);
 			InstallHook(AddBuildingsToItemList_InjectPoint, Hook_AddBuildingsToItemList);
+			InstallHook(AddBuildingsToItemList3_InjectPoint, Hook_AddBuildingsToItemList3);
 			InstallHook(InvokeTertiaryMenu_InjectPoint, Hook_InvokeTertiaryMenu);
+			InstallHook(HandleButtonActivatedReward_InjectPoint, Hook_HandleButtonActivatedReward);
 
 			// With the following replacement, plugins can be designed for use with and without the DLL.
 			// The property ITEM_SUBMENU_PARENT_ID_PROP is not loaded without the DLL, but otherwise behaves like ITEM_SUBMENU_PROP.

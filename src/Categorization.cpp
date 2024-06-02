@@ -24,6 +24,7 @@ const std::unordered_set<uint32_t> Categorization::autoPrefilledSubmenus = {
 	policeSmallSubmenuId, policeLargeSubmenuId, policeDeluxeSubmenuId,
 	elementarySchoolSubmenuId, highSchoolSubmenuId, collegeSubmenuId, libraryMuseumSubmenuId,
 	healthSmallSubmenuId, healthMediumSubmenuId, healthLargeSubmenuId,
+	governmentSubmenuId, religionSubmenuId, entertainmentSubmenuId,
 };
 
 Categorization::Categorization(std::unordered_set<uint32_t>* reachableSubmenus) : reachableSubmenus(reachableSubmenus)
@@ -47,6 +48,29 @@ static bool isHeightBelow(cISCPropertyHolder* propHolder, float_t height)
 		}
 		variant->Release();
 		property->Release();
+	}
+	return result;
+}
+
+static bool isPatientCapacityGreaterThan(cISCPropertyHolder* propHolder, uint32_t threshold)
+{
+	if (propHolder->HasProperty(hospitalPatientCapacityPropId)) {
+		auto property = propHolder->GetProperty(hospitalPatientCapacityPropId);
+		uint32_t capacity = threshold;
+		bool success = property->GetPropertyValue()->GetValUint32(capacity);
+		if (success) {
+			return capacity > threshold;
+		}
+	}
+	return false;
+}
+
+static bool isConditional(cISCPropertyHolder* propHolder)
+{
+	bool result = false;
+	if (propHolder->HasProperty(conditionalBuildingPropId)) {
+		auto property = propHolder->GetProperty(conditionalBuildingPropId);
+		property->GetPropertyValue()->GetValBool(result);
 	}
 	return result;
 }
@@ -102,9 +126,9 @@ bool Categorization::belongsToSubmenu(cISCPropertyHolder* propHolder, uint32_t s
 			// case parkingSubmenuId:  // no auto-categorization
 
 			case portFerrySubmenuId: return hasOg(OgWaterTransit) && (hasOg(OgPassengerFerry) || hasOg(OgCarFerry) || hasOg(OgSeaport)) && !hasOg(OgAirport);
-			case canalSubmenuId:  return (hasOg(OgWaterTransit) || hasOg(OgPark)) && hasOg(OgBteInlandWaterways);
+			case canalSubmenuId:  return (hasOg(OgWaterTransit) || hasOg(OgPark)) && (hasOg(OgBteInlandWaterways) || hasOg(OgSgWaterway));
 			// case seawallSubmenuId:  // no auto-categorization
-			case waterfrontSubmenuId: return hasOg(OgWaterTransit) && hasOg(OgBteWaterfront) && !hasOg(OgBteInlandWaterways) && !(hasOg(OgPassengerFerry) || hasOg(OgCarFerry) || hasOg(OgSeaport));
+			case waterfrontSubmenuId: return hasOg(OgWaterTransit) && hasOg(OgBteWaterfront) && !hasOg(OgBteInlandWaterways) && !hasOg(OgSgWaterway) && !(hasOg(OgPassengerFerry) || hasOg(OgCarFerry) || hasOg(OgSeaport));
 
 			case energyDirtySubmenuId:
 				return hasOg(OgPower) && (
@@ -135,10 +159,24 @@ bool Categorization::belongsToSubmenu(cISCPropertyHolder* propHolder, uint32_t s
 			case collegeSubmenuId:          return hasOg(OgCollege);
 			case libraryMuseumSubmenuId:    return hasOg(OgLibrary) || hasOg(OgMuseum);
 
-			case healthSmallSubmenuId:  return hasOg(OgHealth) && hasOg(OgHospital) && !hasOg(OgHealthLarge) && !hasOg(OgHealthOther);
-			case healthMediumSubmenuId: return hasOg(OgHealth) && hasOg(OgHospital) && hasOg(OgHealthLarge) && !hasOg(OgHealthOther);
-			case healthLargeSubmenuId:  return hasOg(OgHealth) && hasOg(OgHealthOther)
-			                                && PropertyUtil::arrayContains(propHolder, budgetItemDepartmentPropId, nullptr, budgetItemDepartmentProp_HealthCoverage);
+			case healthSmallSubmenuId:  return hasOg(OgHealth) && hasOg(OgHospital) && !hasOg(OgHealthOther) &&  (hasOg(OgClinic) || !hasOg(OgHealthLarge) && !hasOg(OgAmbulanceMaker));
+			case healthMediumSubmenuId: return hasOg(OgHealth) && hasOg(OgHospital) && !hasOg(OgHealthOther) && !(hasOg(OgClinic) || !hasOg(OgHealthLarge) && !hasOg(OgAmbulanceMaker))
+				&& !isPatientCapacityGreaterThan(propHolder, 20000);
+			case healthLargeSubmenuId:  return hasOg(OgHealth) && (
+					hasOg(OgHealthOther) && PropertyUtil::arrayContains(propHolder, budgetItemDepartmentPropId, nullptr, budgetItemDepartmentProp_HealthCoverage)
+					|| isPatientCapacityGreaterThan(propHolder, 20000)
+				);
+
+			case governmentSubmenuId:
+				return PropertyUtil::arrayContains(propHolder, budgetItemDepartmentPropId, nullptr, budgetItemDepartmentProp_GovernmentBuildings)
+					|| hasOg(OgMayorHouse) || hasOg(OgBureaucracy) || hasOg(OgConventionCrowd) || hasOg(OgStockExchange)
+					|| (hasOg(OgCourthouse) && !hasOg(OgLandmark));  // to exclude US Capitol
+			case religionSubmenuId: return hasOg(OgWorship) || hasOg(OgCemetery) || hasOg(OgBteReligious);
+			case entertainmentSubmenuId: return hasOg(OgStadium) || hasOg(OgOpera) || hasOg(OgNiteClub) || hasOg(OgZoo) || hasOg(OgStateFair)
+					// || hasOg(OgCommercialCinema) || hasOg(OgCommercialMaxisSimTheatre) || (hasOg(OgCommercialMovie) && !hasOg(OgCommercialDrivein))
+					|| hasOg(OgCasino) || hasOg(OgTvStation)
+					|| PropertyUtil::arrayContains(propHolder, queryExemplarGuidPropId, nullptr, queryExemplarGuidProp_RadioStation)
+					|| hasOg(OgSgEntertainment) || hasOg(OgBteCommEntertainment);
 
 			default: // generic submenu
 				return false;
@@ -180,6 +218,9 @@ Categorization::TriState Categorization::belongsToMenu(cISCPropertyHolder* propH
 						&& !belongsToSubmenu(propHolder, r1SubmenuId)
 						&& !belongsToSubmenu(propHolder, r2SubmenuId)
 						&& !belongsToSubmenu(propHolder, r3SubmenuId)
+						&& !belongsToSubmenu(propHolder, governmentSubmenuId)
+						&& !belongsToSubmenu(propHolder, religionSubmenuId)
+						&& !belongsToSubmenu(propHolder, entertainmentSubmenuId)
 					);
 
 			case railButtonId:
@@ -240,9 +281,21 @@ Categorization::TriState Categorization::belongsToMenu(cISCPropertyHolder* propH
 						&& !belongsToSubmenu(propHolder, healthLargeSubmenuId)
 					);
 
+			// for buildings in submenus (e.g. Religion), we keep a copy here
+			// if they are *conditional* reward buildings (to make them easy to find when unlocked)
+			case rewardButtonId:
+				return bool2tri(hasOg(OgReward) && (
+						isConditional(propHolder)
+						|| !belongsToSubmenu(propHolder, governmentSubmenuId)
+						&& !belongsToSubmenu(propHolder, religionSubmenuId)
+						&& !belongsToSubmenu(propHolder, entertainmentSubmenuId)
+					));
+
 			case parkButtonId:
 				return bool2tri(hasOg(OgPark)
 						&& !belongsToSubmenu(propHolder, canalSubmenuId)
+						&& !belongsToSubmenu(propHolder, religionSubmenuId)
+						&& !belongsToSubmenu(propHolder, entertainmentSubmenuId)
 					);
 
 			default:
