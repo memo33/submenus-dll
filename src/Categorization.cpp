@@ -174,7 +174,9 @@ bool Categorization::belongsToSubmenu(cISCPropertyHolder* propHolder, uint32_t s
 			case religionSubmenuId: return hasOg(OgWorship) || hasOg(OgCemetery) || hasOg(OgBteReligious);
 			case entertainmentSubmenuId: return hasOg(OgStadium) || hasOg(OgOpera) || hasOg(OgNiteClub) || hasOg(OgZoo) || hasOg(OgStateFair)
 					// || hasOg(OgCommercialCinema) || hasOg(OgCommercialMaxisSimTheatre) || (hasOg(OgCommercialMovie) && !hasOg(OgCommercialDrivein))
-					|| hasOg(OgCasino) || hasOg(OgSgEntertainment) || hasOg(OgBteCommEntertainment);
+					|| hasOg(OgCasino) || hasOg(OgTvStation)
+					|| PropertyUtil::arrayContains(propHolder, queryExemplarGuidPropId, nullptr, queryExemplarGuidProp_RadioStation)
+					|| hasOg(OgSgEntertainment) || hasOg(OgBteCommEntertainment);
 
 			default: // generic submenu
 				return false;
