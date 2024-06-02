@@ -66,6 +66,7 @@ static constexpr uint32_t OgWaterTransit = 0x1519;
 
 static constexpr uint32_t OgBteWaterfront = 0xB5C00DD6;
 static constexpr uint32_t OgBteInlandWaterways = 0xB5C00DD8;
+static constexpr uint32_t OgSgWaterway = 0xB5C00185;
 
 static constexpr uint32_t OgPower = 0x1400;
 
@@ -111,6 +112,19 @@ static constexpr uint32_t OgStockExchange = 0x1913;  // Biz Lawyer Attack
 static constexpr uint32_t OgConventionCrowd = 0x1921;
 static constexpr uint32_t OgWorship = 0x1907;
 static constexpr uint32_t OgCemetery = 0x1700;
+static constexpr uint32_t OgBteReligious = 0xB5C00DDF;
+static constexpr uint32_t OgStadium = 0x1906;
+static constexpr uint32_t OgOpera = 0x1909;
+static constexpr uint32_t OgNiteClub = 0x1908;
+static constexpr uint32_t OgZoo = 0x1702;
+static constexpr uint32_t OgStateFair = 0x1925;
+static constexpr uint32_t OgCasino = 0x1940;
+static constexpr uint32_t OgCommercialCinema = 0x1112;
+static constexpr uint32_t OgCommercialMaxisSimTheatre = 0x1113;
+static constexpr uint32_t OgCommercialMovie = 0x21003;
+static constexpr uint32_t OgCommercialDrivein = 0x1103;
+static constexpr uint32_t OgSgEntertainment = 0xB5C00157;
+static constexpr uint32_t OgBteCommEntertainment = 0xB5C00A0A;
 
 static constexpr uint32_t OgPark = 0x1006;
 
@@ -151,6 +165,7 @@ static constexpr uint32_t healthLargeSubmenuId = 0xBC251B69;  // medical center 
 
 static constexpr uint32_t governmentSubmenuId = 0x9FAF7A3B;
 static constexpr uint32_t religionSubmenuId = 0x26EB3057;
+static constexpr uint32_t entertainmentSubmenuId = 0xBE9FDA0C;
 
 static constexpr uint32_t r1SubmenuId = 0x93DADFE9;
 static constexpr uint32_t r2SubmenuId = 0x984E5034;

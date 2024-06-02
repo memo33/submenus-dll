@@ -109,7 +109,8 @@ Health:
 
 Landmark:
 - Government (0x9FAF7A3B)*
-- Religion (0x26EB3057)*
+- Churches and Cemeteries (0x26EB3057)*
+- Entertainment (0xBE9FDA0C)* (theaters, operas, cinemas, stadiums, night clubs, etc.)
 
 Parks:
 - Green Spaces (0xBF776D40)

@@ -24,7 +24,7 @@ const std::unordered_set<uint32_t> Categorization::autoPrefilledSubmenus = {
 	policeSmallSubmenuId, policeLargeSubmenuId, policeDeluxeSubmenuId,
 	elementarySchoolSubmenuId, highSchoolSubmenuId, collegeSubmenuId, libraryMuseumSubmenuId,
 	healthSmallSubmenuId, healthMediumSubmenuId, healthLargeSubmenuId,
-	governmentSubmenuId, religionSubmenuId,
+	governmentSubmenuId, religionSubmenuId, entertainmentSubmenuId,
 };
 
 Categorization::Categorization(std::unordered_set<uint32_t>* reachableSubmenus) : reachableSubmenus(reachableSubmenus)
@@ -113,9 +113,9 @@ bool Categorization::belongsToSubmenu(cISCPropertyHolder* propHolder, uint32_t s
 			// case parkingSubmenuId:  // no auto-categorization
 
 			case portFerrySubmenuId: return hasOg(OgWaterTransit) && (hasOg(OgPassengerFerry) || hasOg(OgCarFerry) || hasOg(OgSeaport)) && !hasOg(OgAirport);
-			case canalSubmenuId:  return (hasOg(OgWaterTransit) || hasOg(OgPark)) && hasOg(OgBteInlandWaterways);
+			case canalSubmenuId:  return (hasOg(OgWaterTransit) || hasOg(OgPark)) && (hasOg(OgBteInlandWaterways) || hasOg(OgSgWaterway));
 			// case seawallSubmenuId:  // no auto-categorization
-			case waterfrontSubmenuId: return hasOg(OgWaterTransit) && hasOg(OgBteWaterfront) && !hasOg(OgBteInlandWaterways) && !(hasOg(OgPassengerFerry) || hasOg(OgCarFerry) || hasOg(OgSeaport));
+			case waterfrontSubmenuId: return hasOg(OgWaterTransit) && hasOg(OgBteWaterfront) && !hasOg(OgBteInlandWaterways) && !hasOg(OgSgWaterway) && !(hasOg(OgPassengerFerry) || hasOg(OgCarFerry) || hasOg(OgSeaport));
 
 			case energyDirtySubmenuId:
 				return hasOg(OgPower) && (
@@ -155,7 +155,10 @@ bool Categorization::belongsToSubmenu(cISCPropertyHolder* propHolder, uint32_t s
 				return PropertyUtil::arrayContains(propHolder, budgetItemDepartmentPropId, nullptr, budgetItemDepartmentProp_GovernmentBuildings)
 					|| hasOg(OgMayorHouse) || hasOg(OgBureaucracy) || hasOg(OgConventionCrowd) || hasOg(OgStockExchange)
 					|| (hasOg(OgCourthouse) && !hasOg(OgLandmark));  // to exclude US Capitol
-			case religionSubmenuId: return hasOg(OgWorship) || hasOg(OgCemetery);
+			case religionSubmenuId: return hasOg(OgWorship) || hasOg(OgCemetery) || hasOg(OgBteReligious);
+			case entertainmentSubmenuId: return hasOg(OgStadium) || hasOg(OgOpera) || hasOg(OgNiteClub) || hasOg(OgZoo) || hasOg(OgStateFair)
+					// || hasOg(OgCommercialCinema) || hasOg(OgCommercialMaxisSimTheatre) || (hasOg(OgCommercialMovie) && !hasOg(OgCommercialDrivein))
+					|| hasOg(OgCasino) || hasOg(OgSgEntertainment) || hasOg(OgBteCommEntertainment);
 
 			default: // generic submenu
 				return false;
@@ -199,6 +202,7 @@ Categorization::TriState Categorization::belongsToMenu(cISCPropertyHolder* propH
 						&& !belongsToSubmenu(propHolder, r3SubmenuId)
 						&& !belongsToSubmenu(propHolder, governmentSubmenuId)
 						&& !belongsToSubmenu(propHolder, religionSubmenuId)
+						&& !belongsToSubmenu(propHolder, entertainmentSubmenuId)
 					);
 
 			case railButtonId:
@@ -266,12 +270,14 @@ Categorization::TriState Categorization::belongsToMenu(cISCPropertyHolder* propH
 						isConditional(propHolder)
 						|| !belongsToSubmenu(propHolder, governmentSubmenuId)
 						&& !belongsToSubmenu(propHolder, religionSubmenuId)
+						&& !belongsToSubmenu(propHolder, entertainmentSubmenuId)
 					));
 
 			case parkButtonId:
 				return bool2tri(hasOg(OgPark)
 						&& !belongsToSubmenu(propHolder, canalSubmenuId)
 						&& !belongsToSubmenu(propHolder, religionSubmenuId)
+						&& !belongsToSubmenu(propHolder, entertainmentSubmenuId)
 					);
 
 			default:
