@@ -111,6 +111,7 @@ Landmark:
 - Government (0x9FAF7A3B)*
 - Churches and Cemeteries (0x26EB3057)*
 - Entertainment (0xBE9FDA0C)* (theaters, operas, cinemas, stadiums, night clubs, etc.)
+Ploppable landmarks with jobs appear in the zoning menus.
 
 Parks:
 - Green Spaces (0xBF776D40)
