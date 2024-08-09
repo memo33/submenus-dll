@@ -64,6 +64,9 @@ Industrial:
 - Ploppable Manufacturing Industry (0x68B3E5FD)*
 - Ploppable High-Tech Industry (0x954E20FE)*
 
+Highway:
+- Signage (0x83E040BB) (signs, billboards, street lights)
+
 Rail:
 - Passenger Rail (0x35380C75)*
 - Freight Rail Stations (0x3557F0A1)*
