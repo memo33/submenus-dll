@@ -1,5 +1,5 @@
 /vendor/xwin
-/submenus
+# /submenus
 *submenus.dll
 *submenus.lib
 *.zip

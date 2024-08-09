@@ -1,3 +1,19 @@
+*.dat binary
+*.dat diff=dbpf
+*.dat merge=dbpf
+
+*.sc4lot binary
+*.sc4lot diff=dbpf
+*.sc4lot merge=dbpf
+
+*.sc4model binary
+*.sc4model diff=dbpf
+*.sc4model merge=dbpf
+
+*.sc4desc binary
+*.sc4desc diff=dbpf
+*.sc4desc merge=dbpf
+
 ###############################################################################
 # Set default behavior to automatically normalize line endings.
 ###############################################################################
