@@ -87,6 +87,7 @@ Water Transit:
 - Canals (0x03C6629C)*
 - Seawalls (0x1CD18678)
 - Waterfront (0x84D42CD6)*
+- Boats, Ships and Watercraft (0xDD5DC0E7)
 
 Power:
 - Dirty Energy (0x4B465151)*

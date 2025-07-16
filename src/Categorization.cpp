@@ -129,6 +129,7 @@ bool Categorization::belongsToSubmenu(cISCPropertyHolder* propHolder, uint32_t s
 			case canalSubmenuId:  return (hasOg(OgWaterTransit) || hasOg(OgPark)) && (hasOg(OgBteInlandWaterways) || hasOg(OgSgWaterway));
 			// case seawallSubmenuId:  // no auto-categorization
 			case waterfrontSubmenuId: return hasOg(OgWaterTransit) && hasOg(OgBteWaterfront) && !hasOg(OgBteInlandWaterways) && !hasOg(OgSgWaterway) && !(hasOg(OgPassengerFerry) || hasOg(OgCarFerry) || hasOg(OgSeaport));
+			// case watercraftSubmenuId:  // no auto-categorization
 
 			case energyDirtySubmenuId:
 				return hasOg(OgPower) && (
@@ -249,6 +250,7 @@ Categorization::TriState Categorization::belongsToMenu(cISCPropertyHolder* propH
 						&& !belongsToSubmenu(propHolder, canalSubmenuId)
 						// && !belongsToSubmenu(propHolder, seawallSubmenuId)
 						&& !belongsToSubmenu(propHolder, waterfrontSubmenuId)
+						// && !belongsToSubmenu(propHolder, watercraftSubmenuId)
 					);
 
 			case powerButtonId:

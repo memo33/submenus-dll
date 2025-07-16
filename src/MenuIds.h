@@ -151,6 +151,7 @@ static constexpr uint32_t portFerrySubmenuId = 0x07047B22;
 static constexpr uint32_t canalSubmenuId = 0x03C6629C;
 static constexpr uint32_t seawallSubmenuId = 0x1CD18678;
 static constexpr uint32_t waterfrontSubmenuId = 0x84D42CD6;
+static constexpr uint32_t watercraftSubmenuId = 0xDD5DC0E7;
 
 static constexpr uint32_t energyDirtySubmenuId = 0x4B465151;
 static constexpr uint32_t energyCleanSubmenuId =0xCDE0316B;
