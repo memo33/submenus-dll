@@ -66,6 +66,8 @@ static constexpr uint32_t OgMiscTransit = 0x130A;
 static constexpr uint32_t OgAirport = 0x1508;
 static constexpr uint32_t OgSeaport = 0x1509;
 static constexpr uint32_t OgWaterTransit = 0x1519;
+static constexpr uint32_t OgBteGlr = 0xB5C00DF9;
+static constexpr uint32_t OgBteHybridRailway = 0xB5C00DFA;
 
 static constexpr uint32_t OgBteWaterfront = 0xB5C00DD6;
 static constexpr uint32_t OgBteInlandWaterways = 0xB5C00DD8;

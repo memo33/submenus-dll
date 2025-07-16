@@ -113,15 +113,15 @@ bool Categorization::belongsToSubmenu(cISCPropertyHolder* propHolder, uint32_t s
 			case r3SubmenuId:  return hasOg(OgLandmark) && hasOg(OgR3)  && propHolder->HasProperty(capacitySatisfiedPropId);
 
 			case freightRailSubmenuId:   return hasOg(OgRail) && hasOg(OgFreightRail)                         && !hasOg(OgAirport) && !hasOg(OgSeaport);
-			case passengerRailSubmenuId: return hasOg(OgRail) && hasOg(OgPassengerRail) && !hasOg(OgMonorail) && !hasOg(OgAirport) && !hasOg(OgSeaport) && !hasOg(OgLightrail);
-			case monorailSubmenuId:      return hasOg(OgRail) && hasOg(OgMonorail) && !hasOg(OgPassengerRail) && !hasOg(OgAirport) && !hasOg(OgSeaport) && !hasOg(OgLightrail);
-			case hybridRailwaySubmenuId: return hasOg(OgRail) && hasOg(OgMonorail) &&  hasOg(OgPassengerRail) && !hasOg(OgAirport) && !hasOg(OgSeaport) && !hasOg(OgLightrail);
+			case passengerRailSubmenuId: return hasOg(OgRail) && hasOg(OgPassengerRail) && !hasOg(OgMonorail) && !hasOg(OgBteHybridRailway) && !hasOg(OgAirport) && !hasOg(OgSeaport) && !hasOg(OgLightrail);
+			case monorailSubmenuId:      return hasOg(OgRail) && hasOg(OgMonorail) && !hasOg(OgPassengerRail) && !hasOg(OgBteHybridRailway) && !hasOg(OgAirport) && !hasOg(OgSeaport) && !hasOg(OgLightrail);
+			case hybridRailwaySubmenuId: return hasOg(OgRail) && (hasOg(OgMonorail) && hasOg(OgPassengerRail) || hasOg(OgBteHybridRailway)) && !hasOg(OgAirport) && !hasOg(OgSeaport) && !hasOg(OgLightrail);
 			case yardsSubmenuId: return hasOg(OgRail) && !hasOg(OgPassengerRail) && !hasOg(OgFreightRail) && !hasOg(OgMonorail) && !hasOg(OgAirport) && !hasOg(OgSeaport);
 
 			case busSubmenuId: return hasOg(OgMiscTransit) && hasOg(OgBus) && !hasOg(OgSubway) && !hasOg(OgLightrail) && !hasOg(OgPassengerRail) && !hasOg(OgMonorail) && !hasOg(OgAirport) && !hasOg(OgSeaport);
 			case subwaySubmenuId: return hasOg(OgMiscTransit) && hasOg(OgSubway) && !hasOg(OgLightrail) && !hasOg(OgPassengerRail) && !hasOg(OgMonorail) && !hasOg(OgAirport) && !hasOg(OgSeaport) && !propHolder->HasProperty(capacitySatisfiedPropId);
-			case elRailSubmenuId: return hasOg(OgMiscTransit) && hasOg(OgLightrail) && !hasOg(OgPassengerRail) && !hasOg(OgMonorail) && !hasOg(OgAirport) && !hasOg(OgSeaport) && !isHeightBelow(propHolder, 15.5);
-			case glrSubmenuId: return hasOg(OgMiscTransit) && hasOg(OgLightrail) && !hasOg(OgPassengerRail) && !hasOg(OgMonorail) && !hasOg(OgAirport) && !hasOg(OgSeaport) && isHeightBelow(propHolder, 15.5);
+			case elRailSubmenuId: return hasOg(OgMiscTransit) && hasOg(OgLightrail) && !isHeightBelow(propHolder, 15.5) && !hasOg(OgBteGlr) && !hasOg(OgPassengerRail) && !hasOg(OgMonorail) && !hasOg(OgAirport) && !hasOg(OgSeaport);
+			case glrSubmenuId: return hasOg(OgMiscTransit) && (hasOg(OgLightrail) && isHeightBelow(propHolder, 15.5) || hasOg(OgBteGlr)) && !hasOg(OgPassengerRail) && !hasOg(OgMonorail) && !hasOg(OgAirport) && !hasOg(OgSeaport);
 			case multiModalStationsSubmenuId: return (hasOg(OgRail) || hasOg(OgMiscTransit)) && hasOg(OgLightrail) && (hasOg(OgPassengerRail) || hasOg(OgMonorail)) && !hasOg(OgAirport) && !hasOg(OgSeaport);
 			// case parkingSubmenuId:  // no auto-categorization
 
