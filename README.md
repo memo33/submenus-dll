@@ -7,7 +7,6 @@ Submenus for SimCity 4.
 - enables submenu functionality: This DLL is a dependency for other submenu-compatible plugins.
 - adds more than 50 standard submenus such as Plazas, Green Spaces, Sports and many more.
 - fixes the game's menu rendering issues caused by duplicate or missing menu icons.
-- implements Exemplar Patching functionality.
 
 ## System requirements
 
@@ -17,7 +16,7 @@ Submenus for SimCity 4.
 
 ## Dependencies
 
-- [SC4ResourceLoadingHooks DLL](https://community.simtropolis.com/files/file/36242-resource-loading-hooks-dll-for-simcity-4/)
+- [SC4ResourceLoadingHooks DLL](https://community.simtropolis.com/files/file/36242-resource-loading-hooks-dll-for-simcity-4/) (for Exemplar Patching)
 
 ## Installation
 
@@ -252,6 +251,8 @@ Conversely, multiple Exemplar Patches can be applied to the same Exemplar file.
 
 If two Cohort files have the same Instance ID, only the one loading last has an effect.
 Therefore, you should usually change the Instance ID whenever you copy an existing Exemplar Patch Cohort file.
+
+Exemplar Patching is now entirely implemented in the SC4ResourceLoadingHooks DLL alone and does not require the Submenus DLL anymore.
 
 
 ### Additional resources

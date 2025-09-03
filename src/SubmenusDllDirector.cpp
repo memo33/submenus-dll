@@ -53,10 +53,7 @@
 #include "cISC4City.h"
 #include "cISC4App.h"
 #include "PersistResourceKeyFilterByTypeAndGroup.h"
-#include "cIExemplarLoadHookServer.h"
-#include "ExemplarPatcher.h"
 #include "PropertyUtil.h"
-#include "cRZAutoRefCount.h"
 #include "MenuIds.h"
 #include "Categorization.h"
 
@@ -1437,34 +1434,6 @@ public:
 		return true;
 	}
 
-	bool PreAppInit()
-	{
-		if (exemplarPatcher) {
-			return false;
-		} else {
-			cIGZCOM* const pCOM = GZCOM();
-			cRZAutoRefCount<cIExemplarLoadHookServer> exemplarLoadHookServer;
-			Logger& logger = Logger::GetInstance();
-
-			// Get an instance of the cIExemplarLoadHookServer class from GZCOM.
-			if (pCOM->GetClassObject(
-				GZCLSID_cIExemplarLoadHookServer,
-				GZIID_cIExemplarLoadHookServer,
-				exemplarLoadHookServer.AsPPVoid()))
-			{
-				exemplarPatcher = new ExemplarPatcher();
-				exemplarLoadHookServer->AddLoadNotification(exemplarPatcher);
-				logger.WriteLine(LogLevel::Info, "Installed the Exemplar Patching feature.");
-			}
-			else
-			{
-				logger.WriteLine(LogLevel::Error, "Failed to reach the Exemplar-load-hook server. Please install the SC4ResourceLoadingHooks DLL:\n\n  https://github.com/0xC0000054/sc4-resource-loading-hooks/releases\n");
-			}
-
-			return true;
-		}
-	}
-
 	bool PostAppInit()
 	{
 		Logger& logger = Logger::GetInstance();
@@ -1489,11 +1458,6 @@ public:
 		{
 			logger.WriteLine(LogLevel::Error, "Failed to subscribe to the required notifications.");
 			return false;
-		}
-
-		if (exemplarPatcher)
-		{
-			exemplarPatcher->LoadPatches();
 		}
 
 		return true;
@@ -1533,8 +1497,6 @@ public:
 private:
 
 	const SC4VersionDetection versionDetection;
-
-	ExemplarPatcher* exemplarPatcher = nullptr;
 
 	Categorization categorization;
 };
