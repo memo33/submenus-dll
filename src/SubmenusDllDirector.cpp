@@ -1390,6 +1390,9 @@ public:
 			auto buttonId = p.first;
 			bool isEmpty = isSubmenuEmptyUpdate(buttonId);  // updates nonemptySubmenus if non-empty
 			if (isEmpty) {
+				if (emptySubmenus.empty()) {
+					logger.WriteLine(LogLevel::Info, "There isn't any content for the following submenus in your Plugins, so their submenu buttons will not be displayed in the menus:");
+				}
 				emptySubmenus.insert(buttonId);
 				if (submenuNames.contains(buttonId)) {
 					logger.WriteLineFormatted(LogLevel::Info, "Hiding empty submenu with Button ID 0x%08X: %s", buttonId, submenuNames[buttonId]->ToChar());
