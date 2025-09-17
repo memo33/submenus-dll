@@ -23,8 +23,8 @@ Submenus for SimCity 4.
 - Copy the DLLs into the top-level directory of either Plugins folder
   (place it directly in `<Documents>\SimCity 4\Plugins` or `<SC4 install folder>\Plugins`, not in a subfolder).
 - Copy the file `submenu-essentials.dat` and optionally the individual submenu files anywhere into your Plugins folder.
-  You may skip installing an optional submenu if it contains neither Flora nor any sub-submenus.
-  In that case, the buildings of that submenu will appear in the default top-level menu instead.
+  You may skip installing an optional submenu if it contains neither network items nor any sub-submenus.
+  In that case, the buildings and Flora of that submenu will appear in the default top-level menu instead.
 
 Alternatively, the mod can be installed with Sc4pac: [memo:submenus-dll](https://memo33.github.io/sc4pac/channel/?pkg=memo:submenus-dll)
 

@@ -167,10 +167,11 @@ static uint32_t CreateBuildingMenu_ContinueJump = 0x7f0756;
 static uint32_t CreateCatalogView_InjectPoint = 0x78f16a;
 static uint32_t CreateCatalogView_ContinueJump = 0x78f16f;
 
-static uint32_t CreateCatalogItemList_InjectPoint = 0x78f030;
+static uint32_t CreateCatalogItemList_InjectPoint = 0x78f028;
 static uint32_t CreateCatalogItemList_ContinueJump_AddItem = 0x78f053;
 static uint32_t CreateCatalogItemList_ContinueJump_Default = 0x78f036;
 static uint32_t CreateCatalogItemList_ContinueJump_Skip = 0x78f038;
+static uint32_t CreateCatalogItemList_ContinueJump_EarlySkip = 0x78f0b6;
 static uint32_t CreateCatalogItemList2_InjectPoint = 0x78efac;
 static uint32_t CreateCatalogItemList2_ContinueJump = 0x78efb2;
 static uint32_t CreateCatalogItemList3_InjectPoint = 0x78eff1;
@@ -883,6 +884,24 @@ skipEmptinessCheck:
 		}
 	}
 
+	bool isNonReachableFloraItem(cISCPropertyHolder* propHolder)
+	{
+		auto property = propHolder->GetProperty(ITEM_BUTTON_CLASS_PROP);
+		if (property != nullptr) {
+			uint32_t buttonClass;
+			property->GetPropertyValue()->GetValUint32(buttonClass);
+			if (buttonClass == ITEM_BUTTON_CLASS_FLORA) {
+				property = propHolder->GetProperty(ITEM_SUBMENU_PARENT_ID_PROP);
+				if (property != nullptr) {
+					uint32_t submenuId;
+					property->GetPropertyValue()->GetValUint32(submenuId);
+					return !reachableSubmenus.contains(submenuId);
+				}
+			}
+		}
+		return false;
+	}
+
 	// Alters the handling of catalog item exemplars in case of submenu buttons as well as network buttons contained in submenus.
 	// Also fixes the duplicate network item icon bug.
 	void NAKED_FUN Hook_CreateCatalogItemList(void)
@@ -891,6 +910,26 @@ skipEmptinessCheck:
 			// first check whether the exemplar is a duplicate or an empty submenu
 			cmp byte ptr [shouldDiscardItem], 0;
 			jne discardItem;
+
+			// check if we're in the top-level flora menu and the current item is a flora item from a non-reachable submenu, so should be displayed in this top-level menu instead
+			cmp dword ptr [esp + 0x5c], TOOL_PLOP_FLORA;  // param_4
+			jne checkMenuMatches;
+			cmp dword ptr [lastVirtualButtonId], VIRTUAL_SUBMENU_ITEM_TYPE;  // check if nested
+			je checkMenuMatches;  // only add non-reachable flora items in non-nested case
+			push eax;  // store
+			push ecx;  // store
+			push edi;  // propHolder
+			call isNonReachableFloraItem;  // (cdecl)
+			add esp, 0x4;
+			test al, al;
+			pop ecx;  // restore
+			pop eax;  // restore
+			jnz addItem;  // flora item is not reachable, so add it
+
+checkMenuMatches:
+			// regular check if menu matches
+			cmp eax, ecx;
+			jnz earlySkip;
 
 			// next determine whether to check for submenu or network item property
 			cmp dword ptr [esp + 0x5c], SUBMENU_ITEM_TYPE;  // param_4
@@ -924,7 +963,9 @@ checkSubmenuOrNetworkInSubmenu:
 			cmp eax, dword ptr [submenuPropValueBuffer];
 			jne checkRegularNetworkItem;
 
+addItem:
 			// else directly add item
+			mov eax, dword ptr [esp + 0x64];
 			push CreateCatalogItemList_ContinueJump_AddItem;
 			ret;
 
@@ -938,6 +979,10 @@ checkRegularNetworkItem:
 discardItem:
 			// do not add this item at all
 			push CreateCatalogItemList_ContinueJump_Skip;
+			ret;
+
+earlySkip:
+			push CreateCatalogItemList_ContinueJump_EarlySkip;
 			ret;
 		}
 	}
