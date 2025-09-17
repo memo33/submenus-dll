@@ -7368,7 +7368,7 @@ For use with Submenus DLL: the Button IDs of the submenus this building appears 
   </PROPERTY>
   <PROPERTY Name="Exemplar Patch Targets" ID="0x0062e78a" Type="Uint32" Count="-1" Default="0x00000000 0x00000000" ShowAsHex="Y">
     <HELP>
-For use with Submenus DLL: list of Exemplar files this patch applies to. The other properties of this Cohort file are injected into every Exemplar on this list.
+For use with SC4ResourceLoadingHooks DLL: list of Exemplar files this patch applies to. The other properties of this Cohort file are injected into every Exemplar on this list.
 </HELP>
     <FORMATHELP>An even number of IDs of the form Group ID 1, Instance ID 1, Group ID 2, Instance ID 2,...</FORMATHELP>
   </PROPERTY>

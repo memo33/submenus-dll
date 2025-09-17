@@ -4,3 +4,6 @@
 [submodule "vendor/gzcom-dll"]
 	path = vendor/gzcom-dll
 	url = https://github.com/nsgomez/gzcom-dll.git
+[submodule "vendor/sc4-resource-loading-hooks"]
+	path = vendor/sc4-resource-loading-hooks
+	url = https://github.com/0xC0000054/sc4-resource-loading-hooks.git

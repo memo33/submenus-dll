@@ -16,7 +16,7 @@ Submenus for SimCity 4.
 
 ## Dependencies
 
-- [SC4ResourceLoadingHooks DLL](https://community.simtropolis.com/files/file/36242-resource-loading-hooks-dll-for-simcity-4/) (for Exemplar Patching)
+- [SC4ResourceLoadingHooks DLL](https://community.simtropolis.com/files/file/36242-resource-loading-hooks-dll-for-simcity-4/) version 2.0.1 or later (for Exemplar Patching)
 
 ## Installation
 
@@ -285,4 +285,4 @@ See [LICENSE.txt](LICENSE.txt) for more information.
 - [Windows Implementation Library](https://github.com/microsoft/wil) MIT License
 - [SC4Fix](https://github.com/nsgomez/sc4fix) MIT License
 - [NAM-dll](https://github.com/NAMTeam/nam-dll) LGPL 3.0
-- [SC4ResourceLoadingHooks](https://github.com/0xC0000054/sc4-resource-loading-hooks) MIT License
+- [SC4ResourceLoadingHooks](https://github.com/0xC0000054/sc4-resource-loading-hooks) LGPL 3.0

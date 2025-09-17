@@ -54,6 +54,8 @@
 #include "cISC4App.h"
 #include "PersistResourceKeyFilterByTypeAndGroup.h"
 #include "PropertyUtil.h"
+#include "cIExemplarPatchingServer.h"
+#include "cRZAutoRefCount.h"
 #include "MenuIds.h"
 #include "Categorization.h"
 
@@ -1431,6 +1433,26 @@ public:
 			break;
 		}
 
+		return true;
+	}
+
+	bool PreAppInit()
+	{
+		static bool checkedExemplarPatchServer = false;
+		if (!checkedExemplarPatchServer) {
+			cIGZCOM* const pCOM = GZCOM();
+			cRZAutoRefCount<cIExemplarPatchingServer> exemplarPatchingServer;
+			Logger& logger = Logger::GetInstance();
+			if (pCOM->GetClassObject(GZCLSID_cIExemplarPatchingServer, GZIID_cIExemplarPatchingServer, exemplarPatchingServer.AsPPVoid()))
+			{
+				logger.WriteLine(LogLevel::Info, "The Exemplar Patching functionality is available.");
+			}
+			else
+			{
+				logger.WriteLine(LogLevel::Error, "Failed to reach the Exemplar Patching server. Please install the SC4ResourceLoadingHooks DLL version 2.0.1 or later:\n\n  https://github.com/0xC0000054/sc4-resource-loading-hooks/releases\n");
+			}
+			checkedExemplarPatchServer = true;
+		}
 		return true;
 	}
 
