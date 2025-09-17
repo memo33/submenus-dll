@@ -39,4 +39,9 @@ compile:
 # /FC = full path diagnosticts -> not supported, not needed
 
 
-.PHONY: compile
+dist:
+	rm -f submenus-dll-HEAD.zip
+	zip -j submenus-dll-HEAD.zip src/memo.submenus.dll README.md LICENSE.txt "Third Party Notices.txt"
+	cd dbpf && zip ../submenus-dll-HEAD.zip -q -r submenus
+
+.PHONY: compile dist
