@@ -724,12 +724,13 @@ commonCall:
 skipSubmenu:
 			cmp dword ptr [lastVirtualButtonId], VIRTUAL_SUBMENU_ITEM_TYPE;
 			jne skipFlora;  // only add flora items in nested case
-			cmp dword ptr [lastPhysicalButtonId], FLORA_BUTTON_ID;  // lastPhysicalButtonId is only up-to-date in nested case
-			jne skipFlora;
+			// The following check was disabled to allow flora items in submenus outside the top-level flora menu.
+			// cmp dword ptr [lastPhysicalButtonId], FLORA_BUTTON_ID;  // lastPhysicalButtonId is only up-to-date in nested case
+			// jne skipFlora;
 
 			// fourth call for flora items
 			push ITEM_BUTTON_ID_PROP;
-			push dword ptr [occupantGroup]; // is initialized as we are in nested transport menu opened from flora menu
+			push dword ptr [occupantGroup]; // is initialized as we are in nested submenu
 			push TOOL_PLOP_FLORA;
 			push ITEM_EXEMPLAR_GID_FLORA;
 			lea ecx, [esp + 0x1c];

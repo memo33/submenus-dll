@@ -200,7 +200,7 @@ Note that empty submenus are hidden from the menus.
 
 ### Adding flora or network items to a submenu
 
-Add the properties `Item Submenu Parent ID` and `Item Button Class` to the catalog item Exemplar.
+Add the properties `Item Submenu Parent ID` and `Item Button Class` to the catalog item Exemplar (not the submenu button Exemplar).
 The latter property is set to `2 = Network Item in Submenu` or `4 = Flora Item in Submenu`.
 (The `Building Submenus` property is not used for these items.)
 
