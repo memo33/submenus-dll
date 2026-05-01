@@ -53,7 +53,7 @@ namespace PropertyUtil {
 		}
 	}
 
-	static bool arrayContains(cISCPropertyHolder* propHolder, const uint32_t propertyId, const cGZPersistResourceKey* keyOrNull, const uint32_t value)
+	static inline bool arrayContains(cISCPropertyHolder* propHolder, const uint32_t propertyId, const cGZPersistResourceKey* keyOrNull, const uint32_t value)
 	{
 		bool found = false;
 		arrayForeach(propHolder, propertyId, keyOrNull, [&found, &value](uint32_t v) {

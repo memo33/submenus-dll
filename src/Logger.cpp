@@ -63,7 +63,7 @@ Logger& Logger::GetInstance()
 	return logger;
 }
 
-Logger::Logger() : initialized(false), logFile(), logLevel(LogLevel::Error)
+Logger::Logger() : initialized(false), logLevel(LogLevel::Error), logFile()
 {
 }
 

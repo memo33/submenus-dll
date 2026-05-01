@@ -17,9 +17,10 @@
 
 compile:
 	cd src && \
-		clang-cl -target i386-pc-windows-msvc -ferror-limit=1 -fuse-ld=lld-link \
+		clang-cl -target i386-pc-windows-msvc -ferror-limit=10 -fuse-ld=lld-link \
 		-Wno-inconsistent-missing-override \
 		/std:c++20 /EHsc /LD /MD \
+		/W3 \
 		/Gy /Gd /O2 /Oi \
 		/D "_WIN32" /D "NDEBUG" /D "_UNICODE" /D "UNICODE" \
 		/D "_USRDLL" /D "_WINDLL" \

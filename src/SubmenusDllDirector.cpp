@@ -1231,13 +1231,11 @@ public:
 	// Reads a single building exemplar and updates nonemptySubmenus if building belongs to a submenu.
 	void initializeSubmenusFromBuilding(cISC4BuildingDevelopmentSimulator* buildingDevSim, uint32_t buildingType)
 	{
-		Logger& logger = Logger::GetInstance();
-		bool success = true;
 		cIGZPersistResourceManagerPtr pResMan;
 
 		// TODO ignore GetBuildingProfile check which has unknown use
 		cGZPersistResourceKey key;
-		success = buildingDevSim->GetBuildingKeyFromType(buildingType, key);
+		buildingDevSim->GetBuildingKeyFromType(buildingType, key);
 
 		cISCResExemplar* exemplar = nullptr;
 		// GetResource automatically adds a reference to the exemplar
@@ -1359,8 +1357,8 @@ public:
 							}
 						}
 					}
-					else if (propValueBuffer == ITEM_BUTTON_CLASS_NETWORK && itemGid == ITEM_EXEMPLAR_GID_MISC_CATALOG
-							|| propValueBuffer == ITEM_BUTTON_CLASS_FLORA && itemGid == ITEM_EXEMPLAR_GID_FLORA)
+					else if ((propValueBuffer == ITEM_BUTTON_CLASS_NETWORK && itemGid == ITEM_EXEMPLAR_GID_MISC_CATALOG)
+							|| (propValueBuffer == ITEM_BUTTON_CLASS_FLORA && itemGid == ITEM_EXEMPLAR_GID_FLORA))
 					{
 						propHolder->GetProperty((uint32_t)ITEM_SUBMENU_PARENT_ID_PROP, propValueBuffer);
 						if (propValueBuffer != 0)

@@ -115,13 +115,13 @@ bool Categorization::belongsToSubmenu(cISCPropertyHolder* propHolder, uint32_t s
 			case freightRailSubmenuId:   return hasOg(OgRail) && hasOg(OgFreightRail)                         && !hasOg(OgAirport) && !hasOg(OgSeaport);
 			case passengerRailSubmenuId: return hasOg(OgRail) && hasOg(OgPassengerRail) && !hasOg(OgMonorail) && !hasOg(OgBteHybridRailway) && !hasOg(OgAirport) && !hasOg(OgSeaport) && !hasOg(OgLightrail);
 			case monorailSubmenuId:      return hasOg(OgRail) && hasOg(OgMonorail) && !hasOg(OgPassengerRail) && !hasOg(OgBteHybridRailway) && !hasOg(OgAirport) && !hasOg(OgSeaport) && !hasOg(OgLightrail);
-			case hybridRailwaySubmenuId: return hasOg(OgRail) && (hasOg(OgMonorail) && hasOg(OgPassengerRail) || hasOg(OgBteHybridRailway)) && !hasOg(OgAirport) && !hasOg(OgSeaport) && !hasOg(OgLightrail);
+			case hybridRailwaySubmenuId: return hasOg(OgRail) && ((hasOg(OgMonorail) && hasOg(OgPassengerRail)) || hasOg(OgBteHybridRailway)) && !hasOg(OgAirport) && !hasOg(OgSeaport) && !hasOg(OgLightrail);
 			case yardsSubmenuId: return hasOg(OgRail) && !hasOg(OgPassengerRail) && !hasOg(OgFreightRail) && !hasOg(OgMonorail) && !hasOg(OgAirport) && !hasOg(OgSeaport);
 
 			case busSubmenuId: return hasOg(OgMiscTransit) && hasOg(OgBus) && !hasOg(OgSubway) && !hasOg(OgLightrail) && !hasOg(OgPassengerRail) && !hasOg(OgMonorail) && !hasOg(OgAirport) && !hasOg(OgSeaport);
 			case subwaySubmenuId: return hasOg(OgMiscTransit) && hasOg(OgSubway) && !hasOg(OgLightrail) && !hasOg(OgPassengerRail) && !hasOg(OgMonorail) && !hasOg(OgAirport) && !hasOg(OgSeaport) && !propHolder->HasProperty(capacitySatisfiedPropId);
 			case elRailSubmenuId: return hasOg(OgMiscTransit) && hasOg(OgLightrail) && !isHeightBelow(propHolder, 15.5) && !hasOg(OgBteGlr) && !hasOg(OgPassengerRail) && !hasOg(OgMonorail) && !hasOg(OgAirport) && !hasOg(OgSeaport);
-			case glrSubmenuId: return hasOg(OgMiscTransit) && (hasOg(OgLightrail) && isHeightBelow(propHolder, 15.5) || hasOg(OgBteGlr)) && !hasOg(OgPassengerRail) && !hasOg(OgMonorail) && !hasOg(OgAirport) && !hasOg(OgSeaport);
+			case glrSubmenuId: return hasOg(OgMiscTransit) && ((hasOg(OgLightrail) && isHeightBelow(propHolder, 15.5)) || hasOg(OgBteGlr)) && !hasOg(OgPassengerRail) && !hasOg(OgMonorail) && !hasOg(OgAirport) && !hasOg(OgSeaport);
 			case multiModalStationsSubmenuId: return (hasOg(OgRail) || hasOg(OgMiscTransit)) && hasOg(OgLightrail) && (hasOg(OgPassengerRail) || hasOg(OgMonorail)) && !hasOg(OgAirport) && !hasOg(OgSeaport);
 			// case parkingSubmenuId:  // no auto-categorization
 
@@ -160,11 +160,11 @@ bool Categorization::belongsToSubmenu(cISCPropertyHolder* propHolder, uint32_t s
 			case collegeSubmenuId:          return hasOg(OgCollege);
 			case libraryMuseumSubmenuId:    return hasOg(OgLibrary) || hasOg(OgMuseum);
 
-			case healthSmallSubmenuId:  return hasOg(OgHealth) && hasOg(OgHospital) && !hasOg(OgHealthOther) &&  (hasOg(OgClinic) || !hasOg(OgHealthLarge) && !hasOg(OgAmbulanceMaker));
-			case healthMediumSubmenuId: return hasOg(OgHealth) && hasOg(OgHospital) && !hasOg(OgHealthOther) && !(hasOg(OgClinic) || !hasOg(OgHealthLarge) && !hasOg(OgAmbulanceMaker))
+			case healthSmallSubmenuId:  return hasOg(OgHealth) && hasOg(OgHospital) && !hasOg(OgHealthOther) &&  (hasOg(OgClinic) || (!hasOg(OgHealthLarge) && !hasOg(OgAmbulanceMaker)));
+			case healthMediumSubmenuId: return hasOg(OgHealth) && hasOg(OgHospital) && !hasOg(OgHealthOther) && !(hasOg(OgClinic) || (!hasOg(OgHealthLarge) && !hasOg(OgAmbulanceMaker)))
 				&& !isPatientCapacityGreaterThan(propHolder, 20000);
 			case healthLargeSubmenuId:  return hasOg(OgHealth) && (
-					hasOg(OgHealthOther) && PropertyUtil::arrayContains(propHolder, budgetItemDepartmentPropId, nullptr, budgetItemDepartmentProp_HealthCoverage)
+					(hasOg(OgHealthOther) && PropertyUtil::arrayContains(propHolder, budgetItemDepartmentPropId, nullptr, budgetItemDepartmentProp_HealthCoverage))
 					|| isPatientCapacityGreaterThan(propHolder, 20000)
 				);
 
@@ -288,9 +288,9 @@ Categorization::TriState Categorization::belongsToMenu(cISCPropertyHolder* propH
 			case rewardButtonId:
 				return bool2tri(hasOg(OgReward) && (
 						isConditional(propHolder)
-						|| !belongsToSubmenu(propHolder, governmentSubmenuId)
+						|| (!belongsToSubmenu(propHolder, governmentSubmenuId)
 						&& !belongsToSubmenu(propHolder, religionSubmenuId)
-						&& !belongsToSubmenu(propHolder, entertainmentSubmenuId)
+						&& !belongsToSubmenu(propHolder, entertainmentSubmenuId))
 					));
 
 			case parkButtonId:

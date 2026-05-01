@@ -84,7 +84,7 @@ namespace
 		uint16_t wMajorVer = (qwFileVersion >> 48) & 0xFFFF;
 		uint16_t wMinorVer = (qwFileVersion >> 32) & 0xFFFF;
 		uint16_t wRevision = (qwFileVersion >> 16) & 0xFFFF;
-		uint16_t wBuildNum = qwFileVersion & 0xFFFF;
+		// uint16_t wBuildNum = qwFileVersion & 0xFFFF;
 
 		uint16_t nGameVersion = 0;
 
