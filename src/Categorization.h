@@ -11,7 +11,7 @@ class Categorization
 
 		bool belongsToSubmenu(cISCPropertyHolder* propHolder, uint32_t submenuId);
 
-		TriState belongsToMenu(cISCPropertyHolder* propHolder, uint32_t menuId);
+		TriState belongsToMenu(cISCPropertyHolder* propHolder, uint32_t menuId, bool isTutorial);
 
 		static const std::unordered_set<uint32_t> toplevelMenuButtons;
 

@@ -187,11 +187,15 @@ bool Categorization::belongsToSubmenu(cISCPropertyHolder* propHolder, uint32_t s
 
 // Determines whether building exemplar belongs to a given menu, taking into account that some submenus might not be reachable.
 // `menuId` is a top-level button ID or a submenu ID
-Categorization::TriState Categorization::belongsToMenu(cISCPropertyHolder* propHolder, uint32_t menuId)
+Categorization::TriState Categorization::belongsToMenu(cISCPropertyHolder* propHolder, uint32_t menuId, bool isTutorial)
 {
 	if (!toplevelMenuButtons.contains(menuId))
 	{
 		return bool2tri(belongsToSubmenu(propHolder, menuId));
+	}
+	else if (isTutorial)
+	{
+		return Categorization::TriState::Maybe;  // use original logic for top-level menus in tutorial cities
 	}
 	else if (propHolder->HasProperty(itemSubmenuParentPropId) &&
 			PropertyUtil::arrayExists(propHolder, itemSubmenuParentPropId, nullptr, [this](uint32_t id) {

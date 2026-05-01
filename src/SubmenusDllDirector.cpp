@@ -51,6 +51,7 @@
 #include "cIGZPersistResourceKeyList.h"
 #include "cISC4BuildingDevelopmentSimulator.h"
 #include "cISC4City.h"
+#include "cISC4RegionalCity.h"
 #include "cISC4App.h"
 #include "PersistResourceKeyFilterByTypeAndGroup.h"
 #include "PropertyUtil.h"
@@ -307,11 +308,17 @@ namespace
 
 	std::unordered_set<uint32_t> emptySubmenus = {};
 	std::unordered_set<uint32_t> reachableSubmenus(Categorization::toplevelMenuButtons);  // initially just the top-level menus, submenus are added later
+	std::unordered_map<uint32_t, uint32_t> submenuLinks = {};  // maps child to parent
+	bool isTutorial = false;
 
 	// returns false if item is not a submenu
-	bool isEmptySubmenu(const uint32_t buttonId)
+	bool shouldHideSubmenu(const uint32_t buttonId)
 	{
-		return emptySubmenus.contains(buttonId);
+		if (isTutorial) {
+			return submenuLinks.contains(buttonId);  // hide all known submenu buttons
+		} else {
+			return emptySubmenus.contains(buttonId);
+		}
 	}
 
 	// If catalog item is a submenu button, this triggers a static button click event to open a new catalog.
@@ -344,7 +351,7 @@ submenuButton:
 
 	Categorization::TriState call_belongsToMenu(cISCPropertyHolder* propHolder, uint32_t menuId)
 	{
-		return spCategorization->belongsToMenu(propHolder, menuId);
+		return spCategorization->belongsToMenu(propHolder, menuId, isTutorial);
 	}
 
 	// Determine whether the current building should be added to the menu or not, based on its building exemplar data.
@@ -864,13 +871,13 @@ skipSubmenu:
 
 			push eax;  // store
 			push edx;  // store
-			push ecx;  // argument for isEmptySubmenu
+			push ecx;  // argument for shouldHideSubmenu
 			push ecx;
 			call addToItemList;  // (cdecl)
 			add esp, 0x4;
 			test al, al;
 			jnz skipEmptinessCheck;
-			call isEmptySubmenu;  // (cdecl) note that here we assume that IID and Button ID are the same
+			call shouldHideSubmenu;  // (cdecl) note that here we assume that IID and Button ID are the same
 skipEmptinessCheck:
 			mov byte ptr [shouldDiscardItem], al;  // for later use
 			add esp, 0x4;
@@ -1223,7 +1230,6 @@ public:
 		clearItemListIIDs();
 	}
 
-	std::unordered_map<uint32_t, uint32_t> submenuLinks = {};  // maps child to parent
 	std::unordered_map<uint32_t, std::unordered_set<uint32_t>*> submenuChildren = {};  // maps parent to children
 	std::unordered_set<uint32_t> nonemptySubmenus = {};
 	std::unordered_map<uint32_t, cIGZString*> submenuNames = {};  // for debugging
@@ -1294,9 +1300,6 @@ public:
 	bool submenusInitialized = false;
 	void initializeSubmenus()
 	{
-		if (submenusInitialized) {  // TODO reinitialize for each city that is opened?
-			return;
-		}
 		cIGZPersistResourceManagerPtr pResMan;
 		cISC4AppPtr pApp;
 		if (!pResMan || !pApp)
@@ -1305,6 +1308,19 @@ public:
 		}
 		bool success = true;
 		Logger& logger = Logger::GetInstance();
+
+		cISC4RegionalCity* pRegionalCity = pApp->GetRegionalCity();
+		if (pRegionalCity && pRegionalCity->IsTutorial())
+		{
+			logger.WriteLine(LogLevel::Info, "Detected a Tutorial city, so submenus are deactivated in this city.");
+			isTutorial = true;  // in particular, treats every submenu as empty, so hides submenu buttons
+		} else {
+			isTutorial = false;
+		}
+
+		if (submenusInitialized) {  // TODO reinitialize for each city that is opened?
+			return;
+		}
 
 		// Parse all the item exemplars for submenu buttons, network items and flora items
 		// in order to determine which submenus are empty or are unreachable due to missing button exemplars.
@@ -1339,7 +1355,7 @@ public:
 						uint32_t parentId = propValueBuffer;  // copy
 						if (buttonId != 0 && parentId != 0)
 						{
-							this1->submenuLinks[buttonId] = parentId;  // found valid submenu button, store it for later use
+							submenuLinks[buttonId] = parentId;  // found valid submenu button, store it for later use
 							if (this1->submenuChildren.contains(parentId)) {
 								this1->submenuChildren[parentId]->insert(buttonId);
 							} else {
