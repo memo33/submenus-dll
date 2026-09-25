@@ -895,12 +895,12 @@ skipEmptinessCheck:
 	{
 		auto property = propHolder->GetProperty(ITEM_BUTTON_CLASS_PROP);
 		if (property != nullptr) {
-			uint32_t buttonClass;
+			uint32_t buttonClass = 0;
 			property->GetPropertyValue()->GetValUint32(buttonClass);
 			if (buttonClass == ITEM_BUTTON_CLASS_FLORA) {
 				property = propHolder->GetProperty(ITEM_SUBMENU_PARENT_ID_PROP);
 				if (property != nullptr) {
-					uint32_t submenuId;
+					uint32_t submenuId = 0;
 					property->GetPropertyValue()->GetValUint32(submenuId);
 					return !reachableSubmenus.contains(submenuId);
 				}
@@ -1261,14 +1261,17 @@ public:
 		exemplar->Release();
 	}
 
-	bool isSubmenuEmptyUpdate(uint32_t buttonId)
+	// `visited` stops the recursion if the submenu parent links form a loop, which would otherwise overflow the stack.
+	bool isSubmenuEmptyUpdate(uint32_t buttonId, std::unordered_set<uint32_t>& visited)
 	{
 		if (nonemptySubmenus.contains(buttonId)) {
 			return false;
+		} else if (!visited.insert(buttonId).second) {
+			return true;  // already checked in this search (or part of a loop), so it adds no content here
 		} else if (submenuChildren.contains(buttonId)) {
 			// If the menu contains only submenu buttons, we need to check recursively whether the nested menus are empty.
 			for (auto&& childId : *(submenuChildren[buttonId])) {
-				if (!isSubmenuEmptyUpdate(childId)) {
+				if (!isSubmenuEmptyUpdate(childId, visited)) {
 					nonemptySubmenus.insert(buttonId);
 					return false;
 				}
@@ -1280,13 +1283,16 @@ public:
 		}
 	}
 
-	bool isSubmenuReachableUpdate(uint32_t buttonId)
+	// `visited` stops the recursion if the submenu parent links form a loop, which would otherwise overflow the stack.
+	bool isSubmenuReachableUpdate(uint32_t buttonId, std::unordered_set<uint32_t>& visited)
 	{
 		if (reachableSubmenus.contains(buttonId)) {
 			return true;
+		} else if (!visited.insert(buttonId).second) {
+			return false;  // the parent links form a loop that no top-level menu leads into
 		} else if (submenuLinks.contains(buttonId)) {
 			const uint32_t parentId = submenuLinks[buttonId];
-			if (isSubmenuReachableUpdate(parentId)) {
+			if (isSubmenuReachableUpdate(parentId, visited)) {
 				reachableSubmenus.insert(buttonId);
 				return true;
 			} else {
@@ -1345,15 +1351,21 @@ public:
 					auto propHolder = exemplar->AsISCPropertyHolder();
 
 					// check if item exemplar is a submenu button, network item or flora item
-					uint32_t propValueBuffer;
-					propHolder->GetProperty((uint32_t)ITEM_BUTTON_CLASS_PROP, propValueBuffer);
-					if (propValueBuffer == ITEM_BUTTON_CLASS_SUBMENU && itemGid == ITEM_EXEMPLAR_GID_MISC_CATALOG)
+					uint32_t buttonClass = 0;
+					propHolder->GetProperty((uint32_t)ITEM_BUTTON_CLASS_PROP, buttonClass);
+					if (buttonClass == ITEM_BUTTON_CLASS_SUBMENU && itemGid == ITEM_EXEMPLAR_GID_MISC_CATALOG)
 					{
-						propHolder->GetProperty((uint32_t)ITEM_BUTTON_ID_PROP, propValueBuffer);
-						uint32_t buttonId = propValueBuffer;  // copy
-						propHolder->GetProperty((uint32_t)ITEM_SUBMENU_PARENT_ID_PROP, propValueBuffer);
-						uint32_t parentId = propValueBuffer;  // copy
-						if (buttonId != 0 && parentId != 0)
+						uint32_t buttonId = 0;
+						propHolder->GetProperty((uint32_t)ITEM_BUTTON_ID_PROP, buttonId);
+						uint32_t parentId = 0;
+						propHolder->GetProperty((uint32_t)ITEM_SUBMENU_PARENT_ID_PROP, parentId);
+						if (buttonId != 0 && (parentId == 0 || parentId == buttonId))
+						{
+							Logger::GetInstance().WriteLineFormatted(LogLevel::Error,
+								"Submenu button 0x%08X has a missing or invalid Item Submenu Parent ID, so it is ignored: T:0x%08X G:0x%08X I:0x%08X.",
+								buttonId, key.type, key.group, key.instance);
+						}
+						else if (buttonId != 0)
 						{
 							submenuLinks[buttonId] = parentId;  // found valid submenu button, store it for later use
 							if (this1->submenuChildren.contains(parentId)) {
@@ -1373,13 +1385,13 @@ public:
 							}
 						}
 					}
-					else if ((propValueBuffer == ITEM_BUTTON_CLASS_NETWORK && itemGid == ITEM_EXEMPLAR_GID_MISC_CATALOG)
-							|| (propValueBuffer == ITEM_BUTTON_CLASS_FLORA && itemGid == ITEM_EXEMPLAR_GID_FLORA))
+					else if ((buttonClass == ITEM_BUTTON_CLASS_NETWORK && itemGid == ITEM_EXEMPLAR_GID_MISC_CATALOG)
+							|| (buttonClass == ITEM_BUTTON_CLASS_FLORA && itemGid == ITEM_EXEMPLAR_GID_FLORA))
 					{
-						propHolder->GetProperty((uint32_t)ITEM_SUBMENU_PARENT_ID_PROP, propValueBuffer);
-						if (propValueBuffer != 0)
+						uint32_t parentId = 0;
+						propHolder->GetProperty((uint32_t)ITEM_SUBMENU_PARENT_ID_PROP, parentId);
+						if (parentId != 0)
 						{
-							uint32_t parentId = propValueBuffer;  // copy
 							this1->nonemptySubmenus.insert(parentId);  // found network or flora item
 						}
 					}
@@ -1395,7 +1407,8 @@ public:
 		for (auto&& p : submenuLinks)
 		{
 			auto buttonId = p.first;
-			bool isReachable = isSubmenuReachableUpdate(buttonId);  // updates reachableSubmenus
+			std::unordered_set<uint32_t> visited;
+			bool isReachable = isSubmenuReachableUpdate(buttonId, visited);  // updates reachableSubmenus
 			if (!isReachable) {
 				numNonReachable++;
 				logger.WriteLineFormatted(LogLevel::Info, "Submenu with Button ID 0x%08X does not exist or is not reachable from top-level menus.", buttonId);
@@ -1448,7 +1461,8 @@ public:
 		for (auto&& p : submenuLinks)
 		{
 			auto buttonId = p.first;
-			bool isEmpty = isSubmenuEmptyUpdate(buttonId);  // updates nonemptySubmenus if non-empty
+			std::unordered_set<uint32_t> visited;
+			bool isEmpty = isSubmenuEmptyUpdate(buttonId, visited);  // updates nonemptySubmenus if non-empty
 			if (isEmpty) {
 				if (emptySubmenus.empty()) {
 					logger.WriteLine(LogLevel::Info, "There isn't any content for the following submenus in your Plugins, so their submenu buttons will not be displayed in the menus:");
