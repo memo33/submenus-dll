@@ -1427,13 +1427,15 @@ public:
 			{
 				buildingDevSim->AddRef();
 
-				uint32_t nCount;
+				// The count is an in/out limit: the game only ever lowers it to the number of building types
+				// (and returns that number), so it has to start out large enough to hold all of them.
+				uint32_t nCount = UINT32_MAX;
 				success = buildingDevSim->GetAllBuildingTypes(nullptr, nCount);
 
 				if (success && nCount > 0)
 				{
 					uint32_t* buildingTypes{ new uint32_t[nCount]{} };  // TODO consider using eastl::vector
-					uint32_t nCount2;
+					uint32_t nCount2 = nCount;  // limit: the size of buildingTypes
 					success = buildingDevSim->GetAllBuildingTypes(buildingTypes, nCount2);
 					if (nCount2 != nCount || !success)  // should not happen
 					{
