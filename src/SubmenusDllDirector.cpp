@@ -1241,11 +1241,20 @@ public:
 
 		// TODO ignore GetBuildingProfile check which has unknown use
 		cGZPersistResourceKey key;
-		buildingDevSim->GetBuildingKeyFromType(buildingType, key);
+		if (!buildingDevSim->GetBuildingKeyFromType(buildingType, key))
+		{
+			return;
+		}
 
 		cISCResExemplar* exemplar = nullptr;
 		// GetResource automatically adds a reference to the exemplar
-		pResMan->GetResource(key, GZIID_cISCResExemplar, reinterpret_cast<void**>(&exemplar), 0, nullptr);
+		if (!pResMan->GetResource(key, GZIID_cISCResExemplar, reinterpret_cast<void**>(&exemplar), 0, nullptr) || !exemplar)
+		{
+			Logger::GetInstance().WriteLineFormatted(LogLevel::Error,
+				"Failed to load the building exemplar T:0x%08X G:0x%08X I:0x%08X, so it is skipped.",
+				key.type, key.group, key.instance);
+			return;
+		}
 
 		auto propHolder = exemplar->AsISCPropertyHolder();
 		PropertyUtil::arrayForeach(propHolder, OCCUPANT_GROUPS_ALT_PROP, &key, [this](uint32_t submenuId) { nonemptySubmenus.insert(submenuId); });
@@ -1347,7 +1356,13 @@ public:
 					cIGZPersistResourceManagerPtr pResMan;
 					cISCResExemplar* exemplar = nullptr;
 					// GetResource automatically adds a reference to the exemplar
-					pResMan->GetResource(key, GZIID_cISCResExemplar, reinterpret_cast<void**>(&exemplar), 0, nullptr);
+					if (!pResMan->GetResource(key, GZIID_cISCResExemplar, reinterpret_cast<void**>(&exemplar), 0, nullptr) || !exemplar)
+					{
+						Logger::GetInstance().WriteLineFormatted(LogLevel::Error,
+							"Failed to load the item exemplar T:0x%08X G:0x%08X I:0x%08X, so it is skipped.",
+							key.type, key.group, key.instance);
+						return;
+					}
 					auto propHolder = exemplar->AsISCPropertyHolder();
 
 					// check if item exemplar is a submenu button, network item or flora item
