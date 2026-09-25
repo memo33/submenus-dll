@@ -958,6 +958,8 @@ checkSubmenuOrNetworkInSubmenu:
 			jz discardItem;  // if it does not have the property
 
 			// else has submenu, so get the value of the property
+			// (reset first: the helper leaves the buffer unchanged if it cannot convert the value)
+			mov dword ptr [submenuPropValueBuffer], 0;
 			mov ecx, offset submenuPropValueBuffer;
 			push ecx;
 			push ITEM_BUTTON_CLASS_PROP;
@@ -1347,7 +1349,7 @@ public:
 			pResMan->GetAvailableResourceList(&pResourceList, filter);
 			filter->Release();
 
-			pResourceList->AddRef();
+			// GetAvailableResourceList hands over a list that is already AddRef'd, so the Release below frees it
 			if (pResourceList->Size() > 0)
 			{
 				pResourceList->EnumKeys([](const auto& key, void* pContext) {
