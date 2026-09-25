@@ -307,7 +307,7 @@ namespace
 	}
 
 	std::unordered_set<uint32_t> emptySubmenus = {};
-	std::unordered_set<uint32_t> reachableSubmenus(Categorization::toplevelMenuButtons);  // initially just the top-level menus, submenus are added later
+	std::unordered_set<uint32_t> reachableSubmenus(Categorization::toplevelMenuButtons());  // initially just the top-level menus, submenus are added later
 	std::unordered_map<uint32_t, uint32_t> submenuLinks = {};  // maps child to parent
 	bool isTutorial = false;
 

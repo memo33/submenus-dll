@@ -13,7 +13,8 @@ class Categorization
 
 		TriState belongsToMenu(cISCPropertyHolder* propHolder, uint32_t menuId, bool isTutorial);
 
-		static const std::unordered_set<uint32_t> toplevelMenuButtons;
+		// A function rather than a static member, so that globals in other files can safely copy it during DLL initialization.
+		static const std::unordered_set<uint32_t>& toplevelMenuButtons();
 
 		static const std::unordered_set<uint32_t> autoPrefilledSubmenus;
 
