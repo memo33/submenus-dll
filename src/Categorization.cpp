@@ -4,13 +4,19 @@
 #include "cGZPersistResourceKey.h"
 
 
-const std::unordered_set<uint32_t> Categorization::toplevelMenuButtons = {
-	FLORA_BUTTON_ID,
-	ZONE_R_BUTTON_ID, ZONE_C_BUTTON_ID, ZONE_I_BUTTON_ID,
-	ROADWAY_BUTTON_ID, HIGHWAY_BUTTON_ID, RAIL_BUTTON_ID, MISCTRANSP_BUTTON_ID, AIRPORT_BUTTON_ID, SEAPORT_BUTTON_ID,
-	POWER_BUTTON_ID, WATER_BUTTON_ID, GARBAGE_BUTTON_ID,
-	POLICE_BUTTON_ID, FIRE_BUTTON_ID, EDUCATION_BUTTON_ID, HEALTH_BUTTON_ID, LANDMARK_BUTTON_ID, REWARD_BUTTON_ID, PARK_BUTTON_ID
-};
+const std::unordered_set<uint32_t>& Categorization::toplevelMenuButtons()
+{
+	// Constructed on first use: C++ does not order the initialization of globals across files,
+	// so a global in another file (like reachableSubmenus) must not copy a global defined here.
+	static const std::unordered_set<uint32_t> buttons = {
+		FLORA_BUTTON_ID,
+		ZONE_R_BUTTON_ID, ZONE_C_BUTTON_ID, ZONE_I_BUTTON_ID,
+		ROADWAY_BUTTON_ID, HIGHWAY_BUTTON_ID, RAIL_BUTTON_ID, MISCTRANSP_BUTTON_ID, AIRPORT_BUTTON_ID, SEAPORT_BUTTON_ID,
+		POWER_BUTTON_ID, WATER_BUTTON_ID, GARBAGE_BUTTON_ID,
+		POLICE_BUTTON_ID, FIRE_BUTTON_ID, EDUCATION_BUTTON_ID, HEALTH_BUTTON_ID, LANDMARK_BUTTON_ID, REWARD_BUTTON_ID, PARK_BUTTON_ID
+	};
+	return buttons;
+}
 
 const std::unordered_set<uint32_t> Categorization::autoPrefilledSubmenus = {
 	r1SubmenuId, r2SubmenuId, r3SubmenuId,
@@ -189,7 +195,7 @@ bool Categorization::belongsToSubmenu(cISCPropertyHolder* propHolder, uint32_t s
 // `menuId` is a top-level button ID or a submenu ID
 Categorization::TriState Categorization::belongsToMenu(cISCPropertyHolder* propHolder, uint32_t menuId, bool isTutorial)
 {
-	if (!toplevelMenuButtons.contains(menuId))
+	if (!toplevelMenuButtons().contains(menuId))
 	{
 		return bool2tri(belongsToSubmenu(propHolder, menuId));
 	}
