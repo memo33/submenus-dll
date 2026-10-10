@@ -53,6 +53,7 @@
 #include "cISC4City.h"
 #include "cISC4RegionalCity.h"
 #include "cISC4App.h"
+#include "SC4Vector.h"
 #include "PersistResourceKeyFilterByTypeAndGroup.h"
 #include "PropertyUtil.h"
 #include "cIExemplarPatchingServer.h"
@@ -1323,7 +1324,6 @@ public:
 		{
 			return;
 		}
-		bool success = true;
 		Logger& logger = Logger::GetInstance();
 
 		cISC4RegionalCity* pRegionalCity = pApp->GetRegionalCity();
@@ -1443,34 +1443,12 @@ public:
 			if (buildingDevSim)
 			{
 				buildingDevSim->AddRef();
-
-				// The count is an in/out limit: the game only ever lowers it to the number of building types
-				// (and returns that number), so it has to start out large enough to hold all of them.
-				uint32_t nCount = UINT32_MAX;
-				success = buildingDevSim->GetAllBuildingTypes(nullptr, nCount);
-
-				if (success && nCount > 0)
-				{
-					uint32_t* buildingTypes{ new uint32_t[nCount]{} };  // TODO consider using eastl::vector
-					uint32_t nCount2 = nCount;  // limit: the size of buildingTypes
-					success = buildingDevSim->GetAllBuildingTypes(buildingTypes, nCount2);
-					if (nCount2 != nCount || !success)  // should not happen
-					{
-						logger.WriteLineFormatted(LogLevel::Error, "Length mismatch of building-type arrays: %d vs %d.", nCount, nCount2);
+				SC4Vector<uint32_t> buildingTypes = {};
+				if (buildingDevSim->GetAllBuildingTypes(buildingTypes)) {
+					for (auto buildingType : buildingTypes) {
+						initializeSubmenusFromBuilding(buildingDevSim, buildingType);
 					}
-					else
-					{
-						for (auto i = 0; i < nCount; i++)
-						{
-							initializeSubmenusFromBuilding(buildingDevSim, buildingTypes[i]);
-						}
-
-					}
-
-					delete[] buildingTypes;
-					buildingTypes = nullptr;
 				}
-
 				buildingDevSim->Release();
 			}
 			pCity->Release();
